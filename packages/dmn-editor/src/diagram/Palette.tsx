@@ -262,7 +262,6 @@ export function Palette({ pulse }: { pulse: boolean }) {
           className={icon.className}
           onDragStart={(event) => {
             onDragStart(event, icon.nodeType);
-            setIsSubmenuOpen(false);
           }}
           draggable={true}
         >

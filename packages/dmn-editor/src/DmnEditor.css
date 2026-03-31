@@ -386,7 +386,6 @@
 
 .kie-dmn-editor--palette-button {
   margin: 0;
-  margin-bottom: 8px;
   padding: 0;
   width: 40px;
   height: 40px;
@@ -420,7 +419,7 @@
 .kie-dmn-editor--palette-submenu {
   position: absolute;
   left: 58px;
-  bottom: -8px;
+  bottom: 0;
   background: white;
   border: 1px solid black;
   border-radius: 20px;
@@ -428,6 +427,13 @@
   box-shadow: 4px 4px 2px 0px rgb(127 127 127);
   z-index: 1000;
   pointer-events: all;
+  max-height: calc(100vh - 200px);
+  overflow: visible;
+  width: fit-content;
+}
+
+.kie-dmn-editor--palette-submenu:hover {
+  box-shadow: 4px 4px 2px 0px rgb(127 127 127);
 }
 
 .kie-dmn-editor--palette-submenu-triangle {
@@ -446,10 +452,35 @@
   display: grid;
   grid-template-columns: repeat(2, 40px);
   gap: 8px;
+  padding: 0;
+  width: fit-content;
 }
 
 .kie-dmn-editor--palette-submenu-content .kie-dmn-editor--palette-button {
   margin: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  max-width: 40px;
+  border-radius: 40px;
+  border: 0;
+  background: white;
+}
+
+.kie-dmn-editor--palette-submenu-content .kie-dmn-editor--palette-button svg {
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.kie-dmn-editor--palette-submenu-content .kie-dmn-editor--palette-button:hover {
+  filter: brightness(95%);
+  cursor: grab;
+}
+
+.kie-dmn-editor--palette-submenu-content .kie-dmn-editor--palette-button:active {
+  filter: brightness(90%);
+  cursor: grabbing;
 }
 
 /* (end) palette */
