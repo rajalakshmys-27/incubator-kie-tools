@@ -360,6 +360,7 @@
   background: #fff;
   border-radius: 40px;
   border: 1px solid black;
+  margin-bottom: 10px;
 }
 .kie-dmn-editor--palette:hover {
   box-shadow: 4px 4px 2px 0px rgb(127 127 127);
@@ -402,6 +403,55 @@
   filter: brightness(90%);
   cursor: grabbing;
 }
+.kie-dmn-editor--palette-ellipsis-button {
+  cursor: pointer !important;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.kie-dmn-editor--palette-ellipsis-button.active {
+  filter: brightness(90%);
+}
+
+.kie-dmn-editor--palette-submenu {
+  position: absolute;
+  left: 58px;
+  bottom: -8px;
+  background: white;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 8px;
+  box-shadow: 4px 4px 2px 0px rgb(127 127 127);
+  z-index: 1000;
+  pointer-events: all;
+}
+
+.kie-dmn-editor--palette-submenu-triangle {
+  position: absolute;
+  left: -6px;
+  bottom: 20px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  transform: rotate(45deg);
+}
+
+.kie-dmn-editor--palette-submenu-content {
+  display: grid;
+  grid-template-columns: repeat(2, 40px);
+  gap: 8px;
+}
+
+.kie-dmn-editor--palette-submenu-content .kie-dmn-editor--palette-button {
+  margin: 0;
+}
+
 /* (end) palette */
 
 /* (begin) properties panel toggle */
@@ -519,6 +569,7 @@
   background: #fff;
   border-radius: 40px;
   border: 1px solid black;
+  margin-bottom: 10px;
 }
 .kie-dmn-editor--external-nodes-panel-toggle:hover,
 .kie-dmn-editor--drg-panel-toggle:hover {
@@ -562,6 +613,7 @@
   background: #fff;
   border-radius: 40px;
   border: 1px solid black;
+  margin-bottom: 10px;
 }
 .kie-dmn-editor--external-nodes-panel-toggle-button svg {
   transform: scale(1, -1); /* Flip the 'migration icon' vertically, to point to the Diagram */
