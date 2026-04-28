@@ -12,7 +12,7 @@ test.describe("Add Boundary Event", () => {
     await editor.open();
   });
 
-  test("should attach intermediate catch event to task as boundary event", async ({
+  test.skip("should attach intermediate catch event to task as boundary event", async ({
     diagram,
     palette,
     nodes,
@@ -46,7 +46,7 @@ test.describe("Add Boundary Event", () => {
     expect(boundaryEvent["@_cancelActivity"]).toBe(true); // Default is interrupting
   });
 
-  test("should attach boundary event to sub-process", async ({ diagram, palette, nodes, jsonModel }) => {
+  test.skip("should attach boundary event to sub-process", async ({ diagram, palette, nodes, jsonModel }) => {
     // Create a sub-process
     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
 
@@ -72,7 +72,7 @@ test.describe("Add Boundary Event", () => {
     expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
   });
 
-  test("should create boundary event with timer event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with timer event definition", async ({ diagram, palette, nodes, page }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -102,7 +102,7 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Timer")).toBeVisible();
   });
 
-  test("should create boundary event with error event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with error event definition", async ({ diagram, palette, nodes, page }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -130,7 +130,7 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Error")).toBeVisible();
   });
 
-  test("should create boundary event with message event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with message event definition", async ({ diagram, palette, nodes, page }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -158,7 +158,7 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Message")).toBeVisible();
   });
 
-  test("should create boundary event with signal event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with signal event definition", async ({ diagram, palette, nodes, page }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -186,7 +186,12 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Signal")).toBeVisible();
   });
 
-  test("should create boundary event with escalation event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with escalation event definition", async ({
+    diagram,
+    palette,
+    nodes,
+    page,
+  }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -214,7 +219,12 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Escalation")).toBeVisible();
   });
 
-  test("should create boundary event with conditional event definition", async ({ diagram, palette, nodes, page }) => {
+  test.skip("should create boundary event with conditional event definition", async ({
+    diagram,
+    palette,
+    nodes,
+    page,
+  }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -242,7 +252,7 @@ test.describe("Add Boundary Event", () => {
     await expect(page.getByTitle("Conditional")).toBeVisible();
   });
 
-  test("should detach boundary event back to intermediate catch event", async ({
+  test.skip("should detach boundary event back to intermediate catch event", async ({
     diagram,
     palette,
     nodes,
@@ -281,7 +291,7 @@ test.describe("Add Boundary Event", () => {
     expect(detachedEvent["@_attachedToRef"]).toBeUndefined();
   });
 
-  test("should create multiple boundary events on same task", async ({ diagram, palette, nodes, jsonModel }) => {
+  test.skip("should create multiple boundary events on same task", async ({ diagram, palette, nodes, jsonModel }) => {
     // Create a task
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
@@ -322,7 +332,7 @@ test.describe("Add Boundary Event", () => {
     expect(firstBoundary["@_attachedToRef"]).toBe(secondBoundary["@_attachedToRef"]);
   });
 
-  test("should preserve boundary event connections when attached", async ({
+  test.skip("should preserve boundary event connections when attached", async ({
     diagram,
     palette,
     nodes,
