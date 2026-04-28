@@ -1,0 +1,149 @@
+/*
+ * IBM Confidential
+ * PID 5900-AR4
+ * Copyright IBM Corp. 2025, 2026
+ */
+
+import { test, expect } from "../__fixtures__/base";
+import { DefaultNodeName, NodeType } from "../__fixtures__/nodes";
+
+test.beforeEach(async ({ editor, page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await editor.open();
+});
+
+test.describe("Change Properties - Exclusive Gateway", () => {
+  test.beforeEach(async ({ palette, page }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+
+    await gateway.click();
+    await page.waitForTimeout(500);
+  });
+
+  test("should change the Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Decision Point" });
+
+    await page.waitForTimeout(300);
+
+    expect(await gatewayPropertiesPanel.getName()).toBe("Decision Point");
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("gateway-name-changed.png");
+  });
+
+  test("should change the Gateway documentation", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setDocumentation({
+      newDocumentation: "This gateway routes based on order amount",
+    });
+
+    await page.waitForTimeout(300);
+
+    expect(await gatewayPropertiesPanel.getDocumentation()).toBe("This gateway routes based on order amount");
+  });
+});
+
+test.describe("Change Properties - Exclusive Gateway with Default Flow", () => {
+  test.beforeEach(async ({ palette, page }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await gateway.click();
+    await page.waitForTimeout(500);
+  });
+
+  test("should configure Exclusive Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Exclusive Decision" });
+
+    await page.waitForTimeout(300);
+
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("exclusive-gateway-configured.png");
+  });
+});
+
+test.describe("Change Properties - Parallel Gateway", () => {
+  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await gateway.click();
+    await page.waitForTimeout(500);
+
+    await gatewayPropertiesPanel.morphToGateway({ type: "Parallel" });
+  });
+
+  test("should configure Parallel Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Parallel Split" });
+
+    await page.waitForTimeout(300);
+
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("parallel-gateway-configured.png");
+  });
+});
+
+test.describe("Change Properties - Inclusive Gateway", () => {
+  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await gateway.click();
+    await page.waitForTimeout(500);
+
+    await gatewayPropertiesPanel.morphToGateway({ type: "Inclusive" });
+  });
+
+  test("should configure Inclusive Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Inclusive Decision" });
+
+    await page.waitForTimeout(300);
+
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("inclusive-gateway-configured.png");
+  });
+});
+
+test.describe("Change Properties - Event-Based Gateway", () => {
+  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await gateway.click();
+    await page.waitForTimeout(500);
+
+    await gatewayPropertiesPanel.morphToGateway({ type: "Event" });
+  });
+
+  test("should configure Event-Based Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Event Gateway" });
+
+    await page.waitForTimeout(300);
+
+    expect(await gatewayPropertiesPanel.getName()).toBe("Event Gateway");
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("event-based-gateway-configured.png");
+  });
+});
+
+test.describe("Change Properties - Complex Gateway", () => {
+  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+    await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
+
+    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await gateway.click();
+    await page.waitForTimeout(500);
+
+    await gatewayPropertiesPanel.morphToGateway({ type: "Complex" });
+  });
+
+  test("should configure Complex Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+    await gatewayPropertiesPanel.setName({ newName: "Complex Decision" });
+
+    await page.waitForTimeout(300);
+
+    expect(await gatewayPropertiesPanel.getName()).toBe("Complex Decision");
+    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("complex-gateway-configured.png");
+  });
+});
