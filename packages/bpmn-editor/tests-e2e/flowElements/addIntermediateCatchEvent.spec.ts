@@ -429,13 +429,11 @@ test.describe("Add node - Intermediate Catch Event", () => {
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible();
 
-      // Delete using keyboard
       await catchEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(catchEvent).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });

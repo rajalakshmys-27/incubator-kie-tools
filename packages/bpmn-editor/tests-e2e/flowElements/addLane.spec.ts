@@ -39,7 +39,6 @@ test.describe("Add Lane", () => {
 
       await expect(nodes.get({ name: DefaultNodeName.LANE })).not.toBeAttached();
 
-      // Verify it's removed from JSON model - check the lanes within the laneSet
       const process = await jsonModel.getProcess();
       const laneSet = Array.isArray(process.laneSet) ? process.laneSet[0] : process.laneSet;
       expect(laneSet?.lane?.length || 0).toBe(0);

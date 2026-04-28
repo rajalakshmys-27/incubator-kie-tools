@@ -22,7 +22,6 @@ import { NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor, page }) => {
   await editor.open();
-  // Set wider viewport to include properties panel in screenshots
   await page.setViewportSize({ width: 1920, height: 1080 });
 });
 
@@ -30,11 +29,9 @@ test.describe("Change Properties - End Event", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
 
-    // Get the end event locator directly
     const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
     await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-    // Click to select it - properties panel is already open by default
     await endEvent.click();
     await page.waitForTimeout(500);
   });
@@ -135,7 +132,4 @@ test.describe("Change Properties - End Event", () => {
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-compensation.png");
   });
-
-  // Note: Cancel event definition is not available for End Events in BPMN.
-  // Cancel events are only used in transaction sub-processes.
 });

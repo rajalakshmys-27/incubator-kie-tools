@@ -217,7 +217,6 @@ test.describe("Add node - End Event", () => {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for End Event to be visible and get its ID
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
@@ -228,10 +227,8 @@ test.describe("Add node - End Event", () => {
         to: endEventId,
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
     });
 
@@ -241,31 +238,24 @@ test.describe("Add node - End Event", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Gateway node
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the top of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width / 2, box.y + 10);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add End Event" handle
       const addEndEventHandle = gateway.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the End Event
       await addEndEventHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the End Event to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-gateway.png");
     });
 
@@ -275,31 +265,24 @@ test.describe("Add node - End Event", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Sub-Process node using CSS class
       const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
       await subProcess.waitFor({ state: "attached", timeout: 5000 });
 
-      // Get Sub-Process bounding box to hover over it
       const box = await subProcess.boundingBox();
       if (!box) throw new Error("Sub-Process bounding box not found");
 
-      // Hover over the right side of the Sub-Process to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add End Event" handle
       const addEndEventHandle = subProcess.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the End Event
       await addEndEventHandle.dragTo(diagram.get(), {
         targetPosition: { x: 350, y: 100 },
       });
 
-      // Wait for the End Event to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-subprocess.png");
     });
   });
@@ -311,13 +294,11 @@ test.describe("Add node - End Event", () => {
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible();
 
-      // Delete using keyboard
       await endEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(endEvent).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });

@@ -22,14 +22,13 @@ import { DefaultNodeName, NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor, page }) => {
   await editor.open();
-  // Set wider viewport to include properties panel in screenshots
   await page.setViewportSize({ width: 1920, height: 1080 });
 });
 
 test.describe("Change Properties - Lane", () => {
   test.beforeEach(async ({ palette, nodes, lanePropertiesPanel, diagram, page }) => {
     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 200, y: 150 } });
-    await page.waitForTimeout(500); // Wait for lane to be fully rendered
+    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
   });
 
@@ -50,7 +49,6 @@ test.describe("Change Properties - Lane", () => {
 
 test.describe("Change Properties - Multiple Lanes", () => {
   test("should configure multiple lanes in a pool", async ({ palette, nodes, lanePropertiesPanel, diagram, page }) => {
-    // Create first lane
     await palette.dragNewNode({
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 50 },
@@ -60,7 +58,6 @@ test.describe("Change Properties - Multiple Lanes", () => {
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Sales" });
 
-    // Create second lane
     await palette.dragNewNode({
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 500 },
@@ -75,7 +72,6 @@ test.describe("Change Properties - Multiple Lanes", () => {
 
 test.describe("Change Properties - Lane with Tasks", () => {
   test("should create lane with tasks", async ({ palette, lanePropertiesPanel, diagram, page }) => {
-    // Create lane
     await palette.dragNewNode({
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 150 },
@@ -85,7 +81,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Processing Lane" });
 
-    // Create tasks within the lane
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 300, y: 300 },
@@ -102,7 +97,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
   });
 
   test("should move task between lanes", async ({ palette, nodes, lanePropertiesPanel, diagram, page }) => {
-    // Create two lanes closer together
     await palette.dragNewNode({
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 50 },
@@ -121,22 +115,19 @@ test.describe("Change Properties - Lane with Tasks", () => {
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Lane 2" });
 
-    // Create task in first lane
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 300, y: 150 },
       thenRenameTo: "Movable Task",
     });
 
-    // Move task using mouse operations directly
     const task = nodes.get({ name: "Movable Task" });
     const box = await task.boundingBox();
 
     if (box) {
-      // Move to task center and drag to Lane 2
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
       await page.mouse.down();
-      await page.mouse.move(400, 600); // Move to Lane 2 area
+      await page.mouse.move(400, 600);
       await page.mouse.up();
       await page.waitForTimeout(300);
     }

@@ -52,7 +52,6 @@ test.describe("Add Data Object", () => {
 
     await expect(nodes.get({ name: DefaultNodeName.DATA_OBJECT })).not.toBeAttached();
 
-    // Verify it's removed from JSON model
     const flowElements = await jsonModel.getProcess();
     expect(flowElements.flowElement?.length || 0).toBe(0);
   });

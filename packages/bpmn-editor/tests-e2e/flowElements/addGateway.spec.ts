@@ -56,7 +56,6 @@ test.describe("Add node - Gateway", () => {
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Verify it starts as Exclusive
       const gatewayElement = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(gatewayElement.__$$element).toBe("exclusiveGateway");
 
@@ -170,17 +169,14 @@ test.describe("Add node - Gateway", () => {
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // First morph to Parallel
       await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Parallel" });
 
       const gatewayElement = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(gatewayElement.__$$element).toBe("parallelGateway");
 
-      // Reset hover state before second morph
       await page.mouse.move(0, 0);
       await page.waitForTimeout(500);
 
-      // Morph back to Exclusive
       await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Exclusive" });
 
       await expect
@@ -206,31 +202,24 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Gateway node
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the right side of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Task" handle
       const addTaskHandle = gateway.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Task
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Task to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-gateway.png");
     });
 
@@ -240,31 +229,24 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Gateway node
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the right side of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Gateway" handle
       const addGatewayHandle = gateway.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Gateway
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Gateway to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-gateway.png");
     });
 
@@ -279,38 +261,30 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 350, y: 100 },
       });
 
-      // Get the Gateway and Task nodes
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the right side of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get Task position for drag target
       const taskBox = await task.boundingBox();
       if (!taskBox) throw new Error("Task bounding box not found");
 
-      // Drag from the handle to the Task center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-gateway-to-task.png");
     });
 
@@ -325,38 +299,30 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Get the Gateway and End Event nodes
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the right side of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get End Event position for drag target
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
 
-      // Drag from the handle to the End Event center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-gateway-to-end-event.png");
     });
 
@@ -371,30 +337,24 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 350, y: 100 },
       });
 
-      // Get the first Gateway and second Gateway nodes
       const firstGateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(firstGateway).toBeVisible({ timeout: 5000 });
 
       const secondGateway = page.locator(".kie-bpmn-editor--gateway-node").nth(1);
       await expect(secondGateway).toBeAttached();
 
-      // Get first Gateway bounding box to hover over it
       const box = await firstGateway.boundingBox();
       if (!box) throw new Error("First Gateway bounding box not found");
 
-      // Hover over the right side of the first Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = firstGateway.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get second Gateway position for drag target
       const secondGatewayBox = await secondGateway.boundingBox();
       if (!secondGatewayBox) throw new Error("Second Gateway bounding box not found");
 
-      // Drag from the handle to the second Gateway center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: {
           x: secondGatewayBox.x + secondGatewayBox.width / 2,
@@ -402,10 +362,8 @@ test.describe("Add node - Gateway", () => {
         },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-gateway-to-gateway.png");
     });
 
@@ -415,31 +373,24 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Start Event node
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Gateway" handle
       const addGatewayHandle = startEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Gateway
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Gateway to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-start-event.png");
     });
 
@@ -449,31 +400,24 @@ test.describe("Add node - Gateway", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Task node
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      // Get Task bounding box to hover over it
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
 
-      // Hover over the right side of the Task to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Gateway" handle
       const addGatewayHandle = task.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Gateway
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Gateway to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-task.png");
     });
   });
@@ -485,13 +429,11 @@ test.describe("Add node - Gateway", () => {
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible();
 
-      // Delete using the gateway locator
       await gateway.click();
       await page.keyboard.press("Delete");
 
       await expect(gateway).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });

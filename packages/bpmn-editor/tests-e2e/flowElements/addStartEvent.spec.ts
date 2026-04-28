@@ -530,31 +530,24 @@ test.describe("Add node - Start Event", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Start Event node using CSS class
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Task" handle
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Task
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Task to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-start-event.png");
     });
 
@@ -564,31 +557,24 @@ test.describe("Add node - Start Event", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Start Event node using CSS class
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Gateway" handle
       const addGatewayHandle = startEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Gateway
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Gateway to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-start-event.png");
     });
 
@@ -603,38 +589,30 @@ test.describe("Add node - Start Event", () => {
         targetPosition: { x: 350, y: 100 },
       });
 
-      // Get the Start Event node
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
       await expect(subProcess).toBeAttached();
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get Sub-process position for drag target
       const subProcessBox = await subProcess.boundingBox();
       if (!subProcessBox) throw new Error("Sub-process bounding box not found");
 
-      // Drag from the handle to the Sub-process center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: subProcessBox.x + subProcessBox.width / 2, y: subProcessBox.y + subProcessBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-event-to-subprocess.png");
     });
 
@@ -649,38 +627,30 @@ test.describe("Add node - Start Event", () => {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Get the Start Event and End Event nodes
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get End Event position for drag target
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
 
-      // Drag from the handle to the End Event center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-event-to-end-event.png");
     });
   });
@@ -692,13 +662,11 @@ test.describe("Add node - Start Event", () => {
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible();
 
-      // Delete using keyboard
       await startEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(startEvent).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });

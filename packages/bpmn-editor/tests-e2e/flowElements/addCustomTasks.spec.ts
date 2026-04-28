@@ -173,20 +173,17 @@ test.describe("Add Custom Tasks", () => {
       nodes,
       diagram,
     }) => {
-      // Add Start Event
       await palette.dragNewNode({
         type: "node_startEvent" as any,
         targetPosition: { x: 100, y: 200 },
       });
 
-      // Add Rest API call Task
       await customTasks.dragCustomTask({
         customTaskName: "Rest API call Task",
         targetPosition: { x: 300, y: 200 },
         thenRenameTo: "Rest API call Task Flow",
       });
 
-      // Add End Event
       await palette.dragNewNode({
         type: "node_endEvent" as any,
         targetPosition: { x: 500, y: 200 },

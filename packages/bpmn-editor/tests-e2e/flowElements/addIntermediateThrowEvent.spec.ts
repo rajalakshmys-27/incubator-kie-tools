@@ -351,13 +351,11 @@ test.describe("Add node - Intermediate Throw Event", () => {
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible();
 
-      // Delete using keyboard
       await throwEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(throwEvent).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });

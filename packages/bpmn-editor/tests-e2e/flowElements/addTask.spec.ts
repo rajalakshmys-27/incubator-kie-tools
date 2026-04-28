@@ -213,7 +213,6 @@ test.describe("Add node - Task", () => {
       let taskElement = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(taskElement.__$$element).toBe("scriptTask");
 
-      // Reset hover state before second morph
       await page.mouse.move(0, 0);
       await page.waitForTimeout(500);
 
@@ -235,31 +234,24 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Start Event node
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Start Event bounding box to hover over it
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
 
-      // Hover over the right side of the Start Event to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Task" handle
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Task
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Task to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-start-event.png");
     });
 
@@ -269,31 +261,24 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Gateway node
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway bounding box to hover over it
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
 
-      // Hover over the right side of the Gateway to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Task" handle
       const addTaskHandle = gateway.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create the Task
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Task to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-gateway.png");
     });
 
@@ -303,31 +288,24 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      // Get the Task node
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      // Get Task bounding box to hover over it
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
 
-      // Hover over the right side of the Task to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find and click the "Add Task" handle
       const addTaskHandle = task.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      // Drag from the handle to create another Task
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Wait for the Task to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-task.png");
     });
 
@@ -342,38 +320,30 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: 300, y: 100 },
       });
 
-      // Get the Task and End Event nodes
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-      // Get Task bounding box to hover over it
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
 
-      // Hover over the right side of the Task to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get End Event position for drag target
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
 
-      // Drag from the handle to the End Event center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
     });
 
@@ -388,38 +358,30 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: 350, y: 100 },
       });
 
-      // Get the Task and Gateway nodes
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
-      // Get Task bounding box to hover over it
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
 
-      // Hover over the right side of the Task to reveal connection handles
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500); // Wait for handles to appear
+      await page.waitForTimeout(500);
 
-      // Find the "Add Sequence Flow" handle
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
-      // Get Gateway position for drag target
       const gatewayBox = await gateway.boundingBox();
       if (!gatewayBox) throw new Error("Gateway bounding box not found");
 
-      // Drag from the handle to the Gateway center using diagram as target
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: gatewayBox.x + gatewayBox.width / 2, y: gatewayBox.y + gatewayBox.height / 2 },
       });
 
-      // Wait for edge to be created
       await page.waitForTimeout(1000);
 
-      // Verify via screenshot since edge creation is visual
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-gateway.png");
     });
   });
@@ -431,7 +393,6 @@ test.describe("Add node - Task", () => {
 
       await expect(nodes.get({ name: DefaultNodeName.TASK })).not.toBeAttached();
 
-      // Verify it's removed from JSON model
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
