@@ -533,16 +533,16 @@ test.describe("Add node - Call Activity", () => {
       expect(boxAfter?.y).not.toBe(callActivityBox?.y);
     });
 
-    //   test("should rename call activity", async ({ palette, nodes, jsonModel }) => {
-    //     await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
+    test("should rename call activity", async ({ palette, nodes, jsonModel }) => {
+      await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
 
-    //     await nodes.rename({ current: DefaultNodeName.CALL_ACTIVITY, new: "Invoke Subprocess" });
+      await nodes.rename({ current: DefaultNodeName.CALL_ACTIVITY, new: "Invoke Subprocess" });
 
-    //     await expect(nodes.get({ name: "Invoke Subprocess" })).toBeAttached();
+      await expect(nodes.get({ name: "Invoke Subprocess" })).toBeAttached();
 
-    //     const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
-    //     expect(callActivity["@_name"]).toBe("Invoke Subprocess");
-    //   });
+      const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(callActivity["@_name"]).toBe("Invoke Subprocess");
+    });
 
     //   test("should copy and paste call activity", async ({ palette, nodes, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });

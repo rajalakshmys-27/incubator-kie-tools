@@ -71,22 +71,6 @@ test.describe("Add node - Group", () => {
       expect(boxAfter?.y).not.toBe(groupBox?.y);
     });
 
-    //   test("should rename group", async ({ palette, nodes, jsonModel, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
-
-    //     // Groups may have a default name or empty name, find the group element
-    //     const group = page.locator('[data-nodetype="group"]').first();
-    //     await group.click();
-    //     await page.keyboard.press("Enter");
-    //     await page.keyboard.type("Payment Group");
-    //     await page.keyboard.press("Escape");
-
-    //     // Verify in JSON model
-    //     const process = await jsonModel.getProcess();
-    //     const groupArtifact = process.artifact?.find((a: any) => a.__$$element === "group");
-    //     expect(groupArtifact?.["@_categoryValueRef"]).toBeDefined();
-    //   });
-
     //   test("should resize group", async ({ palette, page }) => {
     //     await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
 

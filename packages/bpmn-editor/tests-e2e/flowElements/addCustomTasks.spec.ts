@@ -163,15 +163,15 @@ test.describe("Add Custom Tasks", () => {
   //     await expect(diagram.get()).toHaveScreenshot("add-mixed-custom-tasks.png");
   //   });
 
-  //   test("should rename custom tasks", async ({ customTasks, nodes }) => {
-  //     await customTasks.dragCustomTask({
-  //       customTaskName: "Rest API call Task",
-  //       targetPosition: { x: 300, y: 300 },
-  //       thenRenameTo: "Fetch User Data",
-  //     });
+  test("should rename custom tasks", async ({ customTasks, nodes }) => {
+    await customTasks.dragCustomTask({
+      customTaskName: "Rest API call Task",
+      targetPosition: { x: 300, y: 300 },
+      thenRenameTo: "Fetch User Data",
+    });
 
-  //     await expect(nodes.get({ name: "Fetch User Data" })).toBeAttached();
-  //   });
+    await expect(nodes.get({ name: "Fetch User Data" })).toBeAttached();
+  });
 
   test("should delete custom task", async ({ customTasks, nodes }) => {
     await customTasks.dragCustomTask({
@@ -451,16 +451,16 @@ test.describe("Add Custom Tasks", () => {
   //       await expect(page).toHaveScreenshot("add-mixed-custom-tasks.png");
   //     });
 
-  //     test("should rename custom tasks", async ({ customTasks, nodes }) => {
-  //       await customTasks.dragCustomTask({
-  //         customTaskName: "Gen AI Task",
-  //         targetPosition: { x: 300, y: 300 },
-  //       });
+  // test("should rename custom tasks", async ({ customTasks, nodes }) => {
+  //   await customTasks.dragCustomTask({
+  //     customTaskName: "Gen AI Task",
+  //     targetPosition: { x: 300, y: 300 },
+  //   });
 
-  //       await nodes.rename({ current: "Gen AI Task", new: "Generate Report" });
+  //   await nodes.rename({ current: "Gen AI Task", new: "Generate Report" });
 
-  //       await expect(nodes.get({ name: "Generate Report" })).toBeAttached();
-  //     });
+  //   await expect(nodes.get({ name: "Generate Report" })).toBeAttached();
+  // });
 
   //   test("should delete custom task", async ({ customTasks, nodes }) => {
   //     await customTasks.dragCustomTask({

@@ -428,15 +428,15 @@ test.describe("Add node - Sub-process", () => {
       expect(boxAfter?.y).not.toBe(subProcessBox?.y);
     });
 
-    //   test("should rename sub-process", async ({ palette, nodes, jsonModel }) => {
-    //     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
-    //     await nodes.rename({ current: DefaultNodeName.SUB_PROCESS, new: "Order Processing" });
+    test("should rename sub-process", async ({ palette, nodes, jsonModel }) => {
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+      await nodes.rename({ current: DefaultNodeName.SUB_PROCESS, new: "Order Processing" });
 
-    //     await expect(nodes.get({ name: "Order Processing" })).toBeAttached();
+      await expect(nodes.get({ name: "Order Processing" })).toBeAttached();
 
-    //     const subProcess = await jsonModel.getFlowElement({ elementIndex: 0 });
-    //     expect(subProcess["@_name"]).toBe("Order Processing");
-    //   });
+      const subProcess = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(subProcess["@_name"]).toBe("Order Processing");
+    });
 
     //   test("should resize sub-process", async ({ palette, nodes }) => {
     //     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });

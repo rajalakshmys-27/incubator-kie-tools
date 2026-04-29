@@ -449,15 +449,15 @@ test.describe("Add node - Task", () => {
       expect(boxAfter?.y).not.toBe(taskBox?.y);
     });
 
-    // test("should rename task", async ({ palette, nodes, jsonModel }) => {
-    //   await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
-    //   await nodes.rename({ current: DefaultNodeName.TASK, new: "Process Order" });
+    test("should rename task", async ({ palette, nodes, jsonModel }) => {
+      await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
+      await nodes.rename({ current: DefaultNodeName.TASK, new: "Process Order" });
 
-    //   await expect(nodes.get({ name: "Process Order" })).toBeAttached();
+      await expect(nodes.get({ name: "Process Order" })).toBeAttached();
 
-    //   const task = await jsonModel.getFlowElement({ elementIndex: 0 });
-    //   expect(task["@_name"]).toBe("Process Order");
-    // });
+      const task = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(task["@_name"]).toBe("Process Order");
+    });
 
     // test("should copy and paste task", async ({ palette, nodes, jsonModel, page }) => {
     //   await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });

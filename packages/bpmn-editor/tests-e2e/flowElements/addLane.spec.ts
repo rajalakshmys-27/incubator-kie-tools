@@ -58,16 +58,20 @@ test.describe("Add Lane", () => {
       expect(boxAfter?.y).not.toBe(laneBox?.y);
     });
 
-    //   test("should rename lane", async ({ palette, nodes, jsonModel }) => {
-    //     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
-    //     await nodes.rename({ current: DefaultNodeName.LANE, new: "Customer Service Lane" });
+    test("should rename lane", async ({ palette, nodes, jsonModel, page }) => {
+      await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
 
-    //     await expect(nodes.get({ name: "Customer Service Lane" })).toBeAttached();
+      await nodes.select({ name: DefaultNodeName.LANE, position: NodePosition.LEFT });
+      await page.waitForTimeout(300);
 
-    //     const process = await jsonModel.getProcess();
-    //     const lane = process.laneSet?.[0]?.lane?.[0];
-    //     expect(lane?.["@_name"]).toBe("Customer Service Lane");
-    //   });
+      await nodes.rename({ current: DefaultNodeName.LANE, new: "Customer Service Lane" });
+
+      await expect(nodes.get({ name: "Customer Service Lane" })).toBeAttached();
+
+      const process = await jsonModel.getProcess();
+      const lane = process.laneSet?.[0]?.lane?.[0];
+      expect(lane?.["@_name"]).toBe("Customer Service Lane");
+    });
 
     //   test("should resize lane", async ({ palette, nodes }) => {
     //     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
