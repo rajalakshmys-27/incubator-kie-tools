@@ -1,7 +1,20 @@
 /*
- * IBM Confidential
- * PID 5900-AR4
- * Copyright IBM Corp. 2025, 2026
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { test, expect } from "../__fixtures__/base";
@@ -9,7 +22,6 @@ import { NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor, page }) => {
   await editor.open();
-  // Set wider viewport to include properties panel in screenshots
   await page.setViewportSize({ width: 1920, height: 1080 });
 });
 
@@ -17,11 +29,9 @@ test.describe("Change Properties - End Event", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
 
-    // Get the end event locator directly
     const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
     await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-    // Click to select it - properties panel is already open by default
     await endEvent.click();
     await page.waitForTimeout(500);
   });
@@ -122,7 +132,4 @@ test.describe("Change Properties - End Event", () => {
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-compensation.png");
   });
-
-  // Note: Cancel event definition is not available for End Events in BPMN.
-  // Cancel events are only used in transaction sub-processes.
 });
