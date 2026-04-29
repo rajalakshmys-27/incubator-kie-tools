@@ -670,5 +670,31 @@ test.describe("Add node - Start Event", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move start event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
+
+      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(startEvent).toBeAttached();
+
+      await startEvent.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const startEventBox = await startEvent.boundingBox();
+      if (!startEventBox) {
+        throw new Error("Start Event bounding box not found");
+      }
+
+      await startEvent.dragTo(diagram.get(), {
+        sourcePosition: { x: startEventBox.width / 2, y: startEventBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await startEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(startEventBox?.x);
+      expect(boxAfter?.y).not.toBe(startEventBox?.y);
+    });
   });
 });

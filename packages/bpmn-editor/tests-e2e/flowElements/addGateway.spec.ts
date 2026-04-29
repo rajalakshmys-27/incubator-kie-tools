@@ -437,5 +437,31 @@ test.describe("Add node - Gateway", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move gateway to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
+
+      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      await expect(gateway).toBeAttached();
+
+      await gateway.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const gatewayBox = await gateway.boundingBox();
+      if (!gatewayBox) {
+        throw new Error("Gateway bounding box not found");
+      }
+
+      await gateway.dragTo(diagram.get(), {
+        sourcePosition: { x: gatewayBox.width / 2, y: gatewayBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await gateway.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(gatewayBox?.x);
+      expect(boxAfter?.y).not.toBe(gatewayBox?.y);
+    });
   });
 });

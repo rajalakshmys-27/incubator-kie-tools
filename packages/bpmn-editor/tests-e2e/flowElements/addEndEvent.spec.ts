@@ -302,5 +302,31 @@ test.describe("Add node - End Event", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move end event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
+
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEvent).toBeAttached();
+
+      await endEvent.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const endEventBox = await endEvent.boundingBox();
+      if (!endEventBox) {
+        throw new Error("End Event bounding box not found");
+      }
+
+      await endEvent.dragTo(diagram.get(), {
+        sourcePosition: { x: endEventBox.width / 2, y: endEventBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await endEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(endEventBox?.x);
+      expect(boxAfter?.y).not.toBe(endEventBox?.y);
+    });
   });
 });

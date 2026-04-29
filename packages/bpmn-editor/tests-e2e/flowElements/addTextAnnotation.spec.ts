@@ -57,5 +57,31 @@ test.describe("Add node - Text Annotation", () => {
       const process = await jsonModel.getProcess();
       expect(process.artifact?.length || 0).toBe(0);
     });
+
+    test("should move text annotation to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.TEXT_ANNOTATION, targetPosition: { x: 300, y: 300 } });
+
+      const textAnnotation = page.locator(".kie-bpmn-editor--text-annotation-node").first();
+      await expect(textAnnotation).toBeAttached();
+
+      await textAnnotation.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const textAnnotationBox = await textAnnotation.boundingBox();
+      if (!textAnnotationBox) {
+        throw new Error("Text Annotation bounding box not found");
+      }
+
+      await textAnnotation.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: textAnnotationBox.height / 2 },
+        targetPosition: { x: 500, y: 100 },
+        force: true,
+      });
+
+      const boxAfter = await textAnnotation.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(textAnnotationBox?.x);
+      expect(boxAfter?.y).not.toBe(textAnnotationBox?.y);
+    });
   });
 });

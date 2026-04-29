@@ -437,5 +437,21 @@ test.describe("Add node - Intermediate Catch Event", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move intermediate catch event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
+
+      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boxBefore = await catchEvent.boundingBox();
+
+      await catchEvent.dragTo(diagram.get(), {
+        targetPosition: { x: 500, y: 400 },
+      });
+
+      const boxAfter = await catchEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(boxBefore?.x);
+      expect(boxAfter?.y).not.toBe(boxBefore?.y);
+    });
   });
 });

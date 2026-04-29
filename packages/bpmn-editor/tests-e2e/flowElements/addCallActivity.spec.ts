@@ -449,5 +449,42 @@ test.describe("Add node - Call Activity", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move call activity to new position", async ({ palette, diagram, page }) => {
+      await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
+
+      const callActivity = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(callActivity).toBeAttached();
+
+      await callActivity.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const callActivityBox = await callActivity.boundingBox();
+      if (!callActivityBox) {
+        throw new Error("Call Activity bounding box not found");
+      }
+
+      await callActivity.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: callActivityBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await callActivity.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(callActivityBox?.x);
+      expect(boxAfter?.y).not.toBe(callActivityBox?.y);
+    });
+
+    test("should rename call activity", async ({ palette, nodes, jsonModel }) => {
+      await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
+
+      await nodes.rename({ current: DefaultNodeName.CALL_ACTIVITY, new: "Invoke Subprocess" });
+
+      await expect(nodes.get({ name: "Invoke Subprocess" })).toBeAttached();
+
+      const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(callActivity["@_name"]).toBe("Invoke Subprocess");
+    });
   });
 });

@@ -55,4 +55,30 @@ test.describe("Add Data Object", () => {
     const flowElements = await jsonModel.getProcess();
     expect(flowElements.flowElement?.length || 0).toBe(0);
   });
+
+  test("should move data object to new position", async ({ palette, nodes, diagram, page }) => {
+    await palette.dragNewNode({ type: NodeType.DATA_OBJECT, targetPosition: { x: 300, y: 300 } });
+
+    const dataObject = nodes.get({ name: DefaultNodeName.DATA_OBJECT });
+    await expect(dataObject).toBeAttached();
+
+    await dataObject.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+
+    const dataObjectBox = await dataObject.boundingBox();
+    if (!dataObjectBox) {
+      throw new Error("Data Object bounding box not found");
+    }
+
+    await dataObject.dragTo(diagram.get(), {
+      sourcePosition: { x: dataObjectBox.width / 2, y: dataObjectBox.height / 2 },
+      targetPosition: { x: 500, y: 400 },
+      force: true,
+    });
+
+    const boxAfter = await dataObject.boundingBox();
+
+    expect(boxAfter?.x).not.toBe(dataObjectBox?.x);
+    expect(boxAfter?.y).not.toBe(dataObjectBox?.y);
+  });
 });

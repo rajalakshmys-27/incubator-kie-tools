@@ -367,5 +367,41 @@ test.describe("Add node - Sub-process", () => {
       const flowElements = await jsonModel.getProcess();
       expect(flowElements.flowElement?.length).toBe(0);
     });
+
+    test("should move sub-process to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+
+      const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
+      await expect(subProcess).toBeAttached();
+
+      await subProcess.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const subProcessBox = await subProcess.boundingBox();
+      if (!subProcessBox) {
+        throw new Error("Sub-process bounding box not found");
+      }
+
+      await subProcess.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: subProcessBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await subProcess.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(subProcessBox?.x);
+      expect(boxAfter?.y).not.toBe(subProcessBox?.y);
+    });
+
+    test("should rename sub-process", async ({ palette, nodes, jsonModel }) => {
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+      await nodes.rename({ current: DefaultNodeName.SUB_PROCESS, new: "Order Processing" });
+
+      await expect(nodes.get({ name: "Order Processing" })).toBeAttached();
+
+      const subProcess = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(subProcess["@_name"]).toBe("Order Processing");
+    });
   });
 });

@@ -57,5 +57,31 @@ test.describe("Add node - Group", () => {
       const process = await jsonModel.getProcess();
       expect(process.artifact?.length || 0).toBe(0);
     });
+
+    test("should move group to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
+
+      const group = page.locator(".kie-bpmn-editor--group-node").first();
+      await expect(group).toBeAttached();
+
+      await group.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+
+      const groupBox = await group.boundingBox();
+      if (!groupBox) {
+        throw new Error("Group bounding box not found");
+      }
+
+      await group.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: groupBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await group.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(groupBox?.x);
+      expect(boxAfter?.y).not.toBe(groupBox?.y);
+    });
   });
 });

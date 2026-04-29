@@ -154,6 +154,16 @@ test.describe("Add Custom Tasks", () => {
     });
   });
 
+  test("should rename custom tasks", async ({ customTasks, nodes }) => {
+    await customTasks.dragCustomTask({
+      customTaskName: "Rest API call Task",
+      targetPosition: { x: 300, y: 300 },
+      thenRenameTo: "Fetch User Data",
+    });
+
+    await expect(nodes.get({ name: "Fetch User Data" })).toBeAttached();
+  });
+
   test("should delete custom task", async ({ customTasks, nodes }) => {
     await customTasks.dragCustomTask({
       customTaskName: "gRPC API call Task",
@@ -164,6 +174,36 @@ test.describe("Add Custom Tasks", () => {
     await nodes.delete({ name: "gRPC Task to Delete" });
 
     await expect(nodes.get({ name: "gRPC Task to Delete" })).not.toBeAttached();
+  });
+
+  test("should move custom task to new position", async ({ customTasks, page, diagram }) => {
+    await customTasks.dragCustomTask({
+      customTaskName: "Rest API call Task",
+      targetPosition: { x: 300, y: 300 },
+      thenRenameTo: "Move Test Task",
+    });
+
+    const task = page.locator(".kie-bpmn-editor--task-node").first();
+    await expect(task).toBeAttached();
+
+    await task.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+
+    const taskBox = await task.boundingBox();
+    if (!taskBox) {
+      throw new Error("Custom Task bounding box not found");
+    }
+
+    await task.dragTo(diagram.get(), {
+      sourcePosition: { x: 20, y: taskBox.height / 2 },
+      targetPosition: { x: 500, y: 400 },
+      force: true,
+    });
+
+    const boxAfter = await task.boundingBox();
+
+    expect(boxAfter?.x).not.toBe(taskBox?.x);
+    expect(boxAfter?.y).not.toBe(taskBox?.y);
   });
 
   test.describe("Custom Tasks in Process Flow", () => {
