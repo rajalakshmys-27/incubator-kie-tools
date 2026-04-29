@@ -32,24 +32,31 @@ test.describe("Add Lane", () => {
       expect(laneSet?.lane?.length || 0).toBe(0);
     });
 
-    //   test("should move lane to new position", async ({ palette, nodes }) => {
-    //     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
+    test("should move lane to new position", async ({ palette, nodes, diagram, page }) => {
+      await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
 
-    //     const laneBefore = nodes.get({ name: DefaultNodeName.LANE });
-    //     const boxBefore = await laneBefore.boundingBox();
+      const lane = nodes.get({ name: DefaultNodeName.LANE });
+      await expect(lane).toBeAttached();
 
-    //     // Move lane to new position
-    //     await laneBefore.dragTo(nodes.get({ name: DefaultNodeName.LANE }), {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await lane.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const laneAfter = nodes.get({ name: DefaultNodeName.LANE });
-    //     const boxAfter = await laneAfter.boundingBox();
+      const laneBox = await lane.boundingBox();
+      if (!laneBox) {
+        throw new Error("Lane bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await lane.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: laneBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await lane.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(laneBox?.x);
+      expect(boxAfter?.y).not.toBe(laneBox?.y);
+    });
 
     //   test("should rename lane", async ({ palette, nodes, jsonModel }) => {
     //     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });

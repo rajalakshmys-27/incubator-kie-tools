@@ -57,6 +57,19 @@ export function deleteNode({
     }
   }
 
+  // Delete Boundary Events attached to this node
+  const boundaryEventsToDelete: string[] = [];
+  visitFlowElementsAndArtifacts(process, ({ element }) => {
+    if (element.__$$element === "boundaryEvent" && element["@_attachedToRef"] === nodeId) {
+      boundaryEventsToDelete.push(element["@_id"]);
+    }
+  });
+
+  // Recursively delete each boundary event
+  for (const boundaryEventId of boundaryEventsToDelete) {
+    deleteNode({ definitions, __readonly_bpmnEdgeData, __readonly_bpmnElementId: boundaryEventId });
+  }
+
   // Delete the bpmnElement
 
   let laneIndex: number;

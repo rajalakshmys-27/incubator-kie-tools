@@ -45,23 +45,31 @@ test.describe("Add node - Group", () => {
       expect(process.artifact?.length || 0).toBe(0);
     });
 
-    //   test("should move group to new position", async ({ palette, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
+    test("should move group to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
 
-    //     const group = page.locator('[data-nodetype="group"]').first();
-    //     const boxBefore = await group.boundingBox();
+      const group = page.locator(".kie-bpmn-editor--group-node").first();
+      await expect(group).toBeAttached();
 
-    //     // Move group to new position
-    //     await group.dragTo(group, {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await group.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const boxAfter = await group.boundingBox();
+      const groupBox = await group.boundingBox();
+      if (!groupBox) {
+        throw new Error("Group bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await group.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: groupBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await group.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(groupBox?.x);
+      expect(boxAfter?.y).not.toBe(groupBox?.y);
+    });
 
     //   test("should rename group", async ({ palette, nodes, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });

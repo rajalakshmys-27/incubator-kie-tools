@@ -690,23 +690,31 @@ test.describe("Add node - Start Event", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move start event to new position", async ({ palette, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
+    test("should move start event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
-    //     const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-    //     const boxBefore = await startEvent.boundingBox();
+      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(startEvent).toBeAttached();
 
-    //     // Move start event to new position - create fresh locator for target
-    //     await startEvent.dragTo(page.locator(".kie-bpmn-editor--task-node").first(), {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await startEvent.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const boxAfter = await startEvent.boundingBox();
+      const startEventBox = await startEvent.boundingBox();
+      if (!startEventBox) {
+        throw new Error("Start Event bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await startEvent.dragTo(diagram.get(), {
+        sourcePosition: { x: startEventBox.width / 2, y: startEventBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await startEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(startEventBox?.x);
+      expect(boxAfter?.y).not.toBe(startEventBox?.y);
+    });
 
     //   test("should copy and paste start event", async ({ palette, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });

@@ -423,24 +423,31 @@ test.describe("Add node - Task", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    // test("should move task to new position", async ({ palette, nodes }) => {
-    //   await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
+    test("should move task to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
-    //   const taskBefore = nodes.get({ name: DefaultNodeName.TASK });
-    //   const boxBefore = await taskBefore.boundingBox();
+      const task = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(task).toBeAttached();
 
-    //   // Move task to new position
-    //   await taskBefore.dragTo(nodes.get({ name: DefaultNodeName.TASK }), {
-    //     targetPosition: { x: 500, y: 400 },
-    //   });
+      await task.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //   const taskAfter = nodes.get({ name: DefaultNodeName.TASK });
-    //   const boxAfter = await taskAfter.boundingBox();
+      const taskBox = await task.boundingBox();
+      if (!taskBox) {
+        throw new Error("Task bounding box not found");
+      }
 
-    //   // Verify position changed
-    //   expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //   expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    // });
+      await task.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: taskBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await task.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(taskBox?.x);
+      expect(boxAfter?.y).not.toBe(taskBox?.y);
+    });
 
     // test("should rename task", async ({ palette, nodes, jsonModel }) => {
     //   await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });

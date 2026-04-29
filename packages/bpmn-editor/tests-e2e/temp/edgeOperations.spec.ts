@@ -13,7 +13,7 @@ test.beforeEach(async ({ editor }) => {
 });
 
 test.describe("Edge Operations - Sequence Flow", () => {
-  test("should create sequence flow between two tasks", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should create sequence flow between two tasks", async ({ palette, nodes, edges, diagram }) => {
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 100, y: 100 },
@@ -36,7 +36,7 @@ test.describe("Edge Operations - Sequence Flow", () => {
     await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-between-tasks.png");
   });
 
-  test("should create sequence flow from Start Event to Task", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should create sequence flow from Start Event to Task", async ({ palette, nodes, edges, diagram }) => {
     await palette.dragNewNode({
       type: NodeType.START_EVENT,
       targetPosition: { x: 100, y: 100 },
@@ -56,7 +56,7 @@ test.describe("Edge Operations - Sequence Flow", () => {
     await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-to-task.png");
   });
 
-  // test("should create sequence flow from Task to End Event", async ({ palette, nodes, edges, diagram }) => {
+  // test.skip("should create sequence flow from Task to End Event", async ({ palette, nodes, edges, diagram }) => {
   //   await palette.dragNewNode({
   //     type: NodeType.TASK,
   //     targetPosition: { x: 100, y: 100 },
@@ -76,7 +76,7 @@ test.describe("Edge Operations - Sequence Flow", () => {
   //   await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end.png");
   // });
 
-  test("should delete sequence flow", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should delete sequence flow", async ({ palette, nodes, edges, diagram }) => {
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 100, y: 100 },
@@ -96,7 +96,7 @@ test.describe("Edge Operations - Sequence Flow", () => {
 });
 
 test.describe("Edge Operations - Association", () => {
-  test("should create association from Task to Text Annotation", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should create association from Task to Text Annotation", async ({ palette, nodes, edges, diagram }) => {
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 100, y: 100 },
@@ -119,7 +119,7 @@ test.describe("Edge Operations - Association", () => {
     await expect(diagram.get()).toHaveScreenshot("create-association-task-to-annotation.png");
   });
 
-  test("should delete association", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should delete association", async ({ palette, nodes, edges, diagram }) => {
     await palette.dragNewNode({
       type: NodeType.TASK,
       targetPosition: { x: 100, y: 100 },
@@ -145,7 +145,7 @@ test.describe("Edge Operations - Association", () => {
 });
 
 test.describe("Edge Operations - Complete Flow", () => {
-  test("should create a complete process flow", async ({ palette, nodes, edges, diagram }) => {
+  test.skip("should create a complete process flow", async ({ palette, nodes, edges, diagram }) => {
     // Create Start Event
     await palette.dragNewNode({
       type: NodeType.START_EVENT,

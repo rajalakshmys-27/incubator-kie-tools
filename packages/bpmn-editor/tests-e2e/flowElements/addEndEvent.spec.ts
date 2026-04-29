@@ -309,23 +309,31 @@ test.describe("Add node - End Event", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move end event to new position", async ({ palette, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
+    test("should move end event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
-    //     const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-    //     const boxBefore = await endEvent.boundingBox();
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEvent).toBeAttached();
 
-    //     // Move end event to new position
-    //     await endEvent.dragTo(endEvent, {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await endEvent.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const boxAfter = await endEvent.boundingBox();
+      const endEventBox = await endEvent.boundingBox();
+      if (!endEventBox) {
+        throw new Error("End Event bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await endEvent.dragTo(diagram.get(), {
+        sourcePosition: { x: endEventBox.width / 2, y: endEventBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await endEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(endEventBox?.x);
+      expect(boxAfter?.y).not.toBe(endEventBox?.y);
+    });
 
     //   test("should copy and paste end event", async ({ palette, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });

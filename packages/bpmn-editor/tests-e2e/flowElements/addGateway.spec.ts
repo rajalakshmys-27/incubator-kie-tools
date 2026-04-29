@@ -483,23 +483,31 @@ test.describe("Add node - Gateway", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move gateway to new position", async ({ palette, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
+    test("should move gateway to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
-    //     const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
-    //     const boxBefore = await gateway.boundingBox();
+      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      await expect(gateway).toBeAttached();
 
-    //     // Move gateway to new position
-    //     await gateway.dragTo(gateway, {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await gateway.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const boxAfter = await gateway.boundingBox();
+      const gatewayBox = await gateway.boundingBox();
+      if (!gatewayBox) {
+        throw new Error("Gateway bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await gateway.dragTo(diagram.get(), {
+        sourcePosition: { x: gatewayBox.width / 2, y: gatewayBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await gateway.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(gatewayBox?.x);
+      expect(boxAfter?.y).not.toBe(gatewayBox?.y);
+    });
 
     //   test("should copy and paste gateway", async ({ palette, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });

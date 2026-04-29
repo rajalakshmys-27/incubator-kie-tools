@@ -84,6 +84,20 @@ export function addEdge({
 
   const { process, diagramElements } = addOrGetProcessAndDiagramElements({ definitions });
 
+  // Additional validation: Prevent incoming sequence flows to compensation boundary events
+  if (__readonly_edge.type === EDGE_TYPES.sequenceFlow) {
+    const targetElement = process.flowElement?.find((e: any) => e["@_id"] === __readonly_targetNode.href);
+    if (
+      targetElement &&
+      targetElement.__$$element === "boundaryEvent" &&
+      targetElement.eventDefinition?.some((ed: any) => ed.__$$element === "compensateEventDefinition")
+    ) {
+      throw new Error(
+        `BPMN MUTATION: Invalid connection: Compensation boundary events cannot have incoming sequence flows`
+      );
+    }
+  }
+
   let existingEdgeId: string | undefined = undefined;
 
   // Associations (incl. Compensation Associations)

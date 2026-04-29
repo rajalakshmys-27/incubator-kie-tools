@@ -349,23 +349,31 @@ test.describe("Add node - Intermediate Throw Event", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move intermediate throw event to new position", async ({ palette, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
+    test("should move intermediate throw event to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
 
-    //     const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-    //     const boxBefore = await throwEvent.boundingBox();
+      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
+      await expect(throwEvent).toBeAttached();
 
-    //     // Move intermediate throw event to new position
-    //     await throwEvent.dragTo(throwEvent, {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await throwEvent.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const boxAfter = await throwEvent.boundingBox();
+      const throwEventBox = await throwEvent.boundingBox();
+      if (!throwEventBox) {
+        throw new Error("Intermediate Throw Event bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await throwEvent.dragTo(diagram.get(), {
+        sourcePosition: { x: throwEventBox.width / 2, y: throwEventBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await throwEvent.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(throwEventBox?.x);
+      expect(boxAfter?.y).not.toBe(throwEventBox?.y);
+    });
 
     //   test("should copy and paste intermediate throw event", async ({ palette, jsonModel, page }) => {
     //     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });

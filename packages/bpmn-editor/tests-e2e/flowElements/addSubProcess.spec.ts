@@ -402,24 +402,31 @@ test.describe("Add node - Sub-process", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move sub-process to new position", async ({ palette, nodes }) => {
-    //     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+    test("should move sub-process to new position", async ({ palette, page, diagram }) => {
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
 
-    //     const subProcessBefore = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
-    //     const boxBefore = await subProcessBefore.boundingBox();
+      const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
+      await expect(subProcess).toBeAttached();
 
-    //     // Move sub-process to new position
-    //     await subProcessBefore.dragTo(nodes.get({ name: DefaultNodeName.SUB_PROCESS }), {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      await subProcess.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     const subProcessAfter = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
-    //     const boxAfter = await subProcessAfter.boundingBox();
+      const subProcessBox = await subProcess.boundingBox();
+      if (!subProcessBox) {
+        throw new Error("Sub-process bounding box not found");
+      }
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      await subProcess.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: subProcessBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
+
+      const boxAfter = await subProcess.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(subProcessBox?.x);
+      expect(boxAfter?.y).not.toBe(subProcessBox?.y);
+    });
 
     //   test("should rename sub-process", async ({ palette, nodes, jsonModel }) => {
     //     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });

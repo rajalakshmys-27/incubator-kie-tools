@@ -507,26 +507,31 @@ test.describe("Add node - Call Activity", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    //   test("should move call activity to new position", async ({ palette, diagram, page }) => {
-    //     await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
+    test("should move call activity to new position", async ({ palette, diagram, page }) => {
+      await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
 
-    //     // Wait for the node to be attached and get it by data attribute
-    //     const callActivity = page.locator(`[data-nodelabel="${DefaultNodeName.CALL_ACTIVITY}"]`);
-    //     await callActivity.waitFor({ state: "attached" });
+      const callActivity = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(callActivity).toBeAttached();
 
-    //     const boxBefore = await callActivity.boundingBox();
+      await callActivity.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
 
-    //     // Move call activity to new position
-    //     await callActivity.dragTo(diagram.get(), {
-    //       targetPosition: { x: 500, y: 400 },
-    //     });
+      const callActivityBox = await callActivity.boundingBox();
+      if (!callActivityBox) {
+        throw new Error("Call Activity bounding box not found");
+      }
 
-    //     const boxAfter = await callActivity.boundingBox();
+      await callActivity.dragTo(diagram.get(), {
+        sourcePosition: { x: 20, y: callActivityBox.height / 2 },
+        targetPosition: { x: 500, y: 400 },
+        force: true,
+      });
 
-    //     // Verify position changed
-    //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-    //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-    //   });
+      const boxAfter = await callActivity.boundingBox();
+
+      expect(boxAfter?.x).not.toBe(callActivityBox?.x);
+      expect(boxAfter?.y).not.toBe(callActivityBox?.y);
+    });
 
     //   test("should rename call activity", async ({ palette, nodes, jsonModel }) => {
     //     await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });

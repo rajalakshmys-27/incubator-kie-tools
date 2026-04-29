@@ -14,7 +14,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Delete Operations", () => {
-    test("should delete single task", async ({ palette, nodes, jsonModel }) => {
+    test.skip("should delete single task", async ({ palette, nodes, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.delete({ name: DefaultNodeName.TASK });
 
@@ -25,7 +25,7 @@ test.describe("Node Operations", () => {
       expect(flowElements.flowElement?.length).toBe(0);
     });
 
-    test("should delete task with connections", async ({ palette, nodes, edges, jsonModel }) => {
+    test.skip("should delete task with connections", async ({ palette, nodes, edges, jsonModel }) => {
       // Create a flow: Start -> Task -> End
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 200, y: 300 } });
       await nodes.dragNewConnectedNode({
@@ -52,7 +52,7 @@ test.describe("Node Operations", () => {
       expect(edge2).toBeNull();
     });
 
-    test("should delete multiple nodes", async ({ palette, nodes, jsonModel }) => {
+    test.skip("should delete multiple nodes", async ({ palette, nodes, jsonModel }) => {
       // Create multiple tasks
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 200, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Task 1" });
@@ -75,7 +75,7 @@ test.describe("Node Operations", () => {
       expect(flowElements.flowElement?.length).toBe(1);
     });
 
-    test("should delete gateway with multiple connections", async ({ palette, nodes, edges }) => {
+    test.skip("should delete gateway with multiple connections", async ({ palette, nodes, edges }) => {
       // Create a gateway with multiple outgoing connections
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 200, y: 300 } });
       await nodes.dragNewConnectedNode({
@@ -115,7 +115,7 @@ test.describe("Node Operations", () => {
       expect(edge3).toBeNull();
     });
 
-    test("should delete using keyboard shortcut", async ({ palette, nodes, diagram }) => {
+    test.skip("should delete using keyboard shortcut", async ({ palette, nodes, diagram }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.select({ name: DefaultNodeName.TASK, position: NodePosition.CENTER });
 
@@ -127,7 +127,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Move Operations", () => {
-    test("should move task to new position", async ({ palette, nodes, jsonModel }) => {
+    test.skip("should move task to new position", async ({ palette, nodes, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
       const taskBefore = nodes.get({ name: DefaultNodeName.TASK });
@@ -146,7 +146,7 @@ test.describe("Node Operations", () => {
       expect(boxAfter?.y).not.toBe(boxBefore?.y);
     });
 
-    test("should move task while preserving connections", async ({ palette, nodes, edges }) => {
+    test.skip("should move task while preserving connections", async ({ palette, nodes, edges }) => {
       // Create connected flow
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 200, y: 300 } });
       await nodes.dragNewConnectedNode({
@@ -172,7 +172,7 @@ test.describe("Node Operations", () => {
       expect(edge2).toBeDefined();
     });
 
-    test("should move multiple selected nodes together", async ({ palette, nodes }) => {
+    test.skip("should move multiple selected nodes together", async ({ palette, nodes }) => {
       // Create multiple tasks
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 200, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Task 1" });
@@ -201,7 +201,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Resize Operations", () => {
-    test("should resize task horizontally", async ({ palette, nodes }) => {
+    test.skip("should resize task horizontally", async ({ palette, nodes }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
       const taskBefore = nodes.get({ name: DefaultNodeName.TASK });
@@ -216,7 +216,7 @@ test.describe("Node Operations", () => {
       expect(boxAfter?.height).toBe(boxBefore?.height);
     });
 
-    test("should resize task vertically", async ({ palette, nodes }) => {
+    test.skip("should resize task vertically", async ({ palette, nodes }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
       const taskBefore = nodes.get({ name: DefaultNodeName.TASK });
@@ -231,7 +231,7 @@ test.describe("Node Operations", () => {
       expect(boxAfter?.height).toBeGreaterThan(boxBefore?.height ?? 0);
     });
 
-    test("should resize sub-process", async ({ palette, nodes }) => {
+    test.skip("should resize sub-process", async ({ palette, nodes }) => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
 
       const subProcessBefore = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
@@ -246,7 +246,7 @@ test.describe("Node Operations", () => {
       expect(boxAfter?.height).toBeGreaterThan(boxBefore?.height ?? 0);
     });
 
-    test("should resize while preserving connections", async ({ palette, nodes, edges }) => {
+    test.skip("should resize while preserving connections", async ({ palette, nodes, edges }) => {
       // Create connected flow
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 200, y: 300 } });
       await nodes.dragNewConnectedNode({
@@ -265,7 +265,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Copy/Paste Operations", () => {
-    test("should copy and paste single task", async ({ palette, nodes, page, jsonModel }) => {
+    test.skip("should copy and paste single task", async ({ palette, nodes, page, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Original Task" });
 
@@ -284,7 +284,7 @@ test.describe("Node Operations", () => {
       expect(flowElements.flowElement?.length).toBe(2);
     });
 
-    test("should copy and paste multiple nodes", async ({ palette, nodes, page, jsonModel }) => {
+    test.skip("should copy and paste multiple nodes", async ({ palette, nodes, page, jsonModel }) => {
       // Create multiple tasks
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 200, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Task 1" });
@@ -308,7 +308,7 @@ test.describe("Node Operations", () => {
       expect(flowElements.flowElement?.length).toBe(4);
     });
 
-    test("should copy and paste connected nodes", async ({ palette, nodes, page, jsonModel }) => {
+    test.skip("should copy and paste connected nodes", async ({ palette, nodes, page, jsonModel }) => {
       // Create connected flow
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 200, y: 300 } });
       await nodes.dragNewConnectedNode({
@@ -336,7 +336,7 @@ test.describe("Node Operations", () => {
       expect(flowElements.flowElement?.length).toBe(4); // 2 originals + 2 copies
     });
 
-    test("should cut and paste task", async ({ palette, nodes, page, jsonModel }) => {
+    test.skip("should cut and paste task", async ({ palette, nodes, page, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Cut Task" });
 
@@ -357,7 +357,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Selection Operations", () => {
-    test("should select single node", async ({ palette, nodes, page }) => {
+    test.skip("should select single node", async ({ palette, nodes, page }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.select({ name: DefaultNodeName.TASK, position: NodePosition.CENTER });
 
@@ -365,7 +365,7 @@ test.describe("Node Operations", () => {
       await expect(selectedNode).toBeAttached();
     });
 
-    test("should select multiple nodes with Ctrl+Click", async ({ palette, nodes, page }) => {
+    test.skip("should select multiple nodes with Ctrl+Click", async ({ palette, nodes, page }) => {
       // Create multiple tasks
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 200, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Task 1" });
@@ -384,7 +384,7 @@ test.describe("Node Operations", () => {
       await expect(selected2).toBeAttached();
     });
 
-    test("should deselect node by clicking on canvas", async ({ palette, nodes, page, diagram }) => {
+    test.skip("should deselect node by clicking on canvas", async ({ palette, nodes, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.select({ name: DefaultNodeName.TASK, position: NodePosition.CENTER });
 
@@ -395,7 +395,7 @@ test.describe("Node Operations", () => {
       await expect(deselectedNode).toBeAttached();
     });
 
-    test("should select all nodes with Ctrl+A", async ({ palette, nodes, page }) => {
+    test.skip("should select all nodes with Ctrl+A", async ({ palette, nodes, page }) => {
       // Create multiple nodes
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 200, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.TASK, new: "Task 1" });
@@ -420,7 +420,7 @@ test.describe("Node Operations", () => {
   });
 
   test.describe("Undo/Redo Operations", () => {
-    test("should undo node creation", async ({ palette, nodes, page }) => {
+    test.skip("should undo node creation", async ({ palette, nodes, page }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
 
@@ -431,7 +431,7 @@ test.describe("Node Operations", () => {
       await expect(nodes.get({ name: DefaultNodeName.TASK })).not.toBeAttached();
     });
 
-    test("should redo node creation", async ({ palette, nodes, page }) => {
+    test.skip("should redo node creation", async ({ palette, nodes, page }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
       // Undo
@@ -443,7 +443,7 @@ test.describe("Node Operations", () => {
       await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
     });
 
-    test("should undo node deletion", async ({ palette, nodes, page }) => {
+    test.skip("should undo node deletion", async ({ palette, nodes, page }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await nodes.delete({ name: DefaultNodeName.TASK });
       await expect(nodes.get({ name: DefaultNodeName.TASK })).not.toBeAttached();

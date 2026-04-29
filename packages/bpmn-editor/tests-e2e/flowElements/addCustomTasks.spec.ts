@@ -185,28 +185,35 @@ test.describe("Add Custom Tasks", () => {
     await expect(nodes.get({ name: "gRPC Task to Delete" })).not.toBeAttached();
   });
 
-  //   test("should move custom task to new position", async ({ customTasks, nodes }) => {
-  //     await customTasks.dragCustomTask({
-  //       customTaskName: "Rest API call Task",
-  //       targetPosition: { x: 300, y: 300 },
-  //       thenRenameTo: "Move Test Task",
-  //     });
+  test("should move custom task to new position", async ({ customTasks, page, diagram }) => {
+    await customTasks.dragCustomTask({
+      customTaskName: "Rest API call Task",
+      targetPosition: { x: 300, y: 300 },
+      thenRenameTo: "Move Test Task",
+    });
 
-  //     const taskBefore = nodes.get({ name: "Move Test Task" });
-  //     const boxBefore = await taskBefore.boundingBox();
+    const task = page.locator(".kie-bpmn-editor--task-node").first();
+    await expect(task).toBeAttached();
 
-  //     // Move custom task to new position
-  //     await taskBefore.dragTo(nodes.get({ name: "Move Test Task" }), {
-  //       targetPosition: { x: 500, y: 400 },
-  //     });
+    await task.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
 
-  //     const taskAfter = nodes.get({ name: "Move Test Task" });
-  //     const boxAfter = await taskAfter.boundingBox();
+    const taskBox = await task.boundingBox();
+    if (!taskBox) {
+      throw new Error("Custom Task bounding box not found");
+    }
 
-  //     // Verify position changed
-  //     expect(boxAfter?.x).not.toBe(boxBefore?.x);
-  //     expect(boxAfter?.y).not.toBe(boxBefore?.y);
-  //   });
+    await task.dragTo(diagram.get(), {
+      sourcePosition: { x: 20, y: taskBox.height / 2 },
+      targetPosition: { x: 500, y: 400 },
+      force: true,
+    });
+
+    const boxAfter = await task.boundingBox();
+
+    expect(boxAfter?.x).not.toBe(taskBox?.x);
+    expect(boxAfter?.y).not.toBe(taskBox?.y);
+  });
 
   //   test("should copy and paste custom task", async ({ customTasks, nodes, jsonModel, page }) => {
   //     await customTasks.dragCustomTask({

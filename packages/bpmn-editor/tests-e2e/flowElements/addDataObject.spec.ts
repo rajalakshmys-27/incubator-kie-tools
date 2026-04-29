@@ -44,24 +44,31 @@ test.describe("Add Data Object", () => {
     expect(flowElements.flowElement?.length || 0).toBe(0);
   });
 
-  // test("should move data object to new position", async ({ palette, nodes }) => {
-  //   await palette.dragNewNode({ type: NodeType.DATA_OBJECT, targetPosition: { x: 300, y: 300 } });
+  test("should move data object to new position", async ({ palette, nodes, diagram, page }) => {
+    await palette.dragNewNode({ type: NodeType.DATA_OBJECT, targetPosition: { x: 300, y: 300 } });
 
-  //   const dataObjectBefore = nodes.get({ name: DefaultNodeName.DATA_OBJECT });
-  //   const boxBefore = await dataObjectBefore.boundingBox();
+    const dataObject = nodes.get({ name: DefaultNodeName.DATA_OBJECT });
+    await expect(dataObject).toBeAttached();
 
-  //   // Move data object to new position
-  //   await dataObjectBefore.dragTo(nodes.get({ name: DefaultNodeName.DATA_OBJECT }), {
-  //     targetPosition: { x: 500, y: 400 },
-  //   });
+    await dataObject.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
 
-  //   const dataObjectAfter = nodes.get({ name: DefaultNodeName.DATA_OBJECT });
-  //   const boxAfter = await dataObjectAfter.boundingBox();
+    const dataObjectBox = await dataObject.boundingBox();
+    if (!dataObjectBox) {
+      throw new Error("Data Object bounding box not found");
+    }
 
-  //   // Verify position changed
-  //   expect(boxAfter?.x).not.toBe(boxBefore?.x);
-  //   expect(boxAfter?.y).not.toBe(boxBefore?.y);
-  // });
+    await dataObject.dragTo(diagram.get(), {
+      sourcePosition: { x: dataObjectBox.width / 2, y: dataObjectBox.height / 2 },
+      targetPosition: { x: 500, y: 400 },
+      force: true,
+    });
+
+    const boxAfter = await dataObject.boundingBox();
+
+    expect(boxAfter?.x).not.toBe(dataObjectBox?.x);
+    expect(boxAfter?.y).not.toBe(dataObjectBox?.y);
+  });
 
   // test("should copy and paste data object", async ({ palette, nodes, jsonModel, page }) => {
   //   await palette.dragNewNode({ type: NodeType.DATA_OBJECT, targetPosition: { x: 300, y: 300 } });
