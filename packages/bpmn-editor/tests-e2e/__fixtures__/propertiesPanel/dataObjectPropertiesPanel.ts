@@ -57,7 +57,6 @@ export class DataObjectPropertiesPanel extends PropertiesPanelBase {
 
     await dataTypeInput.click();
     await this.page.keyboard.type(args.itemSubjectRef);
-    await this.page.waitForTimeout(300);
 
     const createOption = this.page.getByText(`Create Data Type "${args.itemSubjectRef}"`, { exact: true });
     if (await createOption.isVisible().catch(() => false)) {
@@ -65,8 +64,6 @@ export class DataObjectPropertiesPanel extends PropertiesPanelBase {
     } else {
       await this.page.getByRole("option", { name: args.itemSubjectRef, exact: true }).click();
     }
-
-    await this.page.waitForTimeout(300);
   }
 
   public async getItemSubjectRef(): Promise<string> {

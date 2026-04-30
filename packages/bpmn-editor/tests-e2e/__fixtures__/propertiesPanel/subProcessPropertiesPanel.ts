@@ -59,7 +59,6 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     });
     await executionModeButton.waitFor({ state: "visible", timeout: 10000 });
     await executionModeButton.click();
-    await this.page.waitForTimeout(300);
   }
 
   public async setCollectionExpression(args: { expression: string }) {
@@ -70,7 +69,6 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     await collectionInput.waitFor({ state: "visible", timeout: 10000 });
     await collectionInput.fill(args.expression);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setCompletionCondition(args: { condition: string }) {
@@ -78,7 +76,6 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setAdHocOrdering(args: { ordering: "Parallel" | "Sequential" }) {
@@ -88,7 +85,6 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     const orderingSelect = orderingFormGroup.locator("select").first();
     await orderingSelect.waitFor({ state: "visible", timeout: 10000 });
     await orderingSelect.selectOption(args.ordering);
-    await this.page.waitForTimeout(300);
   }
 
   public async setAdHocCompletionCondition(args: { condition: string }) {
@@ -99,7 +95,6 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
-    await this.page.waitForTimeout(300);
   }
   private async openMorphingPanel() {
     const selectedSubProcess = this.page.locator(".kie-bpmn-editor--selected-sub-process-node").first();

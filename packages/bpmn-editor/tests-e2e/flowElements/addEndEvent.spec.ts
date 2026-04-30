@@ -227,8 +227,6 @@ test.describe("Add node - End Event", () => {
         to: endEventId,
       });
 
-      await page.waitForTimeout(1000);
-
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
     });
 
@@ -245,7 +243,6 @@ test.describe("Add node - End Event", () => {
       if (!box) throw new Error("Gateway bounding box not found");
 
       await page.mouse.move(box.x + box.width / 2, box.y + 10);
-      await page.waitForTimeout(500);
 
       const addEndEventHandle = gateway.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
@@ -253,8 +250,6 @@ test.describe("Add node - End Event", () => {
       await addEndEventHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-gateway.png");
     });
@@ -272,7 +267,6 @@ test.describe("Add node - End Event", () => {
       if (!box) throw new Error("Sub-Process bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addEndEventHandle = subProcess.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
@@ -280,8 +274,6 @@ test.describe("Add node - End Event", () => {
       await addEndEventHandle.dragTo(diagram.get(), {
         targetPosition: { x: 350, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-subprocess.png");
     });
@@ -310,7 +302,6 @@ test.describe("Add node - End Event", () => {
       await expect(endEvent).toBeAttached();
 
       await endEvent.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) {

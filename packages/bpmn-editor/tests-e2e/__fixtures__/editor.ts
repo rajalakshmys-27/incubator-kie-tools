@@ -26,14 +26,15 @@ export class Editor {
   ) {}
 
   public async open() {
-    await this.page.goto(`${this.baseURL}/iframe.html?args=&id=misc-empty--empty&viewMode=story`);
+    await this.page.goto(`${this.baseURL}/iframe.html?args=&id=misc-empty--empty&viewMode=story`, {
+      timeout: 120000, // 2 minutes for slow Storybook initialization
+    });
 
     const processIdInput = this.page.getByPlaceholder("e.g., hiring");
-    await processIdInput.waitFor({ state: "visible" });
+    await processIdInput.waitFor({ state: "visible", timeout: 120000 }); // 2 minutes for container
     await processIdInput.fill("test");
 
     await this.page.getByRole("button", { name: "Start Modeling" }).click();
-    await this.page.locator(".react-flow").waitFor({ state: "visible" });
   }
 
   public async openWithLocale(locale: string) {
@@ -49,8 +50,5 @@ export class Editor {
 
   public async openCustomTasks() {
     await this.page.goto(`${this.baseURL}/iframe.html?args=&id=features-customtasks--custom-tasks&viewMode=story`);
-    await this.page.locator(".react-flow").waitFor({ state: "visible" });
-    await this.page.locator(".kie-bpmn-editor--palette-custom-tasks-button").waitFor({ state: "visible" });
-    await this.page.waitForTimeout(1000);
   }
 }

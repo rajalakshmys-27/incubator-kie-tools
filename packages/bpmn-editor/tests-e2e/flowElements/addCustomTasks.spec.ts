@@ -187,7 +187,6 @@ test.describe("Add Custom Tasks", () => {
     await expect(task).toBeAttached();
 
     await task.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
 
     const taskBox = await task.boundingBox();
     if (!taskBox) {

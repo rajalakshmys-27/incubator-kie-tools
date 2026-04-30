@@ -42,7 +42,6 @@ test.describe("Change Properties - Sequence Flow", () => {
     if (!box) throw new Error("Task A bounding box not found");
 
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-    await page.waitForTimeout(500);
 
     const addSequenceFlowHandle = taskA.getByTitle("Add Sequence Flow");
     await addSequenceFlowHandle.waitFor({ state: "visible", timeout: 5000 });
@@ -53,8 +52,6 @@ test.describe("Change Properties - Sequence Flow", () => {
     await addSequenceFlowHandle.dragTo(diagram.get(), {
       targetPosition: { x: taskBBox.x + taskBBox.width / 2, y: taskBBox.y + taskBBox.height / 2 },
     });
-
-    await page.waitForTimeout(1000);
 
     const edge = await edges.get({ from: "Task A", to: "Task B" });
     await edge.scrollIntoViewIfNeeded();
@@ -114,7 +111,6 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     let box = await gateway.boundingBox();
     if (!box) throw new Error("Gateway bounding box not found");
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-    await page.waitForTimeout(500);
 
     const addTaskHandle1 = gateway.getByTitle("Add Sequence Flow");
     await expect(addTaskHandle1).toBeVisible({ timeout: 5000 });
@@ -125,12 +121,10 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     await addTaskHandle1.dragTo(diagram.get(), {
       targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
     });
-    await page.waitForTimeout(1000);
 
     box = await gateway.boundingBox();
     if (!box) throw new Error("Gateway bounding box not found");
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-    await page.waitForTimeout(500);
 
     const addTaskHandle2 = gateway.getByTitle("Add Sequence Flow");
     await expect(addTaskHandle2).toBeVisible({ timeout: 5000 });
@@ -141,7 +135,6 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     await addTaskHandle2.dragTo(diagram.get(), {
       targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
     });
-    await page.waitForTimeout(1000);
 
     const edge = await edges.get({ from: gatewayId, to: "High Amount" });
     await edge.scrollIntoViewIfNeeded();
@@ -215,7 +208,6 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     let box = await gateway.boundingBox();
     if (!box) throw new Error("Gateway bounding box not found");
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-    await page.waitForTimeout(500);
 
     const addTaskHandle1 = gateway.getByTitle("Add Sequence Flow");
     await expect(addTaskHandle1).toBeVisible({ timeout: 5000 });
@@ -226,12 +218,10 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     await addTaskHandle1.dragTo(diagram.get(), {
       targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
     });
-    await page.waitForTimeout(1000);
 
     box = await gateway.boundingBox();
     if (!box) throw new Error("Gateway bounding box not found");
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-    await page.waitForTimeout(500);
 
     const addTaskHandle2 = gateway.getByTitle("Add Sequence Flow");
     await expect(addTaskHandle2).toBeVisible({ timeout: 5000 });
@@ -242,7 +232,6 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     await addTaskHandle2.dragTo(diagram.get(), {
       targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
     });
-    await page.waitForTimeout(1000);
   });
 
   test("should configure default flow", async ({ edges, sequenceFlowPropertiesPanel, diagram, nodes, page }) => {

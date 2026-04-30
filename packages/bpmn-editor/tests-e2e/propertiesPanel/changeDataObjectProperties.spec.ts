@@ -33,13 +33,10 @@ test.describe("Change Properties - Data Object", () => {
     await expect(dataObject).toBeAttached();
 
     await dataObject.click();
-    await page.waitForTimeout(500);
   });
 
   test("should change the Data Object name", async ({ dataObjectPropertiesPanel, page }) => {
     await dataObjectPropertiesPanel.setName({ newName: "Customer Data" });
-
-    await page.waitForTimeout(300);
 
     expect(await dataObjectPropertiesPanel.getName()).toBe("Customer Data");
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("data-object-name-changed.png");
@@ -50,15 +47,11 @@ test.describe("Change Properties - Data Object", () => {
       newDocumentation: "Contains customer information for processing",
     });
 
-    await page.waitForTimeout(300);
-
     expect(await dataObjectPropertiesPanel.getDocumentation()).toBe("Contains customer information for processing");
   });
 
   test("should set item subject reference", async ({ dataObjectPropertiesPanel, page }) => {
     await dataObjectPropertiesPanel.setItemSubjectRef({ itemSubjectRef: "tCustomer" });
-
-    await page.waitForTimeout(300);
 
     expect(await dataObjectPropertiesPanel.getItemSubjectRef()).toBe("tCustomer");
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("data-object-item-subject-ref.png");

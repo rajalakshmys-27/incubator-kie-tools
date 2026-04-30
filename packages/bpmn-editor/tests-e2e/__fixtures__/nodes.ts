@@ -104,7 +104,6 @@ export class Nodes {
 
     await from.scrollIntoViewIfNeeded();
     await to.scrollIntoViewIfNeeded();
-    await this.page.waitForTimeout(200);
 
     if (fromIsId) {
       await this.selectById({ id: args.from, position: NodePosition.TOP });
@@ -158,10 +157,8 @@ export class Nodes {
 
     if (nodeName === "") {
       await this.page.waitForSelector(`div[data-nodetype="${args.type}"]`, { timeout: 10000, state: "attached" });
-      await this.page.waitForTimeout(500);
     } else {
       await this.page.waitForSelector(`div[data-nodelabel="${nodeName}"]`, { timeout: 10000, state: "attached" });
-      await this.page.waitForTimeout(500);
     }
 
     if (args.thenRenameTo) {
@@ -244,8 +241,6 @@ export class Nodes {
         ? await this.getPositionalNodeHandleCoordinates({ node, position: args.position })
         : undefined;
 
-    // await node.scrollIntoViewIfNeeded();
-
     await node.click({ position, force: true });
   }
 
@@ -284,18 +279,6 @@ export class Nodes {
     }
   }
 
-  /**
-   * Morphs a node to a different type using the morphing panel.
-   *
-   * @param args.nodeLocator - The Playwright locator for the node to morph
-   * @param args.targetMorphType - The title of the morphing option to select (e.g., "User task", "Message", "Error")
-   * @param args.hoverDelay - Optional delay after hovering (default: 300ms)
-   * @param args.exact - Optional flag for exact title matching (default: false)
-   *
-   * @example
-   * const task = page.locator(`[data-nodelabel="${DefaultNodeName.TASK}"]`);
-   * await nodes.morphNode({ nodeLocator: task, targetMorphType: "User task" });
-   */
   public async morphNode(args: {
     nodeLocator: Locator;
     targetMorphType: string;

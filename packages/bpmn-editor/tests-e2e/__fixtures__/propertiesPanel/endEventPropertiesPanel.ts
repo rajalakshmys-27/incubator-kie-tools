@@ -41,7 +41,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     if (!box) throw new Error("End Event not visible");
 
     await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(300);
 
     const morphingToggle = args.endEventLocator.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await morphingToggle.waitFor({ state: "visible", timeout: 5000 });
@@ -50,7 +49,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     const morphingOption = this.page.getByTitle(args.eventType);
     await morphingOption.waitFor({ state: "visible", timeout: 5000 });
     await morphingOption.click({ force: true });
-    await this.page.waitForTimeout(500);
   }
 
   public async setName(args: { newName: string }) {
@@ -71,7 +69,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
 
   public async setTerminateDefinition(args: { endEventLocator: Locator }) {
     await this.morphToEventType({ endEventLocator: args.endEventLocator, eventType: "Terminate" });
-    await this.page.waitForTimeout(500);
   }
 
   public async setMessageDefinition(args: { messageName: string; endEventLocator: Locator }) {
@@ -81,7 +78,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     await messageInput.waitFor({ state: "visible", timeout: 10000 });
     await messageInput.fill(args.messageName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setSignalDefinition(args: { signalName: string; endEventLocator: Locator }) {
@@ -91,7 +87,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     await signalInput.waitFor({ state: "visible", timeout: 10000 });
     await signalInput.fill(args.signalName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setErrorDefinition(args: { errorName: string; errorCode?: string; endEventLocator: Locator }) {
@@ -101,7 +96,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     await errorInput.waitFor({ state: "visible", timeout: 10000 });
     await errorInput.fill(args.errorName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
 
     if (args.errorCode) {
       const errorCodeInput = this.panel().getByPlaceholder("Error code");
@@ -109,7 +103,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
       if (isVisible) {
         await errorCodeInput.fill(args.errorCode);
         await errorCodeInput.blur();
-        await this.page.waitForTimeout(300);
       }
     }
   }
@@ -125,7 +118,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     await escalationInput.waitFor({ state: "visible", timeout: 10000 });
     await escalationInput.fill(args.escalationName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
 
     if (args.escalationCode) {
       const escalationCodeInput = this.panel().getByPlaceholder("Escalation code");
@@ -133,13 +125,11 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
       if (isVisible) {
         await escalationCodeInput.fill(args.escalationCode);
         await escalationCodeInput.blur();
-        await this.page.waitForTimeout(300);
       }
     }
   }
 
   public async setCompensationDefinition(args: { endEventLocator: Locator }) {
     await this.morphToEventType({ endEventLocator: args.endEventLocator, eventType: "Compensation" });
-    await this.page.waitForTimeout(500);
   }
 }

@@ -33,13 +33,10 @@ test.describe("Change Properties - Start Event", () => {
     await expect(startEvent).toBeVisible({ timeout: 5000 });
 
     await startEvent.click();
-    await page.waitForTimeout(500);
   });
 
   test("should change the Start Event name", async ({ startEventPropertiesPanel, page }) => {
     await startEventPropertiesPanel.setName({ newName: "Process Started" });
-
-    await page.waitForTimeout(300);
 
     expect(await startEventPropertiesPanel.getName()).toBe("Process Started");
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-name-changed.png");
@@ -49,8 +46,6 @@ test.describe("Change Properties - Start Event", () => {
     await startEventPropertiesPanel.setDocumentation({
       newDocumentation: "This event starts the process",
     });
-
-    await page.waitForTimeout(300);
 
     expect(await startEventPropertiesPanel.getDocumentation()).toBe("This event starts the process");
   });
@@ -64,8 +59,6 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-timer-date.png");
   });
 
@@ -77,8 +70,6 @@ test.describe("Change Properties - Start Event", () => {
       value: "PT5M",
       startEventLocator: startEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-timer-duration.png");
   });
@@ -92,8 +83,6 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-timer-cycle.png");
   });
 
@@ -104,8 +93,6 @@ test.describe("Change Properties - Start Event", () => {
       messageName: "StartMessage",
       startEventLocator: startEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-message.png");
   });
@@ -118,8 +105,6 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-signal.png");
   });
 
@@ -130,8 +115,6 @@ test.describe("Change Properties - Start Event", () => {
       expression: "${amount > 1000}",
       startEventLocator: startEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-conditional.png");
   });
@@ -144,8 +127,6 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-error.png");
   });
 
@@ -157,8 +138,6 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-escalation.png");
   });
 
@@ -168,8 +147,6 @@ test.describe("Change Properties - Start Event", () => {
     await startEventPropertiesPanel.setCompensationDefinition({
       startEventLocator: startEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-compensation.png");
   });
@@ -186,7 +163,6 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     if (!box) throw new Error("Sub-Process not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -196,7 +172,6 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     const eventSubProcessOption = morphingPanel.locator('div[title="Event"]').first();
     await expect(eventSubProcessOption).toBeVisible({ timeout: 5000 });
     await eventSubProcessOption.click({ force: true });
-    await page.waitForTimeout(500);
 
     const targetPosition = {
       x: box.x + box.width / 2 - 50,
@@ -208,13 +183,11 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
     await expect(startEvent).toBeVisible({ timeout: 5000 });
     await startEvent.click();
-    await page.waitForTimeout(500);
 
     await startEventPropertiesPanel.setMessageDefinition({
       messageName: "StartMessage",
       startEventLocator: startEvent,
     });
-    await page.waitForTimeout(500);
   });
 
   test("should display interrupting checkbox for Start Event in Event Sub-Process", async ({
@@ -230,7 +203,6 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     expect(await startEventPropertiesPanel.getInterrupting()).toBe(true);
 
     await startEventPropertiesPanel.setInterrupting({ isInterrupting: false });
-    await page.waitForTimeout(300);
 
     expect(await startEventPropertiesPanel.getInterrupting()).toBe(false);
 

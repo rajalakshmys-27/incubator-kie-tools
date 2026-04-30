@@ -29,17 +29,11 @@ test.describe("Change Properties - Task Node", () => {
   test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
-    await page.waitForTimeout(500);
-
     await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
-
-    await page.waitForTimeout(300);
   });
 
   test("should change the Task name", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setName({ newName: "Process Order" });
-
-    await page.waitForTimeout(300);
 
     expect(await taskPropertiesPanel.getName()).toBe("Process Order");
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-name-changed.png");
@@ -49,8 +43,6 @@ test.describe("Change Properties - Task Node", () => {
     await taskPropertiesPanel.setDocumentation({
       newDocumentation: "This task processes customer orders",
     });
-
-    await page.waitForTimeout(300);
 
     expect(await taskPropertiesPanel.getDocumentation()).toBe("This task processes customer orders");
   });
@@ -67,7 +59,6 @@ test.describe("Change Properties - User Task", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -77,13 +68,10 @@ test.describe("Change Properties - User Task", () => {
     const userTaskOption = morphingPanel.getByTitle("User task");
     await expect(userTaskOption).toBeVisible({ timeout: 5000 });
     await userTaskOption.click({ force: true });
-    await page.waitForTimeout(500);
   });
 
   test("should configure User Task actors", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setActors({ actors: "john, mary, admin" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-actors-configured.png");
   });
@@ -91,15 +79,11 @@ test.describe("Change Properties - User Task", () => {
   test("should configure User Task groups", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setGroups({ groups: "managers, supervisors" });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-groups-configured.png");
   });
 
   test("should configure User Task name", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setTaskName({ taskName: "ApproveOrder" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-name-configured.png");
   });
@@ -109,15 +93,11 @@ test.describe("Change Properties - User Task", () => {
     await taskPropertiesPanel.setGroups({ groups: "managers" });
     await taskPropertiesPanel.setTaskName({ taskName: "ReviewDocument" });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-full-configuration.png");
   });
 
   test("should set async flag on User Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setAsync({ isAsync: true });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-async-enabled.png");
   });
@@ -134,7 +114,6 @@ test.describe("Change Properties - Service Task", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -144,13 +123,10 @@ test.describe("Change Properties - Service Task", () => {
     const serviceTaskOption = morphingPanel.getByTitle("Service task");
     await expect(serviceTaskOption).toBeVisible({ timeout: 5000 });
     await serviceTaskOption.click({ force: true });
-    await page.waitForTimeout(1000);
   });
 
   test("should configure Service Task implementation", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setImplementation({ implementation: "Java" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("service-task-implementation.png");
   });
@@ -158,8 +134,6 @@ test.describe("Change Properties - Service Task", () => {
   test("should configure Service Task interface and operation", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setInterface({ interfaceName: "OrderService" });
     await taskPropertiesPanel.setOperation({ operationName: "processOrder" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("service-task-interface-operation.png");
   });
@@ -176,7 +150,6 @@ test.describe("Change Properties - Script Task", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -186,15 +159,12 @@ test.describe("Change Properties - Script Task", () => {
     const scriptTaskOption = morphingPanel.getByTitle("Script task");
     await expect(scriptTaskOption).toBeVisible({ timeout: 5000 });
     await scriptTaskOption.click({ force: true });
-    await page.waitForTimeout(500);
   });
 
   test("should configure Script Task script content", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setScript({
       script: 'System.out.println("Processing order: " + orderId);',
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("script-task-with-script.png");
   });
@@ -211,7 +181,6 @@ test.describe("Change Properties - Business Rule Task", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -221,13 +190,10 @@ test.describe("Change Properties - Business Rule Task", () => {
     const businessRuleTaskOption = morphingPanel.getByTitle("Business rule task");
     await expect(businessRuleTaskOption).toBeVisible({ timeout: 5000 });
     await businessRuleTaskOption.click({ force: true });
-    await page.waitForTimeout(500);
   });
 
   test("should configure Business Rule Task with DRL rule flow group", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setRuleFlowGroup({ ruleFlowGroup: "order-validation-rules" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("business-rule-task-drl-ruleflow.png");
   });
@@ -238,8 +204,6 @@ test.describe("Change Properties - Business Rule Task", () => {
       namespace: "https://example.com/dmn",
       modelName: "OrderDecision",
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("business-rule-task-dmn-model.png");
   });
@@ -256,7 +220,6 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -266,14 +229,11 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     const callActivityOption = morphingPanel.getByTitle("Call activity");
     await expect(callActivityOption).toBeVisible({ timeout: 5000 });
     await callActivityOption.click({ force: true });
-    await page.waitForTimeout(500);
   });
 
   test("should configure parallel multi-instance", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setMultiInstance({ type: "parallel" });
     await taskPropertiesPanel.setCollectionExpression({ expression: "${orderItems}" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-parallel.png");
   });
@@ -282,8 +242,6 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     await taskPropertiesPanel.setMultiInstance({ type: "sequential" });
     await taskPropertiesPanel.setCollectionExpression({ expression: "${approvers}" });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-sequential.png");
   });
 
@@ -291,8 +249,6 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     await taskPropertiesPanel.setMultiInstance({ type: "parallel" });
     await taskPropertiesPanel.setCollectionExpression({ expression: "${tasks}" });
     await taskPropertiesPanel.setCompletionCondition({ condition: "${nrOfCompletedInstances >= 3}" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot(
       "task-multi-instance-completion-condition.png"
@@ -311,7 +267,6 @@ test.describe("Change Properties - Task Data I/O", () => {
     if (!box) throw new Error("Task not visible");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
 
     const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -321,21 +276,16 @@ test.describe("Change Properties - Task Data I/O", () => {
     const userTaskOption = morphingPanel.getByTitle("User task");
     await expect(userTaskOption).toBeVisible({ timeout: 5000 });
     await userTaskOption.click({ force: true });
-    await page.waitForTimeout(500);
   });
 
   test("should add data input to Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.addDataInput({ name: "orderId" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-data-input-added.png");
   });
 
   test("should add data output to Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.addDataOutput({ name: "result" });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-data-output-added.png");
   });
@@ -350,8 +300,6 @@ test.describe("Change Properties - Task Data I/O", () => {
     await taskPropertiesPanel.addDataOutputInModal({ name: "message" });
 
     await taskPropertiesPanel.closeDataMappingModal();
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multiple-data-io.png");
   });

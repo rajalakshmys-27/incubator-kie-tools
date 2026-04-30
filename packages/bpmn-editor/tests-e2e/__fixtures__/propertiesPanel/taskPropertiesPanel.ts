@@ -57,7 +57,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await actorsInput.waitFor({ state: "visible", timeout: 5000 });
     await actorsInput.fill(args.actors);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setGroups(args: { groups: string }) {
@@ -65,7 +64,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await groupsInput.waitFor({ state: "visible", timeout: 5000 });
     await groupsInput.fill(args.groups);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setTaskName(args: { taskName: string }) {
@@ -73,14 +71,12 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await taskNameInput.waitFor({ state: "visible", timeout: 5000 });
     await taskNameInput.fill(args.taskName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setImplementation(args: { implementation: string }) {
     const implButton = this.panel().getByRole("button", { name: args.implementation, exact: true });
     await implButton.waitFor({ state: "visible", timeout: 10000 });
     await implButton.click();
-    await this.page.waitForTimeout(300);
   }
 
   public async setInterface(args: { interfaceName: string }) {
@@ -88,7 +84,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await interfaceInput.waitFor({ state: "visible", timeout: 10000 });
     await interfaceInput.fill(args.interfaceName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setOperation(args: { operationName: string }) {
@@ -96,7 +91,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await operationInput.waitFor({ state: "visible", timeout: 10000 });
     await operationInput.fill(args.operationName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setScript(args: { script: string }) {
@@ -104,45 +98,38 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await scriptTextarea.waitFor({ state: "visible", timeout: 10000 });
     await scriptTextarea.fill(args.script);
     await scriptTextarea.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setRuleFlowGroup(args: { ruleFlowGroup: string }) {
     const drlButton = this.panel().getByRole("button", { name: "DRL", exact: true });
     await drlButton.waitFor({ state: "visible", timeout: 10000 });
     await drlButton.click();
-    await this.page.waitForTimeout(300);
 
     const ruleFlowInput = this.panel().getByPlaceholder(/Enter a Rule flow group/i);
     await ruleFlowInput.waitFor({ state: "visible", timeout: 10000 });
     await ruleFlowInput.fill(args.ruleFlowGroup);
     await ruleFlowInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setDmnModel(args: { relativePath: string; namespace: string; modelName: string }) {
     const dmnButton = this.panel().getByRole("button", { name: "DMN", exact: true });
     await dmnButton.waitFor({ state: "visible", timeout: 10000 });
     await dmnButton.click();
-    await this.page.waitForTimeout(300);
 
     const relativePathInput = this.panel().getByPlaceholder(/Enter a relative path/i);
     await relativePathInput.waitFor({ state: "visible", timeout: 10000 });
     await relativePathInput.fill(args.relativePath);
     await relativePathInput.blur();
-    await this.page.waitForTimeout(300);
 
     const namespaceInput = this.panel().getByLabel("DMN model namespace");
     await namespaceInput.waitFor({ state: "visible", timeout: 10000 });
     await namespaceInput.fill(args.namespace);
     await namespaceInput.blur();
-    await this.page.waitForTimeout(300);
 
     const modelNameInput = this.panel().getByLabel("DMN model name", { exact: true });
     await modelNameInput.waitFor({ state: "visible", timeout: 10000 });
     await modelNameInput.fill(args.modelName);
     await modelNameInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setMultiInstance(args: { type: "parallel" | "sequential" }) {
@@ -163,7 +150,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     });
     await executionModeButton.waitFor({ state: "visible", timeout: 10000 });
     await executionModeButton.click();
-    await this.page.waitForTimeout(300);
   }
 
   public async setCollectionExpression(args: { expression: string }) {
@@ -174,7 +160,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await collectionInput.waitFor({ state: "visible", timeout: 10000 });
     await collectionInput.fill(args.expression);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setCompletionCondition(args: { condition: string }) {
@@ -182,7 +167,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async openDataMappingModal() {
@@ -205,7 +189,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
 
     if (isVisible) {
       await addInputButton.click();
-      await this.page.waitForTimeout(300);
     } else {
       const inputsSection = this.page
         .locator("div")
@@ -218,12 +201,10 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
         .first();
       await plusButton.waitFor({ state: "visible", timeout: 10000 });
       await plusButton.click();
-      await this.page.waitForTimeout(300);
     }
 
     const nameInput = this.page.locator('input[placeholder*="name"]').last();
     await nameInput.fill(args.name);
-    await this.page.waitForTimeout(300);
   }
 
   public async addDataOutputInModal(args: { name: string }) {
@@ -232,7 +213,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
 
     if (isVisible) {
       await addOutputButton.click();
-      await this.page.waitForTimeout(300);
     } else {
       const outputsSection = this.page
         .locator("div")
@@ -245,12 +225,10 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
         .first();
       await plusButton.waitFor({ state: "visible", timeout: 10000 });
       await plusButton.click();
-      await this.page.waitForTimeout(300);
     }
 
     const nameInput = this.page.locator('input[placeholder*="name"]').last();
     await nameInput.fill(args.name);
-    await this.page.waitForTimeout(300);
   }
 
   public async addDataInput(args: { name: string }) {
@@ -271,7 +249,6 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
 
     if (isChecked !== args.isAsync) {
       await asyncCheckbox.click();
-      await this.page.waitForTimeout(300);
     }
   }
 }

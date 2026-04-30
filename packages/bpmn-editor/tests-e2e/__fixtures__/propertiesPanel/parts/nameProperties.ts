@@ -29,7 +29,6 @@ export class NameProperties {
     const nameInput = this.panel.getByPlaceholder("Enter a name...");
     await nameInput.fill(args.newName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async getName(): Promise<string> {
@@ -41,6 +40,5 @@ export class NameProperties {
     const nameInput = this.panel.getByPlaceholder("Enter a name...");
     await nameInput.clear();
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 }

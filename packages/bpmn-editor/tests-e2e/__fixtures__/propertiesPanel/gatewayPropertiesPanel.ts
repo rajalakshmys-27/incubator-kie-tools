@@ -56,7 +56,6 @@ export class GatewayPropertiesPanel extends PropertiesPanelBase {
     const defaultFlowSelect = this.panel().locator("select").first();
     await defaultFlowSelect.waitFor({ state: "visible", timeout: 10000 });
     await defaultFlowSelect.selectOption(args.flowId);
-    await this.page.waitForTimeout(300);
   }
 
   public async getDefaultFlow(): Promise<string> {

@@ -51,7 +51,6 @@ test.describe("Add Lane", () => {
       await expect(lane).toBeAttached();
 
       await lane.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const laneBox = await lane.boundingBox();
       if (!laneBox) {
@@ -74,7 +73,6 @@ test.describe("Add Lane", () => {
       await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
 
       await nodes.select({ name: DefaultNodeName.LANE, position: NodePosition.LEFT });
-      await page.waitForTimeout(300);
 
       await nodes.rename({ current: DefaultNodeName.LANE, new: "Customer Service Lane" });
 

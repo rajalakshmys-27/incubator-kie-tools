@@ -65,7 +65,6 @@ test.describe("Add node - Text Annotation", () => {
       await expect(textAnnotation).toBeAttached();
 
       await textAnnotation.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const textAnnotationBox = await textAnnotation.boundingBox();
       if (!textAnnotationBox) {

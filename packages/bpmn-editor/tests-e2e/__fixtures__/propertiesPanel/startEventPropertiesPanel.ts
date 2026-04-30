@@ -74,7 +74,6 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     const isChecked = await checkbox.isChecked();
     if (isChecked !== args.isInterrupting) {
       await checkbox.click();
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -106,13 +105,11 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     const radioButton = this.panel().getByLabel(label);
     await radioButton.waitFor({ state: "visible", timeout: 5000 });
     await radioButton.click();
-    await this.page.waitForTimeout(300);
 
     const valueInput = this.panel().locator(`input[placeholder*="${placeholder}"]`);
     await valueInput.waitFor({ state: "visible", timeout: 5000 });
     await valueInput.fill(args.value);
     await valueInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setMessageDefinition(args: { messageName: string; startEventLocator: Locator }) {
@@ -122,7 +119,6 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await messageInput.waitFor({ state: "visible", timeout: 10000 });
     await messageInput.fill(args.messageName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setSignalDefinition(args: { signalName: string; startEventLocator: Locator }) {
@@ -132,7 +128,6 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await signalInput.waitFor({ state: "visible", timeout: 10000 });
     await signalInput.fill(args.signalName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setConditionalExpression(args: { expression: string; startEventLocator: Locator }) {
@@ -142,7 +137,6 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await expressionInput.waitFor({ state: "visible", timeout: 10000 });
     await expressionInput.fill(args.expression);
     await expressionInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setErrorDefinition(args: { errorName: string; startEventLocator: Locator }) {
@@ -152,7 +146,6 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await errorInput.waitFor({ state: "visible", timeout: 10000 });
     await errorInput.fill(args.errorName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setEscalationDefinition(args: { escalationName: string; startEventLocator: Locator }) {
@@ -162,11 +155,9 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await escalationInput.waitFor({ state: "visible", timeout: 10000 });
     await escalationInput.fill(args.escalationName);
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setCompensationDefinition(args: { startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Compensation" });
-    await this.page.waitForTimeout(500);
   }
 }

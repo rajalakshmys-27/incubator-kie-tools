@@ -65,7 +65,6 @@ test.describe("Add node - Group", () => {
       await expect(group).toBeAttached();
 
       await group.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const groupBox = await group.boundingBox();
       if (!groupBox) {

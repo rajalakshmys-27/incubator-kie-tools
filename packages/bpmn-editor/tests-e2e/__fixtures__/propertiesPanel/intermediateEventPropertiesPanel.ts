@@ -86,7 +86,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     }
 
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 
   public async setMessageDefinition(args: { messageName: string }) {
@@ -95,7 +94,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     const messageInput = this.panel().locator('input[role="combobox"]').first();
     await messageInput.click();
     await this.page.keyboard.type(args.messageName);
-    await this.page.waitForTimeout(300);
 
     const createOption = this.page.getByText(`Create Message "${args.messageName}"`, { exact: true });
     if (await createOption.isVisible().catch(() => false)) {
@@ -103,8 +101,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     } else {
       await this.page.getByRole("option", { name: args.messageName, exact: true }).click();
     }
-
-    await this.page.waitForTimeout(300);
   }
 
   public async setSignalDefinition(args: {
@@ -116,7 +112,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     const signalInput = this.panel().locator('input[role="combobox"]').first();
     await signalInput.click();
     await this.page.keyboard.type(args.signalName);
-    await this.page.waitForTimeout(300);
 
     const createOption = this.page.getByText(`Create Signal "${args.signalName}"`, { exact: true });
     if (await createOption.isVisible().catch(() => false)) {
@@ -125,13 +120,10 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
       await this.page.getByRole("option", { name: args.signalName, exact: true }).click();
     }
 
-    await this.page.waitForTimeout(300);
-
     if (args.scope) {
       const scopeSelect = this.panel().locator("select").first();
       await scopeSelect.waitFor({ state: "visible", timeout: 10000 });
       await scopeSelect.selectOption(args.scope);
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -142,7 +134,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await expressionInput.waitFor({ state: "visible", timeout: 10000 });
     await expressionInput.fill(args.expression);
     await expressionInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setLinkDefinition(args: { linkName: string }) {
@@ -152,7 +143,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await linkInput.waitFor({ state: "visible", timeout: 10000 });
     await linkInput.fill(args.linkName);
     await linkInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async setErrorDefinition(args: { errorName: string; errorCode?: string }) {
@@ -161,7 +151,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     const errorInput = this.panel().locator('input[role="combobox"]').first();
     await errorInput.click();
     await this.page.keyboard.type(args.errorName);
-    await this.page.waitForTimeout(300);
 
     const createOption = this.page.getByText(`Create Error "${args.errorName}"`, { exact: true });
     if (await createOption.isVisible().catch(() => false)) {
@@ -170,13 +159,10 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
       await this.page.getByRole("option", { name: args.errorName, exact: true }).click();
     }
 
-    await this.page.waitForTimeout(300);
-
     if (args.errorCode) {
       const errorCodeInput = this.panel().locator('input[type="text"]').nth(1);
       await errorCodeInput.fill(args.errorCode);
       await errorCodeInput.blur();
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -186,7 +172,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     const escalationInput = this.panel().locator('input[role="combobox"]').first();
     await escalationInput.click();
     await this.page.keyboard.type(args.escalationName);
-    await this.page.waitForTimeout(300);
 
     const createOption = this.page.getByText(`Create Escalation "${args.escalationName}"`, { exact: true });
     if (await createOption.isVisible().catch(() => false)) {
@@ -195,13 +180,10 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
       await this.page.getByRole("option", { name: args.escalationName, exact: true }).click();
     }
 
-    await this.page.waitForTimeout(300);
-
     if (args.escalationCode) {
       const escalationCodeInput = this.panel().locator('input[type="text"]').nth(1);
       await escalationCodeInput.fill(args.escalationCode);
       await escalationCodeInput.blur();
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -212,14 +194,11 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
       const activityInput = this.panel().locator('input[role="combobox"]').first();
       await activityInput.click();
       await this.page.keyboard.type(args.activityRef);
-      await this.page.waitForTimeout(300);
 
       const option = this.page.getByRole("option", { name: args.activityRef, exact: true });
       if (await option.isVisible().catch(() => false)) {
         await option.click();
       }
-
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -229,7 +208,6 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
     if (isChecked !== args.cancelActivity) {
       await cancelCheckbox.click();
-      await this.page.waitForTimeout(300);
     }
   }
 

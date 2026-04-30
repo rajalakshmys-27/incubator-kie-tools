@@ -33,13 +33,10 @@ test.describe("Change Properties - End Event", () => {
     await expect(endEvent).toBeVisible({ timeout: 5000 });
 
     await endEvent.click();
-    await page.waitForTimeout(500);
   });
 
   test("should change the End Event name", async ({ endEventPropertiesPanel, page }) => {
     await endEventPropertiesPanel.setName({ newName: "Process Completed" });
-
-    await page.waitForTimeout(300);
 
     expect(await endEventPropertiesPanel.getName()).toBe("Process Completed");
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-name-changed.png");
@@ -50,8 +47,6 @@ test.describe("Change Properties - End Event", () => {
       newDocumentation: "This event ends the process successfully",
     });
 
-    await page.waitForTimeout(300);
-
     expect(await endEventPropertiesPanel.getDocumentation()).toBe("This event ends the process successfully");
   });
 
@@ -61,8 +56,6 @@ test.describe("Change Properties - End Event", () => {
     await endEventPropertiesPanel.setTerminateDefinition({
       endEventLocator: endEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-terminate.png");
   });
@@ -75,8 +68,6 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-message.png");
   });
 
@@ -87,8 +78,6 @@ test.describe("Change Properties - End Event", () => {
       signalName: "CompletionSignal",
       endEventLocator: endEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-signal.png");
   });
@@ -102,8 +91,6 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-error.png");
   });
 
@@ -116,8 +103,6 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await page.waitForTimeout(300);
-
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-escalation.png");
   });
 
@@ -127,8 +112,6 @@ test.describe("Change Properties - End Event", () => {
     await endEventPropertiesPanel.setCompensationDefinition({
       endEventLocator: endEvent,
     });
-
-    await page.waitForTimeout(300);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-compensation.png");
   });

@@ -195,7 +195,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       if (!box) throw new Error("Intermediate Throw Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addTaskHandle = throwEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
@@ -203,8 +202,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-intermediate-throw-event.png");
     });
@@ -222,7 +219,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       if (!box) throw new Error("Intermediate Throw Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addGatewayHandle = throwEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
@@ -230,8 +226,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-intermediate-throw-event.png");
     });
@@ -265,8 +259,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
         targetPosition: { x: endBox.x + endBox.width / 2, y: endBox.y + endBox.height / 2 },
       });
 
-      await page.waitForTimeout(1000);
-
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-intermediate-throw-event-to-end-event.png");
     });
 
@@ -299,8 +291,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
         targetPosition: { x: throwBox.x + throwBox.width / 2, y: throwBox.y + throwBox.height / 2 },
       });
 
-      await page.waitForTimeout(1000);
-
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-event-to-intermediate-throw-event.png");
     });
 
@@ -326,7 +316,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       if (!taskBox) throw new Error("Task bounding box not found");
 
       await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -337,8 +326,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: throwBox.x + throwBox.width / 2, y: throwBox.y + throwBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-intermediate-throw-event.png");
     });
@@ -367,7 +354,6 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await expect(throwEvent).toBeAttached();
 
       await throwEvent.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const throwEventBox = await throwEvent.boundingBox();
       if (!throwEventBox) {

@@ -181,7 +181,6 @@ test.describe("Add node - Task", () => {
       expect(taskElement.__$$element).toBe("userTask");
 
       await page.mouse.move(0, 0);
-      await page.waitForTimeout(500);
 
       await nodes.morphNode({ nodeLocator: task, targetMorphType: "Service task" });
 
@@ -213,7 +212,6 @@ test.describe("Add node - Task", () => {
       expect(taskElement.__$$element).toBe("scriptTask");
 
       await page.mouse.move(0, 0);
-      await page.waitForTimeout(500);
 
       await nodes.morphNode({ nodeLocator: task, targetMorphType: "Task", exact: true });
 
@@ -240,16 +238,11 @@ test.describe("Add node - Task", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addTaskHandle = startEvent.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
-
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-start-event.png");
     });
@@ -267,16 +260,10 @@ test.describe("Add node - Task", () => {
       if (!box) throw new Error("Gateway bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
-
       const addTaskHandle = gateway.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
-
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-gateway.png");
     });
@@ -294,16 +281,10 @@ test.describe("Add node - Task", () => {
       if (!box) throw new Error("Task bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
-
       const addTaskHandle = task.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
-
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-task.png");
     });
@@ -329,10 +310,8 @@ test.describe("Add node - Task", () => {
       if (!box) throw new Error("Task bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
@@ -340,8 +319,6 @@ test.describe("Add node - Task", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
     });
@@ -367,10 +344,8 @@ test.describe("Add node - Task", () => {
       if (!box) throw new Error("Task bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
 
       const gatewayBox = await gateway.boundingBox();
       if (!gatewayBox) throw new Error("Gateway bounding box not found");
@@ -378,8 +353,6 @@ test.describe("Add node - Task", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: gatewayBox.x + gatewayBox.width / 2, y: gatewayBox.y + gatewayBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-gateway.png");
     });
@@ -403,7 +376,6 @@ test.describe("Add node - Task", () => {
       await expect(task).toBeAttached();
 
       await task.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const taskBox = await task.boundingBox();
       if (!taskBox) {

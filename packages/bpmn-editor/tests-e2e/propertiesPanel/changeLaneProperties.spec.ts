@@ -28,7 +28,6 @@ test.beforeEach(async ({ editor, page }) => {
 test.describe("Change Properties - Lane", () => {
   test.beforeEach(async ({ palette, nodes, lanePropertiesPanel, diagram, page }) => {
     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 200, y: 150 } });
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
   });
 
@@ -54,7 +53,6 @@ test.describe("Change Properties - Multiple Lanes", () => {
       targetPosition: { x: 200, y: 50 },
     });
 
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Sales" });
 
@@ -62,7 +60,6 @@ test.describe("Change Properties - Multiple Lanes", () => {
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 500 },
     });
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Marketing" });
 
@@ -77,7 +74,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
       targetPosition: { x: 200, y: 150 },
     });
 
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Processing Lane" });
 
@@ -102,7 +98,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
       targetPosition: { x: 200, y: 50 },
     });
 
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Lane 1" });
 
@@ -111,7 +106,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
       targetPosition: { x: 200, y: 500 },
     });
 
-    await page.waitForTimeout(500);
     await lanePropertiesPanel.open();
     await lanePropertiesPanel.setName({ newName: "Lane 2" });
 
@@ -129,7 +123,6 @@ test.describe("Change Properties - Lane with Tasks", () => {
       await page.mouse.down();
       await page.mouse.move(400, 600);
       await page.mouse.up();
-      await page.waitForTimeout(300);
     }
 
     await expect(diagram.get()).toHaveScreenshot("task-moved-between-lanes.png");

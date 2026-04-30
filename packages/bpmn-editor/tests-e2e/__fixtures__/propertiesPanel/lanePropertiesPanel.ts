@@ -38,7 +38,6 @@ export class LanePropertiesPanel extends PropertiesPanelBase {
 
   public async setName(args: { newName: string }) {
     await this.nameProperties.setName({ ...args });
-    await this.page.waitForTimeout(500);
   }
 
   public async getName(): Promise<string> {
@@ -47,7 +46,6 @@ export class LanePropertiesPanel extends PropertiesPanelBase {
 
   public async setDocumentation(args: { newDocumentation: string }) {
     await this.documentationProperties.setDocumentation({ ...args });
-    await this.page.waitForTimeout(500);
   }
 
   public async getDocumentation(): Promise<string> {

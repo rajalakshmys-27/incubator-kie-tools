@@ -57,7 +57,6 @@ export class SequenceFlowPropertiesPanel extends PropertiesPanelBase {
     await expressionInput.waitFor({ state: "visible", timeout: 10000 });
     await expressionInput.fill(args.expression);
     await expressionInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async getConditionExpression(): Promise<string> {
@@ -70,7 +69,6 @@ export class SequenceFlowPropertiesPanel extends PropertiesPanelBase {
     await priorityInput.waitFor({ state: "visible", timeout: 10000 });
     await priorityInput.fill(args.priority);
     await priorityInput.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async getPriority(): Promise<string> {
@@ -84,7 +82,6 @@ export class SequenceFlowPropertiesPanel extends PropertiesPanelBase {
 
     if (isChecked !== args.immediate) {
       await immediateCheckbox.click();
-      await this.page.waitForTimeout(300);
     }
   }
 

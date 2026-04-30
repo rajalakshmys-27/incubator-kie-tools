@@ -29,7 +29,6 @@ export class DocumentationProperties {
     const docTextarea = this.panel.getByPlaceholder("Enter documentation...");
     await docTextarea.fill(args.newDocumentation);
     await docTextarea.blur();
-    await this.page.waitForTimeout(300);
   }
 
   public async getDocumentation(): Promise<string> {
@@ -42,6 +41,5 @@ export class DocumentationProperties {
     const docTextarea = this.panel.getByPlaceholder("Enter documentation...");
     await docTextarea.clear();
     await this.page.keyboard.press("Enter");
-    await this.page.waitForTimeout(300);
   }
 }

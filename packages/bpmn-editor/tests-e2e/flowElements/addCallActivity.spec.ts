@@ -74,7 +74,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Call Activity bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addTaskHandle = callActivity.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
@@ -82,8 +81,6 @@ test.describe("Add node - Call Activity", () => {
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-call-activity.png");
     });
@@ -101,7 +98,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Call Activity bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addGatewayHandle = callActivity.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
@@ -109,8 +105,6 @@ test.describe("Add node - Call Activity", () => {
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-call-activity.png");
     });
@@ -136,7 +130,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Call Activity bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = callActivity.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -147,8 +140,6 @@ test.describe("Add node - Call Activity", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-call-activity-to-end-event.png");
     });
@@ -166,7 +157,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
@@ -175,8 +165,6 @@ test.describe("Add node - Call Activity", () => {
         targetPosition: { x: 300, y: 100 },
       });
 
-      await page.waitForTimeout(1000);
-
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
@@ -184,7 +172,6 @@ test.describe("Add node - Call Activity", () => {
       if (!taskBox) throw new Error("Task not visible");
 
       await page.mouse.move(taskBox.x + taskBox.width / 2, taskBox.y + taskBox.height / 2);
-      await page.waitForTimeout(300);
 
       const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
       await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -194,8 +181,6 @@ test.describe("Add node - Call Activity", () => {
       const callActivityOption = morphingPanel.getByTitle("Call activity");
       await expect(callActivityOption).toBeVisible({ timeout: 5000 });
       await callActivityOption.click({ force: true });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-call-activity-from-start-event.png");
     });
@@ -227,7 +212,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("First Call Activity bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = firstCallActivity.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -241,8 +225,6 @@ test.describe("Add node - Call Activity", () => {
           y: secondCallActivityBox.y + secondCallActivityBox.height / 2,
         },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-call-activity-to-call-activity.png");
     });
@@ -268,7 +250,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Gateway bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -282,8 +263,6 @@ test.describe("Add node - Call Activity", () => {
           y: callActivityBox.y + callActivityBox.height / 2,
         },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-gateway-to-call-activity.png");
     });
@@ -309,7 +288,6 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Call Activity bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = callActivity.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -320,8 +298,6 @@ test.describe("Add node - Call Activity", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: gatewayBox.x + gatewayBox.width / 2, y: gatewayBox.y + gatewayBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-call-activity-to-gateway.png");
     });
@@ -372,7 +348,6 @@ test.describe("Add node - Call Activity", () => {
       let box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
       const handle1 = startEvent.getByTitle("Add Sequence Flow");
       await expect(handle1).toBeVisible({ timeout: 5000 });
       const prepareData = nodes.get({ name: "Prepare Data" });
@@ -381,12 +356,10 @@ test.describe("Add node - Call Activity", () => {
       await handle1.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
-      await page.waitForTimeout(1000);
 
       box = await prepareData.boundingBox();
       if (!box) throw new Error("Prepare Data not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
       const handle2 = prepareData.getByTitle("Add Sequence Flow");
       await expect(handle2).toBeVisible({ timeout: 5000 });
       const callActivity = nodes.get({ name: "Execute Subprocess" });
@@ -395,12 +368,10 @@ test.describe("Add node - Call Activity", () => {
       await handle2.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
-      await page.waitForTimeout(1000);
 
       box = await callActivity.boundingBox();
       if (!box) throw new Error("Call Activity not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
       const handle3 = callActivity.getByTitle("Add Sequence Flow");
       await expect(handle3).toBeVisible({ timeout: 5000 });
       const processResults = nodes.get({ name: "Process Results" });
@@ -409,12 +380,10 @@ test.describe("Add node - Call Activity", () => {
       await handle3.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
-      await page.waitForTimeout(1000);
 
       box = await processResults.boundingBox();
       if (!box) throw new Error("Process Results not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
       const handle4 = processResults.getByTitle("Add Sequence Flow");
       await expect(handle4).toBeVisible({ timeout: 5000 });
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
@@ -423,7 +392,6 @@ test.describe("Add node - Call Activity", () => {
       await handle4.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
-      await page.waitForTimeout(1000);
 
       await diagram.resetFocus();
 
@@ -457,7 +425,6 @@ test.describe("Add node - Call Activity", () => {
       await expect(callActivity).toBeAttached();
 
       await callActivity.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const callActivityBox = await callActivity.boundingBox();
       if (!callActivityBox) {

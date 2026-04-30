@@ -63,7 +63,6 @@ test.describe("Add Data Object", () => {
     await expect(dataObject).toBeAttached();
 
     await dataObject.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
 
     const dataObjectBox = await dataObject.boundingBox();
     if (!dataObjectBox) {

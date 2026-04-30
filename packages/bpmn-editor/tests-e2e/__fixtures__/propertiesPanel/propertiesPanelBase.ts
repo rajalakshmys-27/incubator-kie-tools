@@ -40,7 +40,6 @@ export abstract class PropertiesPanelBase {
     const isButtonVisible = await propertiesButton.isVisible();
     if (isButtonVisible) {
       await propertiesButton.click();
-      await this.page.waitForTimeout(300);
     }
   }
 
@@ -49,7 +48,6 @@ export abstract class PropertiesPanelBase {
     const isVisible = await closeButton.isVisible();
     if (isVisible) {
       await closeButton.click();
-      await this.page.waitForTimeout(300);
     }
   }
 

@@ -35,7 +35,6 @@ async function setupEventSubProcess(palette: any, nodes: any, page: any) {
   if (!box) throw new Error("Sub-Process not visible");
 
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.waitForTimeout(300);
 
   const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
   await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -45,7 +44,6 @@ async function setupEventSubProcess(palette: any, nodes: any, page: any) {
   const eventSubProcessOption = morphingPanel.locator('div[title="Event"]').first();
   await expect(eventSubProcessOption).toBeVisible({ timeout: 5000 });
   await eventSubProcessOption.click({ force: true });
-  await page.waitForTimeout(500);
 
   const targetPosition = {
     x: box.x + box.width / 2 - 50,
@@ -234,7 +232,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event not visible");
 
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      await page.waitForTimeout(300);
 
       const morphingToggle = startEvent.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
       await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -505,7 +502,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event not visible");
 
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      await page.waitForTimeout(300);
 
       const morphingToggle = startEvent.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
       await expect(morphingToggle).toBeVisible({ timeout: 5000 });
@@ -537,7 +533,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
@@ -545,8 +540,6 @@ test.describe("Add node - Start Event", () => {
       await addTaskHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-start-event.png");
     });
@@ -564,7 +557,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addGatewayHandle = startEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
@@ -572,8 +564,6 @@ test.describe("Add node - Start Event", () => {
       await addGatewayHandle.dragTo(diagram.get(), {
         targetPosition: { x: 300, y: 100 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-start-event.png");
     });
@@ -599,7 +589,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -610,8 +599,6 @@ test.describe("Add node - Start Event", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: subProcessBox.x + subProcessBox.width / 2, y: subProcessBox.y + subProcessBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-event-to-subprocess.png");
     });
@@ -637,7 +624,6 @@ test.describe("Add node - Start Event", () => {
       if (!box) throw new Error("Start Event bounding box not found");
 
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-      await page.waitForTimeout(500);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
       await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
@@ -648,8 +634,6 @@ test.describe("Add node - Start Event", () => {
       await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
-
-      await page.waitForTimeout(1000);
 
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-start-event-to-end-event.png");
     });
@@ -678,7 +662,6 @@ test.describe("Add node - Start Event", () => {
       await expect(startEvent).toBeAttached();
 
       await startEvent.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
 
       const startEventBox = await startEvent.boundingBox();
       if (!startEventBox) {
