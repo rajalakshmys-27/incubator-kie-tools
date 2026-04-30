@@ -80,22 +80,6 @@ export function addEdge({
     );
   }
 
-  // BPMN-specific validation: Compensation boundary events cannot have incoming sequence flows
-  if (__readonly_edge.type === EDGE_TYPES.sequenceFlow) {
-    const process = definitions.rootElement?.find((e) => e.__$$element === "process") as
-      | Normalized<BPMN20__tProcess>
-      | undefined;
-    if (process) {
-      const targetElement = process.flowElement?.find((e) => e["@_id"] === __readonly_targetNode.href);
-      if (
-        targetElement?.__$$element === "boundaryEvent" &&
-        targetElement.eventDefinition?.[0]?.__$$element === "compensateEventDefinition"
-      ) {
-        throw new Error(`BPMN MUTATION: Compensation boundary events cannot have incoming sequence flows`);
-      }
-    }
-  }
-
   const newEdgeId = generateUuid();
 
   const { process, diagramElements } = addOrGetProcessAndDiagramElements({ definitions });
