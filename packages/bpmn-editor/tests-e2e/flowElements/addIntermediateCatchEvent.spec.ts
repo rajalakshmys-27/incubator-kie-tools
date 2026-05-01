@@ -18,7 +18,7 @@
  */
 
 import { test, expect } from "../__fixtures__/base";
-import { DefaultNodeName, NodeType } from "../__fixtures__/nodes";
+import { NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor }) => {
   await editor.open();
@@ -26,8 +26,12 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Intermediate Catch Event", () => {
   test.describe("Add from palette", () => {
-    test("should add Intermediate Catch Event node from palette", async ({ palette, diagram }) => {
+    test("should add Intermediate Catch Event node from palette", async ({ palette, jsonModel, diagram }) => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
+
+      const catchEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(catchEvent.__$$element).toBe("intermediateCatchEvent");
+
       await expect(diagram.get()).toHaveScreenshot("add-intermediate-catch-event-node-from-palette.png");
     });
 
@@ -38,6 +42,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
         targetPosition: { x: 300, y: 300 },
         thenRenameTo: "Second Intermediate Catch",
       });
+
       await diagram.resetFocus();
       await expect(diagram.get()).toHaveScreenshot("add-2-intermediate-catch-event-nodes-from-palette.png");
     });
@@ -48,223 +53,54 @@ test.describe("Add node - Intermediate Catch Event", () => {
   // Not allowed: None, Terminate
 
   test.describe("Intermediate catch event type morphing", () => {
-    test("should morph Intermediate Catch Event to Message", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
+    const morphTestCases = [
+      { morphType: "Message", eventDefinition: "messageEventDefinition" },
+      { morphType: "Timer", eventDefinition: "timerEventDefinition" },
+      { morphType: "Error", eventDefinition: "errorEventDefinition" },
+      { morphType: "Escalation", eventDefinition: "escalationEventDefinition" },
+      { morphType: "Compensation", eventDefinition: "compensateEventDefinition" },
+      { morphType: "Conditional", eventDefinition: "conditionalEventDefinition" },
+      { morphType: "Link", eventDefinition: "linkEventDefinition" },
+      { morphType: "Signal", eventDefinition: "signalEventDefinition" },
+    ];
 
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+    for (const { morphType, eventDefinition } of morphTestCases) {
+      test(`should morph Intermediate Catch Event to ${morphType}`, async ({
+        jsonModel,
+        palette,
+        diagram,
+        page,
+        nodes,
+      }) => {
+        await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Message" });
+        const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+        await expect(catchEvent).toBeVisible({ timeout: 5000 });
 
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "messageEventDefinition", "@_id": expect.any(String) }],
-        });
+        await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: morphType });
 
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-message.png");
-    });
+        await expect
+          .poll(
+            async () => {
+              return await jsonModel.getFlowElement({ elementIndex: 0 });
+            },
+            { timeout: 10000 }
+          )
+          .toMatchObject({
+            __$$element: "intermediateCatchEvent",
+            eventDefinition: [{ __$$element: eventDefinition }],
+          });
 
-    test("should morph Intermediate Catch Event to Timer", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Timer" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "timerEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-timer.png");
-    });
-
-    test("should morph Intermediate Catch Event to Error", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Error" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "errorEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-error.png");
-    });
-
-    test("should morph Intermediate Catch Event to Escalation", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Escalation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "escalationEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-escalation.png");
-    });
-
-    test("should morph Intermediate Catch Event to Compensation", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Compensation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-compensation.png");
-    });
-
-    test("should morph Intermediate Catch Event to Conditional", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Conditional" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "conditionalEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-conditional.png");
-    });
-
-    test("should morph Intermediate Catch Event to Link", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Link" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "linkEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-link.png");
-    });
-
-    test("should morph Intermediate Catch Event to Signal", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Signal" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateCatchEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "signalEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-catch-event-to-signal.png");
-    });
+        await expect(diagram.get()).toHaveScreenshot(
+          `morph-intermediate-catch-event-to-${morphType.toLowerCase()}.png`
+        );
+      });
+    }
   });
 
   test.describe("Add connected Intermediate Catch Event node", () => {
     test("should add connected Task node from Intermediate Catch Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_CATCH_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible({ timeout: 5000 });
@@ -277,18 +113,13 @@ test.describe("Add node - Intermediate Catch Event", () => {
       const addTaskHandle = catchEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      await addTaskHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-intermediate-catch-event.png");
     });
 
     test("should add connected Gateway node from Intermediate Catch Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_CATCH_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible({ timeout: 5000 });
@@ -301,9 +132,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       const addGatewayHandle = catchEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      await addGatewayHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-intermediate-catch-event.png");
     });
@@ -313,15 +142,8 @@ test.describe("Add node - Intermediate Catch Event", () => {
       palette,
       page,
     }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_CATCH_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
-
-      await palette.dragNewNode({
-        type: NodeType.END_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible({ timeout: 5000 });
@@ -329,11 +151,18 @@ test.describe("Add node - Intermediate Catch Event", () => {
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
+      const box = await catchEvent.boundingBox();
+      if (!box) throw new Error("Intermediate Catch Event bounding box not found");
+
+      await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
+
+      const addSequenceFlowHandle = catchEvent.getByTitle("Add Sequence Flow");
+      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
 
-      await catchEvent.dragTo(diagram.get(), {
-        sourcePosition: { x: 20, y: 10 },
+      await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endBox.x + endBox.width / 2, y: endBox.y + endBox.height / 2 },
       });
 
@@ -345,27 +174,27 @@ test.describe("Add node - Intermediate Catch Event", () => {
       palette,
       page,
     }) => {
-      await palette.dragNewNode({
-        type: NodeType.START_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
-
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_CATCH_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeAttached();
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible({ timeout: 5000 });
 
+      const startBox = await startEvent.boundingBox();
+      if (!startBox) throw new Error("Start Event bounding box not found");
+
+      await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
+
+      const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
+      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+
       const catchBox = await catchEvent.boundingBox();
       if (!catchBox) throw new Error("Intermediate Catch Event bounding box not found");
 
-      await startEvent.dragTo(diagram.get(), {
-        sourcePosition: { x: 20, y: 10 },
+      await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: catchBox.x + catchBox.width / 2, y: catchBox.y + catchBox.height / 2 },
       });
 
@@ -373,16 +202,9 @@ test.describe("Add node - Intermediate Catch Event", () => {
     });
 
     test("should create sequence flow from Task to Intermediate Catch Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.TASK,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await diagram.resetFocus();
-
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_CATCH_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
@@ -415,30 +237,29 @@ test.describe("Add node - Intermediate Catch Event", () => {
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
       await expect(catchEvent).toBeVisible();
-
       await catchEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(catchEvent).not.toBeAttached();
 
-      const flowElements = await jsonModel.getProcess();
-      expect(flowElements.flowElement?.length).toBe(0);
+      const process = await jsonModel.getProcess();
+      expect(process.flowElement?.length).toBe(0);
     });
 
     test("should move intermediate catch event to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
 
       const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      const boxBefore = await catchEvent.boundingBox();
+      await expect(catchEvent).toBeAttached();
 
-      await catchEvent.dragTo(diagram.get(), {
-        targetPosition: { x: 500, y: 400 },
-      });
+      const boxBefore = await catchEvent.boundingBox();
+      if (!boxBefore) throw new Error("Intermediate Catch Event bounding box not found");
+
+      await catchEvent.dragTo(diagram.get(), { targetPosition: { x: 500, y: 400 } });
 
       const boxAfter = await catchEvent.boundingBox();
-
-      expect(boxAfter?.x).not.toBe(boxBefore?.x);
-      expect(boxAfter?.y).not.toBe(boxBefore?.y);
+      expect(boxAfter?.x).not.toBe(boxBefore.x);
+      expect(boxAfter?.y).not.toBe(boxBefore.y);
     });
   });
 });

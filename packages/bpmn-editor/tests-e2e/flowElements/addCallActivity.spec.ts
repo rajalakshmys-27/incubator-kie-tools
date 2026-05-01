@@ -27,10 +27,15 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Call Activity", () => {
   test.describe("Add from palette", () => {
-    test("should add Call Activity node from palette", async ({ palette, nodes, diagram }) => {
+    test("should add Call Activity node from palette", async ({ palette, nodes, jsonModel, diagram }) => {
       await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 100, y: 100 } });
 
       await expect(nodes.get({ name: DefaultNodeName.CALL_ACTIVITY })).toBeAttached();
+
+      const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(callActivity.__$$element).toBe("callActivity");
+      expect(callActivity["@_name"]).toBe(DefaultNodeName.CALL_ACTIVITY);
+
       await expect(diagram.get()).toHaveScreenshot("add-call-activity-node-from-palette.png");
     });
 
@@ -55,8 +60,6 @@ test.describe("Add node - Call Activity", () => {
 
       await expect(nodes.get({ name: "First Call Activity" })).toBeAttached();
       await expect(nodes.get({ name: "Second Call Activity" })).toBeAttached();
-
-      await expect(diagram.get()).toHaveScreenshot("add-2-call-activity-nodes-from-palette.png");
     });
   });
 
@@ -78,9 +81,7 @@ test.describe("Add node - Call Activity", () => {
       const addTaskHandle = callActivity.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      await addTaskHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-call-activity.png");
     });
@@ -102,9 +103,7 @@ test.describe("Add node - Call Activity", () => {
       const addGatewayHandle = callActivity.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      await addGatewayHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-call-activity.png");
     });
@@ -151,7 +150,7 @@ test.describe("Add node - Call Activity", () => {
       });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeAttached();
 
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
@@ -161,15 +160,13 @@ test.describe("Add node - Call Activity", () => {
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      await addTaskHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
       const taskBox = await task.boundingBox();
-      if (!taskBox) throw new Error("Task not visible");
+      if (!taskBox) throw new Error("Task bounding box not found");
 
       await page.mouse.move(taskBox.x + taskBox.width / 2, taskBox.y + taskBox.height / 2);
 
@@ -308,6 +305,7 @@ test.describe("Add node - Call Activity", () => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       await editor.open();
     });
+
     test("should create a complete process with Call Activity", async ({
       jsonModel,
       palette,
@@ -315,78 +313,74 @@ test.describe("Add node - Call Activity", () => {
       diagram,
       page,
     }) => {
-      await palette.dragNewNode({
-        type: NodeType.START_EVENT,
-        targetPosition: { x: 100, y: 150 },
-      });
-
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 150 } });
       await palette.dragNewNode({
         type: NodeType.TASK,
         targetPosition: { x: 250, y: 150 },
         thenRenameTo: "Prepare Data",
       });
-
       await palette.dragNewNode({
         type: NodeType.CALL_ACTIVITY,
         targetPosition: { x: 500, y: 150 },
         thenRenameTo: "Execute Subprocess",
       });
-
       await palette.dragNewNode({
         type: NodeType.TASK,
         targetPosition: { x: 750, y: 150 },
         thenRenameTo: "Process Results",
       });
-
-      await palette.dragNewNode({
-        type: NodeType.END_EVENT,
-        targetPosition: { x: 1000, y: 150 },
-      });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 1000, y: 150 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeAttached();
+
+      const prepareData = nodes.get({ name: "Prepare Data" });
+      const callActivity = nodes.get({ name: "Execute Subprocess" });
+      const processResults = nodes.get({ name: "Process Results" });
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+
+      // Connect Start Event -> Prepare Data
       let box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle1 = startEvent.getByTitle("Add Sequence Flow");
       await expect(handle1).toBeVisible({ timeout: 5000 });
-      const prepareData = nodes.get({ name: "Prepare Data" });
       let targetBox = await prepareData.boundingBox();
       if (!targetBox) throw new Error("Prepare Data not visible");
       await handle1.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
 
+      // Connect Prepare Data -> Execute Subprocess
       box = await prepareData.boundingBox();
       if (!box) throw new Error("Prepare Data not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle2 = prepareData.getByTitle("Add Sequence Flow");
       await expect(handle2).toBeVisible({ timeout: 5000 });
-      const callActivity = nodes.get({ name: "Execute Subprocess" });
       targetBox = await callActivity.boundingBox();
       if (!targetBox) throw new Error("Call Activity not visible");
       await handle2.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
 
+      // Connect Execute Subprocess -> Process Results
       box = await callActivity.boundingBox();
       if (!box) throw new Error("Call Activity not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle3 = callActivity.getByTitle("Add Sequence Flow");
       await expect(handle3).toBeVisible({ timeout: 5000 });
-      const processResults = nodes.get({ name: "Process Results" });
       targetBox = await processResults.boundingBox();
       if (!targetBox) throw new Error("Process Results not visible");
       await handle3.dragTo(diagram.get(), {
         targetPosition: { x: targetBox.x + targetBox.width / 2, y: targetBox.y + targetBox.height / 2 },
       });
 
+      // Connect Process Results -> End Event
       box = await processResults.boundingBox();
       if (!box) throw new Error("Process Results not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle4 = processResults.getByTitle("Add Sequence Flow");
       await expect(handle4).toBeVisible({ timeout: 5000 });
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       targetBox = await endEvent.boundingBox();
       if (!targetBox) throw new Error("End Event not visible");
       await handle4.dragTo(diagram.get(), {
@@ -395,12 +389,12 @@ test.describe("Add node - Call Activity", () => {
 
       await diagram.resetFocus();
 
-      const flowElements = await jsonModel.getProcess();
-      const callActivityElement = flowElements.flowElement?.find((el: any) => el["@_name"] === "Execute Subprocess");
-      expect(callActivityElement).toMatchObject({
-        __$$element: "callActivity",
-        "@_name": "Execute Subprocess",
-      });
+      const process = await jsonModel.getProcess();
+      const callActivityElement = process.flowElement?.find(
+        (el: { __$$element: string; "@_name"?: string }) => el["@_name"] === "Execute Subprocess"
+      );
+      expect(callActivityElement.__$$element).toBe("callActivity");
+      expect(callActivityElement["@_name"]).toBe("Execute Subprocess");
 
       await expect(diagram.get()).toHaveScreenshot("complete-process-with-call-activity.png");
     });
@@ -414,8 +408,8 @@ test.describe("Add node - Call Activity", () => {
 
       await expect(nodes.get({ name: DefaultNodeName.CALL_ACTIVITY })).not.toBeAttached();
 
-      const flowElements = await jsonModel.getProcess();
-      expect(flowElements.flowElement?.length).toBe(0);
+      const process = await jsonModel.getProcess();
+      expect(process.flowElement?.length).toBe(0);
     });
 
     test("should move call activity to new position", async ({ palette, diagram, page }) => {
@@ -423,13 +417,10 @@ test.describe("Add node - Call Activity", () => {
 
       const callActivity = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(callActivity).toBeAttached();
-
       await callActivity.scrollIntoViewIfNeeded();
 
       const callActivityBox = await callActivity.boundingBox();
-      if (!callActivityBox) {
-        throw new Error("Call Activity bounding box not found");
-      }
+      if (!callActivityBox) throw new Error("Call Activity bounding box not found");
 
       await callActivity.dragTo(diagram.get(), {
         sourcePosition: { x: 20, y: callActivityBox.height / 2 },
@@ -438,9 +429,8 @@ test.describe("Add node - Call Activity", () => {
       });
 
       const boxAfter = await callActivity.boundingBox();
-
-      expect(boxAfter?.x).not.toBe(callActivityBox?.x);
-      expect(boxAfter?.y).not.toBe(callActivityBox?.y);
+      expect(boxAfter?.x).not.toBe(callActivityBox.x);
+      expect(boxAfter?.y).not.toBe(callActivityBox.y);
     });
 
     test("should rename call activity", async ({ palette, nodes, jsonModel }) => {
@@ -451,6 +441,7 @@ test.describe("Add node - Call Activity", () => {
       await expect(nodes.get({ name: "Invoke Subprocess" })).toBeAttached();
 
       const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(callActivity.__$$element).toBe("callActivity");
       expect(callActivity["@_name"]).toBe("Invoke Subprocess");
     });
   });

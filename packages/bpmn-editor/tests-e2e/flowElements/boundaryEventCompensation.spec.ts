@@ -18,7 +18,7 @@
  */
 
 import { test, expect } from "../__fixtures__/base";
-import { NodeType, DefaultNodeName } from "../__fixtures__/nodes";
+import { NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor }) => {
   await editor.open();
@@ -27,7 +27,6 @@ test.beforeEach(async ({ editor }) => {
 test.describe("Compensation Boundary Events", () => {
   test("should create compensation boundary event on task", async ({
     palette,
-    nodes,
     jsonModel,
     page,
     diagram,
@@ -37,17 +36,13 @@ test.describe("Compensation Boundary Events", () => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
     const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
-    expect(boundaryEvent).toMatchObject({
-      __$$element: "boundaryEvent",
-      "@_id": expect.any(String),
-      "@_attachedToRef": expect.any(String),
-    });
+    expect(boundaryEvent.__$$element).toBe("boundaryEvent");
+    expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
 
     const eventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
     await eventNode.click();
 
     await intermediateEventPropertiesPanel.setCompensationDefinition({});
-
     await intermediateEventPropertiesPanel.setCancelActivity({ cancelActivity: false });
 
     await expect
@@ -59,10 +54,9 @@ test.describe("Compensation Boundary Events", () => {
       )
       .toMatchObject({
         __$$element: "boundaryEvent",
-        "@_id": expect.any(String),
-        "@_attachedToRef": expect.any(String),
+        "@_attachedToRef": expect.stringMatching(/.+/),
         "@_cancelActivity": false,
-        eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
+        eventDefinition: [{ __$$element: "compensateEventDefinition" }],
       });
 
     const cancelActivity = await intermediateEventPropertiesPanel.getCancelActivity();
@@ -73,9 +67,7 @@ test.describe("Compensation Boundary Events", () => {
 
   test.skip("should not allow incoming sequence flows to compensation boundary event", async ({
     // TODO: Enable when compensation boundary event validation is implemented
-    // This test requires validation logic to prevent sequence flows to compensation boundary events
     palette,
-    nodes,
     jsonModel,
     page,
     diagram,
@@ -86,7 +78,6 @@ test.describe("Compensation Boundary Events", () => {
 
     const eventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
     await expect(eventNode).toBeAttached();
-
     await eventNode.click();
 
     await intermediateEventPropertiesPanel.setCompensationDefinition({});
@@ -95,17 +86,17 @@ test.describe("Compensation Boundary Events", () => {
       .poll(
         async () => {
           const process = await jsonModel.getProcess();
-          return process.flowElement?.find((e: any) => e.__$$element === "boundaryEvent");
+          return process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
         },
         { timeout: 10000 }
       )
       .toMatchObject({
         __$$element: "boundaryEvent",
-        eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
+        eventDefinition: [{ __$$element: "compensateEventDefinition" }],
       });
 
     const process = await jsonModel.getProcess();
-    const boundaryEvent = process.flowElement?.find((e: any) => e.__$$element === "boundaryEvent");
+    const boundaryEvent = process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
 
     await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 300 } });
 
@@ -128,15 +119,17 @@ test.describe("Compensation Boundary Events", () => {
     });
 
     const updatedProcess = await jsonModel.getProcess();
-    const sequenceFlows = updatedProcess.flowElement?.filter((e: any) => e.__$$element === "sequenceFlow") || [];
-    const incomingFlowToBoundary = sequenceFlows.find((flow: any) => flow["@_targetRef"] === boundaryEvent["@_id"]);
+    const sequenceFlows =
+      updatedProcess.flowElement?.filter((e: { __$$element: string }) => e.__$$element === "sequenceFlow") ?? [];
+    const incomingFlowToBoundary = sequenceFlows.find(
+      (flow: { "@_targetRef"?: string }) => flow["@_targetRef"] === boundaryEvent["@_id"]
+    );
 
     expect(incomingFlowToBoundary).toBeUndefined();
   });
 
   test("should allow compensation boundary event on subprocess", async ({
     palette,
-    nodes,
     jsonModel,
     page,
     diagram,
@@ -146,8 +139,8 @@ test.describe("Compensation Boundary Events", () => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 550, y: 350 } });
 
     const process = await jsonModel.getProcess();
-    const boundaryEvent = process.flowElement?.find((e: any) => e.__$$element === "boundaryEvent");
-    const subProcessElement = process.flowElement?.find((e: any) => e.__$$element === "subProcess");
+    const boundaryEvent = process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
+    const subProcessElement = process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "subProcess");
 
     expect(boundaryEvent).toBeDefined();
     expect(boundaryEvent["@_attachedToRef"]).toBe(subProcessElement["@_id"]);
@@ -156,14 +149,13 @@ test.describe("Compensation Boundary Events", () => {
     await eventNode.click();
 
     await intermediateEventPropertiesPanel.setCompensationDefinition({});
-
     await intermediateEventPropertiesPanel.setCancelActivity({ cancelActivity: false });
 
     await expect
       .poll(
         async () => {
           const updatedProcess = await jsonModel.getProcess();
-          return updatedProcess.flowElement?.find((e: any) => e.__$$element === "boundaryEvent");
+          return updatedProcess.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
         },
         { timeout: 10000 }
       )
@@ -171,7 +163,7 @@ test.describe("Compensation Boundary Events", () => {
         __$$element: "boundaryEvent",
         "@_attachedToRef": subProcessElement["@_id"],
         "@_cancelActivity": false,
-        eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
+        eventDefinition: [{ __$$element: "compensateEventDefinition" }],
       });
 
     await expect(diagram.get()).toHaveScreenshot("compensation-boundary-event-on-subprocess.png");

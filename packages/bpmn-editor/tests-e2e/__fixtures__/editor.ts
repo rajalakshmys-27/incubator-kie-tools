@@ -18,6 +18,7 @@
  */
 
 import { Page } from "@playwright/test";
+import { Nodes } from "./nodes";
 
 export class Editor {
   constructor(
@@ -48,7 +49,9 @@ export class Editor {
     await this.page.locator(".react-flow").waitFor({ state: "visible" });
   }
 
-  public async openCustomTasks() {
+  public async openCustomTasks({ nodes }: { nodes: Nodes }) {
     await this.page.goto(`${this.baseURL}/iframe.html?args=&id=features-customtasks--custom-tasks&viewMode=story`);
+    await nodes.delete({ name: "Rest API call Task" });
+    await nodes.delete({ name: "gRPC API call Task" });
   }
 }

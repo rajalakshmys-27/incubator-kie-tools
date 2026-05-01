@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import { test, expect } from "../__fixtures__/base";
-import { DefaultNodeName, NodeType } from "../__fixtures__/nodes";
+import { NodeType } from "../__fixtures__/nodes";
 
 test.beforeEach(async ({ editor }) => {
   await editor.open();
@@ -26,8 +25,12 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Intermediate Throw Event", () => {
   test.describe("Add from palette", () => {
-    test("should add Intermediate Throw Event node from palette", async ({ palette, diagram }) => {
+    test("should add Intermediate Throw Event node from palette", async ({ palette, jsonModel, diagram }) => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
+
+      const throwEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(throwEvent.__$$element).toBe("intermediateThrowEvent");
+
       await expect(diagram.get()).toHaveScreenshot("add-intermediate-throw-event-node-from-palette.png");
     });
 
@@ -38,6 +41,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
         targetPosition: { x: 300, y: 300 },
         thenRenameTo: "Second Intermediate Throw",
       });
+
       await diagram.resetFocus();
       await expect(diagram.get()).toHaveScreenshot("add-2-intermediate-throw-event-nodes-from-palette.png");
     });
@@ -48,145 +52,51 @@ test.describe("Add node - Intermediate Throw Event", () => {
   // Not allowed: None, Timer, Error, Conditional, Terminate
 
   test.describe("Intermediate throw event type morphing", () => {
-    test("should morph Intermediate Throw Event to Message", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
+    const morphTestCases = [
+      { morphType: "Message", eventDefinition: "messageEventDefinition" },
+      { morphType: "Escalation", eventDefinition: "escalationEventDefinition" },
+      { morphType: "Compensation", eventDefinition: "compensateEventDefinition" },
+      { morphType: "Link", eventDefinition: "linkEventDefinition" },
+      { morphType: "Signal", eventDefinition: "signalEventDefinition" },
+    ];
 
-      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+    for (const { morphType, eventDefinition } of morphTestCases) {
+      test(`should morph Intermediate Throw Event to ${morphType}`, async ({
+        jsonModel,
+        palette,
+        diagram,
+        page,
+        nodes,
+      }) => {
+        await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: "Message" });
+        const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
+        await expect(throwEvent).toBeVisible({ timeout: 5000 });
 
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateThrowEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "messageEventDefinition", "@_id": expect.any(String) }],
-        });
+        await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: morphType });
 
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-throw-event-to-message.png");
-    });
+        await expect
+          .poll(
+            async () => {
+              return await jsonModel.getFlowElement({ elementIndex: 0 });
+            },
+            { timeout: 10000 }
+          )
+          .toMatchObject({
+            __$$element: "intermediateThrowEvent",
+            eventDefinition: [{ __$$element: eventDefinition }],
+          });
 
-    test("should morph Intermediate Throw Event to Escalation", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: "Escalation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateThrowEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "escalationEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-throw-event-to-escalation.png");
-    });
-
-    test("should morph Intermediate Throw Event to Compensation", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: "Compensation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateThrowEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-throw-event-to-compensation.png");
-    });
-
-    test("should morph Intermediate Throw Event to Link", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: "Link" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateThrowEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "linkEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-throw-event-to-link.png");
-    });
-
-    test("should morph Intermediate Throw Event to Signal", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: "Signal" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "intermediateThrowEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "signalEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-intermediate-throw-event-to-signal.png");
-    });
+        await expect(diagram.get()).toHaveScreenshot(
+          `morph-intermediate-throw-event-to-${morphType.toLowerCase()}.png`
+        );
+      });
+    }
   });
 
   test.describe("Add connected Intermediate Throw Event node", () => {
     test("should add connected Task node from Intermediate Throw Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_THROW_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible({ timeout: 5000 });
@@ -199,18 +109,13 @@ test.describe("Add node - Intermediate Throw Event", () => {
       const addTaskHandle = throwEvent.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      await addTaskHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-task-node-from-intermediate-throw-event.png");
     });
 
     test("should add connected Gateway node from Intermediate Throw Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_THROW_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible({ timeout: 5000 });
@@ -223,9 +128,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       const addGatewayHandle = throwEvent.getByTitle("Add Gateway");
       await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
 
-      await addGatewayHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-gateway-node-from-intermediate-throw-event.png");
     });
@@ -235,15 +138,8 @@ test.describe("Add node - Intermediate Throw Event", () => {
       palette,
       page,
     }) => {
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_THROW_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
-
-      await palette.dragNewNode({
-        type: NodeType.END_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible({ timeout: 5000 });
@@ -251,11 +147,18 @@ test.describe("Add node - Intermediate Throw Event", () => {
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
+      const box = await throwEvent.boundingBox();
+      if (!box) throw new Error("Intermediate Throw Event bounding box not found");
+
+      await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
+
+      const addSequenceFlowHandle = throwEvent.getByTitle("Add Sequence Flow");
+      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
 
-      await throwEvent.dragTo(diagram.get(), {
-        sourcePosition: { x: 20, y: 10 },
+      await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: endBox.x + endBox.width / 2, y: endBox.y + endBox.height / 2 },
       });
 
@@ -267,27 +170,27 @@ test.describe("Add node - Intermediate Throw Event", () => {
       palette,
       page,
     }) => {
-      await palette.dragNewNode({
-        type: NodeType.START_EVENT,
-        targetPosition: { x: 100, y: 100 },
-      });
-
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_THROW_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeAttached();
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible({ timeout: 5000 });
 
+      const startBox = await startEvent.boundingBox();
+      if (!startBox) throw new Error("Start Event bounding box not found");
+
+      await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
+
+      const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
+      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+
       const throwBox = await throwEvent.boundingBox();
       if (!throwBox) throw new Error("Intermediate Throw Event bounding box not found");
 
-      await startEvent.dragTo(diagram.get(), {
-        sourcePosition: { x: 20, y: 10 },
+      await addSequenceFlowHandle.dragTo(diagram.get(), {
         targetPosition: { x: throwBox.x + throwBox.width / 2, y: throwBox.y + throwBox.height / 2 },
       });
 
@@ -295,16 +198,9 @@ test.describe("Add node - Intermediate Throw Event", () => {
     });
 
     test("should create sequence flow from Task to Intermediate Throw Event", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.TASK,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await diagram.resetFocus();
-
-      await palette.dragNewNode({
-        type: NodeType.INTERMEDIATE_THROW_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
@@ -337,14 +233,13 @@ test.describe("Add node - Intermediate Throw Event", () => {
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeVisible();
-
       await throwEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(throwEvent).not.toBeAttached();
 
-      const flowElements = await jsonModel.getProcess();
-      expect(flowElements.flowElement?.length).toBe(0);
+      const process = await jsonModel.getProcess();
+      expect(process.flowElement?.length).toBe(0);
     });
 
     test("should move intermediate throw event to new position", async ({ palette, page, diagram }) => {
@@ -352,13 +247,10 @@ test.describe("Add node - Intermediate Throw Event", () => {
 
       const throwEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
       await expect(throwEvent).toBeAttached();
-
       await throwEvent.scrollIntoViewIfNeeded();
 
       const throwEventBox = await throwEvent.boundingBox();
-      if (!throwEventBox) {
-        throw new Error("Intermediate Throw Event bounding box not found");
-      }
+      if (!throwEventBox) throw new Error("Intermediate Throw Event bounding box not found");
 
       await throwEvent.dragTo(diagram.get(), {
         sourcePosition: { x: throwEventBox.width / 2, y: throwEventBox.height / 2 },
@@ -367,9 +259,8 @@ test.describe("Add node - Intermediate Throw Event", () => {
       });
 
       const boxAfter = await throwEvent.boundingBox();
-
-      expect(boxAfter?.x).not.toBe(throwEventBox?.x);
-      expect(boxAfter?.y).not.toBe(throwEventBox?.y);
+      expect(boxAfter?.x).not.toBe(throwEventBox.x);
+      expect(boxAfter?.y).not.toBe(throwEventBox.y);
     });
   });
 });

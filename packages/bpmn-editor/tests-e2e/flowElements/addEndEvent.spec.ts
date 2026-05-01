@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import { test, expect } from "../__fixtures__/base";
 import { DefaultNodeName, NodeType } from "../__fixtures__/nodes";
 import { EdgeType } from "../__fixtures__/edges";
@@ -27,8 +26,12 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - End Event", () => {
   test.describe("Add from palette", () => {
-    test("should add End Event node from palette", async ({ palette, diagram }) => {
+    test("should add End Event node from palette", async ({ palette, jsonModel, diagram }) => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
+
+      const endEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(endEvent.__$$element).toBe("endEvent");
+
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-palette.png");
     });
 
@@ -48,174 +51,52 @@ test.describe("Add node - End Event", () => {
   // All types available in any context: None, Message, Error, Escalation, Signal, Compensation, Terminate
 
   test.describe("End event type morphing", () => {
-    test("should morph None End Event to Message End Event", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
+    const morphTestCases = [
+      { morphType: "Message", eventDefinition: "messageEventDefinition" },
+      { morphType: "Error", eventDefinition: "errorEventDefinition" },
+      { morphType: "Escalation", eventDefinition: "escalationEventDefinition" },
+      { morphType: "Signal", eventDefinition: "signalEventDefinition" },
+      { morphType: "Compensation", eventDefinition: "compensateEventDefinition" },
+      { morphType: "Terminate", eventDefinition: "terminateEventDefinition" },
+    ];
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+    for (const { morphType, eventDefinition } of morphTestCases) {
+      test(`should morph None End Event to ${morphType} End Event`, async ({
+        jsonModel,
+        palette,
+        diagram,
+        page,
+        nodes,
+      }) => {
+        await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Message" });
+        const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+        await expect(endEvent).toBeVisible({ timeout: 5000 });
 
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "messageEventDefinition", "@_id": expect.any(String) }],
-        });
+        await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: morphType });
 
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-message.png");
-    });
+        await expect
+          .poll(
+            async () => {
+              return await jsonModel.getFlowElement({ elementIndex: 0 });
+            },
+            { timeout: 10000 }
+          )
+          .toMatchObject({
+            __$$element: "endEvent",
+            eventDefinition: [{ __$$element: eventDefinition }],
+          });
 
-    test("should morph None End Event to Error End Event", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Error" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "errorEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-error.png");
-    });
-
-    test("should morph None End Event to Escalation End Event", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Escalation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "escalationEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-escalation.png");
-    });
-
-    test("should morph None End Event to Signal End Event", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Signal" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "signalEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-signal.png");
-    });
-
-    test("should morph None End Event to Compensation End Event", async ({
-      jsonModel,
-      palette,
-      diagram,
-      page,
-      nodes,
-    }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Compensation" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "compensateEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-compensation.png");
-    });
-
-    test("should morph None End Event to Terminate End Event", async ({ jsonModel, palette, diagram, page, nodes }) => {
-      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
-
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
-
-      await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: "Terminate" });
-
-      await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
-        .toMatchObject({
-          __$$element: "endEvent",
-          "@_id": expect.any(String),
-          eventDefinition: [{ __$$element: "terminateEventDefinition", "@_id": expect.any(String) }],
-        });
-
-      await expect(diagram.get()).toHaveScreenshot("morph-end-event-to-terminate.png");
-    });
+        await expect(diagram.get()).toHaveScreenshot(`morph-end-event-to-${morphType.toLowerCase()}.png`);
+      });
+    }
   });
 
   test.describe("Add connected End Event node", () => {
     test("should create sequence flow from Task to End Event", async ({ diagram, palette, nodes, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.TASK,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await diagram.resetFocus();
-      await palette.dragNewNode({
-        type: NodeType.END_EVENT,
-        targetPosition: { x: 300, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
@@ -231,10 +112,7 @@ test.describe("Add node - End Event", () => {
     });
 
     test("should add connected End Event from Gateway node", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.GATEWAY,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
@@ -247,18 +125,13 @@ test.describe("Add node - End Event", () => {
       const addEndEventHandle = gateway.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
 
-      await addEndEventHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 300, y: 100 },
-      });
+      await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-gateway.png");
     });
 
     test("should add connected End Event from Sub-process node", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({
-        type: NodeType.SUB_PROCESS,
-        targetPosition: { x: 100, y: 100 },
-      });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 100 } });
 
       const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
       await subProcess.waitFor({ state: "attached", timeout: 5000 });
@@ -271,9 +144,7 @@ test.describe("Add node - End Event", () => {
       const addEndEventHandle = subProcess.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
 
-      await addEndEventHandle.dragTo(diagram.get(), {
-        targetPosition: { x: 350, y: 100 },
-      });
+      await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 350, y: 100 } });
 
       await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-subprocess.png");
     });
@@ -285,14 +156,13 @@ test.describe("Add node - End Event", () => {
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible();
-
       await endEvent.click();
       await page.keyboard.press("Delete");
 
       await expect(endEvent).not.toBeAttached();
 
-      const flowElements = await jsonModel.getProcess();
-      expect(flowElements.flowElement?.length).toBe(0);
+      const process = await jsonModel.getProcess();
+      expect(process.flowElement?.length).toBe(0);
     });
 
     test("should move end event to new position", async ({ palette, page, diagram }) => {
@@ -300,13 +170,10 @@ test.describe("Add node - End Event", () => {
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeAttached();
-
       await endEvent.scrollIntoViewIfNeeded();
 
       const endEventBox = await endEvent.boundingBox();
-      if (!endEventBox) {
-        throw new Error("End Event bounding box not found");
-      }
+      if (!endEventBox) throw new Error("End Event bounding box not found");
 
       await endEvent.dragTo(diagram.get(), {
         sourcePosition: { x: endEventBox.width / 2, y: endEventBox.height / 2 },
@@ -315,9 +182,8 @@ test.describe("Add node - End Event", () => {
       });
 
       const boxAfter = await endEvent.boundingBox();
-
-      expect(boxAfter?.x).not.toBe(endEventBox?.x);
-      expect(boxAfter?.y).not.toBe(endEventBox?.y);
+      expect(boxAfter?.x).not.toBe(endEventBox.x);
+      expect(boxAfter?.y).not.toBe(endEventBox.y);
     });
   });
 });

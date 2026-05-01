@@ -18,8 +18,7 @@
  */
 
 import { test, expect } from "../__fixtures__/base";
-import { NodeType, DefaultNodeName, NodePosition } from "../__fixtures__/nodes";
-import { EdgeType } from "../__fixtures__/edges";
+import { NodeType, DefaultNodeName } from "../__fixtures__/nodes";
 
 test.describe("Add Data Object", () => {
   test.beforeEach(async ({ editor }) => {

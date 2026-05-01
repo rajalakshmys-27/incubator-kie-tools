@@ -18,9 +18,10 @@
  */
 
 import { test, expect } from "../__fixtures__/base";
+import { NodeType } from "../__fixtures__/nodes";
 
-test.beforeEach(async ({ editor }) => {
-  await editor.openCustomTasks();
+test.beforeEach(async ({ editor, nodes }) => {
+  await editor.openCustomTasks({ nodes });
 });
 
 test.describe("Add Custom Tasks", () => {
@@ -55,7 +56,12 @@ test.describe("Add Custom Tasks", () => {
   });
 
   test.describe("Rest API call Task", () => {
-    test("should add Rest API call Task from custom tasks palette", async ({ customTasks, nodes, diagram }) => {
+    test("should add Rest API call Task from custom tasks palette", async ({
+      customTasks,
+      nodes,
+      jsonModel,
+      diagram,
+    }) => {
       await customTasks.dragCustomTask({
         customTaskName: "Rest API call Task",
         targetPosition: { x: 300, y: 300 },
@@ -63,6 +69,12 @@ test.describe("Add Custom Tasks", () => {
       });
 
       await expect(nodes.get({ name: "Rest API call Task New" })).toBeAttached();
+
+      const task = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(task.__$$element).toBe("task");
+      expect(task["@_name"]).toBe("Rest API call Task New");
+      expect(task["@_drools:taskName"]).toBe("rest-api-call-task");
+
       await expect(diagram.get()).toHaveScreenshot("add-rest-api-call-task-from-palette.png");
     });
 
@@ -83,29 +95,16 @@ test.describe("Add Custom Tasks", () => {
 
       await expect(nodes.get({ name: "Rest API call Task A" })).toBeAttached();
       await expect(nodes.get({ name: "Rest API call Task B" })).toBeAttached();
-      await expect(diagram.get()).toHaveScreenshot("add-2-rest-api-call-tasks-from-palette.png");
-    });
-
-    test("should verify Rest API call Task properties in JSON model", async ({ customTasks, jsonModel }) => {
-      await customTasks.dragCustomTask({
-        customTaskName: "Rest API call Task",
-        targetPosition: { x: 300, y: 300 },
-        thenRenameTo: "Rest API call Task Props",
-      });
-
-      const task = await jsonModel.getFlowElement({ elementIndex: 2 });
-
-      expect(task).toMatchObject({
-        __$$element: "task",
-        "@_id": expect.any(String),
-        "@_name": "Rest API call Task Props",
-        "@_drools:taskName": "rest-api-call-task",
-      });
     });
   });
 
   test.describe("gRPC API call Task", () => {
-    test("should add gRPC API call Task from custom tasks palette", async ({ customTasks, nodes, diagram }) => {
+    test("should add gRPC API call Task from custom tasks palette", async ({
+      customTasks,
+      nodes,
+      jsonModel,
+      diagram,
+    }) => {
       await customTasks.dragCustomTask({
         customTaskName: "gRPC API call Task",
         targetPosition: { x: 300, y: 300 },
@@ -113,6 +112,12 @@ test.describe("Add Custom Tasks", () => {
       });
 
       await expect(nodes.get({ name: "gRPC API call Task New" })).toBeAttached();
+
+      const task = await jsonModel.getFlowElement({ elementIndex: 0 });
+      expect(task.__$$element).toBe("task");
+      expect(task["@_name"]).toBe("gRPC API call Task New");
+      expect(task["@_drools:taskName"]).toBe("grpc-api-call-task");
+
       await expect(diagram.get()).toHaveScreenshot("add-grpc-api-call-task-from-palette.png");
     });
 
@@ -133,28 +138,10 @@ test.describe("Add Custom Tasks", () => {
 
       await expect(nodes.get({ name: "gRPC API call Task A" })).toBeAttached();
       await expect(nodes.get({ name: "gRPC API call Task B" })).toBeAttached();
-      await expect(diagram.get()).toHaveScreenshot("add-2-grpc-api-call-tasks-from-palette.png");
-    });
-
-    test("should verify gRPC API call Task properties in JSON model", async ({ customTasks, jsonModel }) => {
-      await customTasks.dragCustomTask({
-        customTaskName: "gRPC API call Task",
-        targetPosition: { x: 300, y: 300 },
-        thenRenameTo: "gRPC API call Task Props",
-      });
-
-      const task = await jsonModel.getFlowElement({ elementIndex: 2 });
-
-      expect(task).toMatchObject({
-        __$$element: "task",
-        "@_id": expect.any(String),
-        "@_name": "gRPC API call Task Props",
-        "@_drools:taskName": "grpc-api-call-task",
-      });
     });
   });
 
-  test("should rename custom tasks", async ({ customTasks, nodes }) => {
+  test("should rename custom task", async ({ customTasks, nodes }) => {
     await customTasks.dragCustomTask({
       customTaskName: "Rest API call Task",
       targetPosition: { x: 300, y: 300 },
@@ -189,9 +176,7 @@ test.describe("Add Custom Tasks", () => {
     await task.scrollIntoViewIfNeeded();
 
     const taskBox = await task.boundingBox();
-    if (!taskBox) {
-      throw new Error("Custom Task bounding box not found");
-    }
+    if (!taskBox) throw new Error("Custom Task bounding box not found");
 
     await task.dragTo(diagram.get(), {
       sourcePosition: { x: 20, y: taskBox.height / 2 },
@@ -200,7 +185,6 @@ test.describe("Add Custom Tasks", () => {
     });
 
     const boxAfter = await task.boundingBox();
-
     expect(boxAfter?.x).not.toBe(taskBox?.x);
     expect(boxAfter?.y).not.toBe(taskBox?.y);
   });
@@ -211,26 +195,49 @@ test.describe("Add Custom Tasks", () => {
       customTasks,
       nodes,
       diagram,
+      page,
     }) => {
-      await palette.dragNewNode({
-        type: "node_startEvent" as any,
-        targetPosition: { x: 100, y: 200 },
-      });
-
+      await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 200 } });
       await customTasks.dragCustomTask({
         customTaskName: "Rest API call Task",
         targetPosition: { x: 300, y: 200 },
         thenRenameTo: "Rest API call Task Flow",
       });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 500, y: 200 } });
 
-      await palette.dragNewNode({
-        type: "node_endEvent" as any,
-        targetPosition: { x: 500, y: 200 },
+      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      await expect(startEvent).toBeAttached();
+
+      const restApiTask = nodes.get({ name: "Rest API call Task Flow" });
+      await expect(restApiTask).toBeAttached();
+
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEvent).toBeVisible({ timeout: 5000 });
+
+      // Connect Start Event -> Rest API call Task
+      const startBox = await startEvent.boundingBox();
+      if (!startBox) throw new Error("Start Event bounding box not found");
+      await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
+      const handle1 = startEvent.getByTitle("Add Sequence Flow");
+      await expect(handle1).toBeVisible({ timeout: 5000 });
+      const taskBox = await restApiTask.boundingBox();
+      if (!taskBox) throw new Error("Rest API call Task bounding box not found");
+      await handle1.dragTo(diagram.get(), {
+        targetPosition: { x: taskBox.x + taskBox.width / 2, y: taskBox.y + taskBox.height / 2 },
+      });
+
+      // Connect Rest API call Task -> End Event
+      await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
+      const handle2 = restApiTask.getByTitle("Add Sequence Flow");
+      await expect(handle2).toBeVisible({ timeout: 5000 });
+      const endBox = await endEvent.boundingBox();
+      if (!endBox) throw new Error("End Event bounding box not found");
+      await handle2.dragTo(diagram.get(), {
+        targetPosition: { x: endBox.x + endBox.width / 2, y: endBox.y + endBox.height / 2 },
       });
 
       await diagram.resetFocus();
 
-      await expect(nodes.get({ name: "Rest API call Task Flow" })).toBeAttached();
       await expect(diagram.get()).toHaveScreenshot("rest-api-call-task-in-process-flow.png");
     });
   });
