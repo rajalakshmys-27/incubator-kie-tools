@@ -86,12 +86,61 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
     iconSvgElement: MILESTONE_TASK_ICON,
     propertiesPanelComponent: MilestoneTaskProperties,
     matches: (task) => task["@_drools:taskName"] === "Milestone",
-    produce: () => ({
-      __$$element: "task",
-      "@_id": generateUuid(),
-      "@_drools:taskName": "Milestone",
-      "@_name": i18n.milestone,
-    }),
+    produce: () => {
+      const conditionInputId = generateUuid();
+      return {
+        __$$element: "task",
+        "@_id": generateUuid(),
+        "@_drools:taskName": "Milestone",
+        "@_name": i18n.milestone,
+        ioSpecification: {
+          "@_id": generateUuid(),
+          dataInput: [
+            {
+              "@_id": conditionInputId,
+              "@_name": "Condition",
+              "@_drools:dtype": "String",
+            },
+          ],
+          inputSet: [
+            {
+              "@_id": generateUuid(),
+              dataInputRefs: [{ __$$text: conditionInputId }],
+            },
+          ],
+          dataOutput: [],
+          outputSet: [
+            {
+              "@_id": generateUuid(),
+              dataOutputRefs: [],
+            },
+          ],
+        },
+        dataInputAssociation: [],
+        dataOutputAssociation: [],
+      };
+    },
+    onAdded: (state, task) => {
+      const definitions = state.bpmn.model.definitions;
+      definitions.rootElement ??= [];
+
+      let stringItemDefinition = definitions.rootElement.find(
+        (r) => r.__$$element === "itemDefinition" && r["@_structureRef"] === "String"
+      );
+
+      if (!stringItemDefinition) {
+        stringItemDefinition = {
+          __$$element: "itemDefinition",
+          "@_id": generateUuid(),
+          "@_structureRef": "String",
+        };
+        definitions.rootElement.push(stringItemDefinition);
+      }
+
+      if (task.ioSpecification?.dataInput?.[0]) {
+        task.ioSpecification.dataInput[0]["@_itemSubjectRef"] = stringItemDefinition["@_id"];
+      }
+    },
     dataInputReservedNames: [],
     dataOutputReservedNames: [],
   };
