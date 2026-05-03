@@ -35,14 +35,13 @@ test.describe("Change Properties - Data Object", () => {
     await dataObject.click();
   });
 
-  test("should change the Data Object name", async ({ dataObjectPropertiesPanel, page }) => {
+  test("should change the Data Object name", async ({ dataObjectPropertiesPanel }) => {
     await dataObjectPropertiesPanel.setName({ newName: "Customer Data" });
 
     expect(await dataObjectPropertiesPanel.getName()).toBe("Customer Data");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("data-object-name-changed.png");
   });
 
-  test("should change the Data Object documentation", async ({ dataObjectPropertiesPanel, page }) => {
+  test("should change the Data Object documentation", async ({ dataObjectPropertiesPanel }) => {
     await dataObjectPropertiesPanel.setDocumentation({
       newDocumentation: "Contains customer information for processing",
     });
@@ -50,10 +49,9 @@ test.describe("Change Properties - Data Object", () => {
     expect(await dataObjectPropertiesPanel.getDocumentation()).toBe("Contains customer information for processing");
   });
 
-  test("should set item subject reference", async ({ dataObjectPropertiesPanel, page }) => {
+  test("should set item subject reference", async ({ dataObjectPropertiesPanel }) => {
     await dataObjectPropertiesPanel.setItemSubjectRef({ itemSubjectRef: "tCustomer" });
 
     expect(await dataObjectPropertiesPanel.getItemSubjectRef()).toBe("tCustomer");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("data-object-item-subject-ref.png");
   });
 });

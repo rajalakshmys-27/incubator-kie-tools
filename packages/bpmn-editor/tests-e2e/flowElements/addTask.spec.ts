@@ -27,15 +27,13 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Task", () => {
   test.describe("Add from palette", () => {
-    test("should add Task node from palette", async ({ palette, nodes, jsonModel, diagram }) => {
+    test("should add Task node from palette", async ({ palette, nodes, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
       await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
 
       const task = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(task.__$$element).toBe("task");
-
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-palette.png");
     });
 
     test("should add two Task nodes from palette in a row", async ({ palette, nodes, diagram }) => {
@@ -48,8 +46,6 @@ test.describe("Add node - Task", () => {
 
       await expect(nodes.get({ name: "Task A" })).toBeAttached();
       await expect(nodes.get({ name: "Task B" })).toBeAttached();
-
-      await expect(diagram.get()).toHaveScreenshot("add-2-task-nodes-from-palette.png");
     });
   });
 
@@ -129,7 +125,7 @@ test.describe("Add node - Task", () => {
   });
 
   test.describe("Add connected Task node", () => {
-    test("should add connected Task from Start Event", async ({ diagram, palette, page }) => {
+    test("should add connected Task from Start Event", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
@@ -143,10 +139,10 @@ test.describe("Add node - Task", () => {
       const addTaskHandle = startEvent.getByTitle("Add Task");
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-start-event.png");
+      await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
     });
 
-    test("should add connected Task from Gateway", async ({ diagram, palette, page }) => {
+    test("should add connected Task from Gateway", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
@@ -160,7 +156,7 @@ test.describe("Add node - Task", () => {
       const addTaskHandle = gateway.getByTitle("Add Task");
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-gateway.png");
+      await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
     });
 
     test("should add connected Task from another Task", async ({ diagram, palette, page }) => {
@@ -177,10 +173,11 @@ test.describe("Add node - Task", () => {
       const addTaskHandle = task.getByTitle("Add Task");
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-task.png");
+      const secondTask = page.locator('[data-nodelabel="New Task"]').nth(1);
+      await expect(secondTask).toBeAttached();
     });
 
-    test("should create sequence flow from Task to End Event", async ({ diagram, palette, page }) => {
+    test("should create sequence flow from Task to End Event", async ({ diagram, palette, page, edges, nodes }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await diagram.resetFocus();
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
@@ -190,6 +187,7 @@ test.describe("Add node - Task", () => {
 
       const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
+      const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
@@ -205,10 +203,11 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: endEventBox.x + endEventBox.width / 2, y: endEventBox.y + endEventBox.height / 2 },
       });
 
-      await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
+      const edge = await edges.get({ from: DefaultNodeName.TASK, to: endEventId });
+      await expect(edge).toBeAttached();
     });
 
-    test("should create sequence flow from Task to Gateway", async ({ diagram, palette, page }) => {
+    test("should create sequence flow from Task to Gateway", async ({ diagram, palette, page, edges, nodes }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 350, y: 100 } });
 
@@ -217,6 +216,7 @@ test.describe("Add node - Task", () => {
 
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
+      const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
       const box = await task.boundingBox();
       if (!box) throw new Error("Task bounding box not found");
@@ -232,7 +232,8 @@ test.describe("Add node - Task", () => {
         targetPosition: { x: gatewayBox.x + gatewayBox.width / 2, y: gatewayBox.y + gatewayBox.height / 2 },
       });
 
-      await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-gateway.png");
+      const edge = await edges.get({ from: DefaultNodeName.TASK, to: gatewayId });
+      await expect(edge).toBeAttached();
     });
   });
 

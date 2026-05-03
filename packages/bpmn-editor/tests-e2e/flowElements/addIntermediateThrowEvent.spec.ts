@@ -25,16 +25,17 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Intermediate Throw Event", () => {
   test.describe("Add from palette", () => {
-    test("should add Intermediate Throw Event node from palette", async ({ palette, jsonModel, diagram }) => {
+    test("should add Intermediate Throw Event node from palette", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const throwEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(throwEvent.__$$element).toBe("intermediateThrowEvent");
 
-      await expect(diagram.get()).toHaveScreenshot("add-intermediate-throw-event-node-from-palette.png");
+      const throwEventNode = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
+      await expect(throwEventNode).toBeAttached();
     });
 
-    test("should add two Intermediate Throw Event nodes from palette in a row", async ({ palette, diagram }) => {
+    test("should add two Intermediate Throw Event nodes from palette in a row", async ({ palette, diagram, page }) => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({
         type: NodeType.INTERMEDIATE_THROW_EVENT,
@@ -43,7 +44,11 @@ test.describe("Add node - Intermediate Throw Event", () => {
       });
 
       await diagram.resetFocus();
-      await expect(diagram.get()).toHaveScreenshot("add-2-intermediate-throw-event-nodes-from-palette.png");
+
+      const firstThrowEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
+      const secondThrowEvent = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").nth(1);
+      await expect(firstThrowEvent).toBeAttached();
+      await expect(secondThrowEvent).toBeAttached();
     });
   });
 

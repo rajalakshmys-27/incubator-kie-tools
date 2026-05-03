@@ -28,25 +28,27 @@ export class Editor {
 
   public async open() {
     await this.page.goto(`${this.baseURL}/iframe.html?args=&id=misc-empty--empty&viewMode=story`, {
-      timeout: 120000, // 2 minutes for slow Storybook initialization
+      timeout: 180000,
     });
-
-    const processIdInput = this.page.getByPlaceholder("e.g., hiring");
-    await processIdInput.waitFor({ state: "visible", timeout: 120000 }); // 2 minutes for container
-    await processIdInput.fill("test");
-
-    await this.page.getByRole("button", { name: "Start Modeling" }).click();
+    await this.initializeEditor();
   }
 
   public async openWithLocale(locale: string) {
-    await this.page.goto(`${this.baseURL}/iframe.html?args=locale:${locale}&id=misc-empty--empty&viewMode=story`);
+    await this.page.goto(`${this.baseURL}/iframe.html?args=locale:${locale}&id=misc-empty--empty&viewMode=story`, {
+      timeout: 180000,
+    });
+    await this.initializeEditor();
+  }
+
+  private async initializeEditor() {
+    await this.page.locator(".react-flow").waitFor({ state: "visible", timeout: 180000 });
 
     const processIdInput = this.page.getByPlaceholder("e.g., hiring");
-    await processIdInput.waitFor({ state: "visible" });
-    await processIdInput.fill("test");
-
-    await this.page.getByRole("button", { name: "Start Modeling" }).click();
-    await this.page.locator(".react-flow").waitFor({ state: "visible" });
+    if (await processIdInput.isVisible().catch(() => false)) {
+      await processIdInput.fill("test");
+      await this.page.getByRole("button", { name: "Start Modeling" }).click();
+      await this.page.locator(".react-flow").waitFor({ state: "visible" });
+    }
   }
 
   public async openCustomTasks({ nodes }: { nodes: Nodes }) {

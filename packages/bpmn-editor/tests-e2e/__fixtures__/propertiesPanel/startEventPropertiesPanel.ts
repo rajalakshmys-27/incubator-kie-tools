@@ -139,6 +139,12 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await expressionInput.blur();
   }
 
+  public async getConditionalExpression(): Promise<string> {
+    const expressionInput = this.panel().locator("textarea").first();
+    await expressionInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await expressionInput.inputValue()) || "";
+  }
+
   public async setErrorDefinition(args: { errorName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Error" });
 
@@ -146,6 +152,12 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await errorInput.waitFor({ state: "visible", timeout: 10000 });
     await errorInput.fill(args.errorName);
     await this.page.keyboard.press("Enter");
+  }
+
+  public async getErrorName(): Promise<string> {
+    const errorInput = this.panel().locator('input[type="text"]').first();
+    await errorInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await errorInput.inputValue()) || "";
   }
 
   public async setEscalationDefinition(args: { escalationName: string; startEventLocator: Locator }) {
@@ -157,7 +169,19 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await this.page.keyboard.press("Enter");
   }
 
+  public async getEscalationName(): Promise<string> {
+    const escalationInput = this.panel().locator('input[type="text"]').first();
+    await escalationInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await escalationInput.inputValue()) || "";
+  }
+
   public async setCompensationDefinition(args: { startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Compensation" });
+  }
+
+  public async isCompensationDefinitionSet(): Promise<boolean> {
+    return await this.panel()
+      .isVisible()
+      .catch(() => false);
   }
 }

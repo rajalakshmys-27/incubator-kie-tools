@@ -136,6 +136,12 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await expressionInput.blur();
   }
 
+  public async getConditionalExpression(): Promise<string> {
+    const expressionInput = this.panel().locator("textarea").first();
+    await expressionInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await expressionInput.inputValue()) || "";
+  }
+
   public async setLinkDefinition(args: { linkName: string }) {
     await this.selectEventDefinition({ eventType: "Link" });
 
@@ -143,6 +149,18 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await linkInput.waitFor({ state: "visible", timeout: 10000 });
     await linkInput.fill(args.linkName);
     await linkInput.blur();
+  }
+
+  public async getLinkName(): Promise<string> {
+    const linkInput = this.panel().locator('input[type="text"]').first();
+    await linkInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await linkInput.inputValue()) || "";
+  }
+
+  public async getSignalName(): Promise<string> {
+    const signalInput = this.panel().locator('input[role="combobox"]').first();
+    await signalInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await signalInput.inputValue()) || "";
   }
 
   public async setErrorDefinition(args: { errorName: string; errorCode?: string }) {
@@ -166,6 +184,12 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     }
   }
 
+  public async getErrorName(): Promise<string> {
+    const errorInput = this.panel().locator('input[role="combobox"]').first();
+    await errorInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await errorInput.inputValue()) || "";
+  }
+
   public async setEscalationDefinition(args: { escalationName: string; escalationCode?: string }) {
     await this.selectEventDefinition({ eventType: "Escalation" });
 
@@ -185,6 +209,12 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
       await escalationCodeInput.fill(args.escalationCode);
       await escalationCodeInput.blur();
     }
+  }
+
+  public async getEscalationName(): Promise<string> {
+    const escalationInput = this.panel().locator('input[role="combobox"]').first();
+    await escalationInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await escalationInput.inputValue()) || "";
   }
 
   public async setCompensationDefinition(args: { activityRef?: string }) {

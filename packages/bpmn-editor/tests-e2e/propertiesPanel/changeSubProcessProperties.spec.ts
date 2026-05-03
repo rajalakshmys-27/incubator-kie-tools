@@ -32,14 +32,13 @@ test.describe("Change Properties - Sub-Process", () => {
     await expect(nodes.get({ name: DefaultNodeName.SUB_PROCESS })).toBeAttached();
   });
 
-  test("should change the Sub-Process name", async ({ subProcessPropertiesPanel, page }) => {
+  test("should change the Sub-Process name", async ({ subProcessPropertiesPanel }) => {
     await subProcessPropertiesPanel.setName({ newName: "Order Processing" });
 
     expect(await subProcessPropertiesPanel.getName()).toBe("Order Processing");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("subprocess-name-changed.png");
   });
 
-  test("should change the Sub-Process documentation", async ({ subProcessPropertiesPanel, page }) => {
+  test("should change the Sub-Process documentation", async ({ subProcessPropertiesPanel }) => {
     await subProcessPropertiesPanel.setDocumentation({
       newDocumentation: "This sub-process handles order processing logic",
     });

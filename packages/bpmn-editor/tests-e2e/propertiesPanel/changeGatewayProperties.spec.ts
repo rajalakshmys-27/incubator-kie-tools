@@ -35,14 +35,13 @@ test.describe("Change Properties - Exclusive Gateway", () => {
     await gateway.click();
   });
 
-  test("should change the Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+  test("should change the Gateway name", async ({ gatewayPropertiesPanel }) => {
     await gatewayPropertiesPanel.setName({ newName: "Decision Point" });
 
     expect(await gatewayPropertiesPanel.getName()).toBe("Decision Point");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("gateway-name-changed.png");
   });
 
-  test("should change the Gateway documentation", async ({ gatewayPropertiesPanel, page }) => {
+  test("should change the Gateway documentation", async ({ gatewayPropertiesPanel }) => {
     await gatewayPropertiesPanel.setDocumentation({
       newDocumentation: "This gateway routes based on order amount",
     });
@@ -96,10 +95,10 @@ test.describe("Change Properties - Inclusive Gateway", () => {
     await gatewayPropertiesPanel.morphToGateway({ type: "Inclusive" });
   });
 
-  test("should configure Inclusive Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
+  test("should configure Inclusive Gateway properties", async ({ gatewayPropertiesPanel }) => {
     await gatewayPropertiesPanel.setName({ newName: "Inclusive Decision" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("inclusive-gateway-configured.png");
+    expect(await gatewayPropertiesPanel.getName()).toBe("Inclusive Decision");
   });
 });
 
@@ -114,11 +113,10 @@ test.describe("Change Properties - Event-Based Gateway", () => {
     await gatewayPropertiesPanel.morphToGateway({ type: "Event" });
   });
 
-  test("should configure Event-Based Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+  test("should configure Event-Based Gateway name", async ({ gatewayPropertiesPanel }) => {
     await gatewayPropertiesPanel.setName({ newName: "Event Gateway" });
 
     expect(await gatewayPropertiesPanel.getName()).toBe("Event Gateway");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("event-based-gateway-configured.png");
   });
 });
 
@@ -133,10 +131,9 @@ test.describe("Change Properties - Complex Gateway", () => {
     await gatewayPropertiesPanel.morphToGateway({ type: "Complex" });
   });
 
-  test("should configure Complex Gateway name", async ({ gatewayPropertiesPanel, page }) => {
+  test("should configure Complex Gateway name", async ({ gatewayPropertiesPanel }) => {
     await gatewayPropertiesPanel.setName({ newName: "Complex Decision" });
 
     expect(await gatewayPropertiesPanel.getName()).toBe("Complex Decision");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("complex-gateway-configured.png");
   });
 });

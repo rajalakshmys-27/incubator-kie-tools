@@ -59,11 +59,23 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await this.page.keyboard.press("Enter");
   }
 
+  public async getActors(): Promise<string> {
+    const actorsInput = this.panel().getByPlaceholder(/Enter actors/i);
+    await actorsInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await actorsInput.inputValue()) || "";
+  }
+
   public async setGroups(args: { groups: string }) {
     const groupsInput = this.panel().getByPlaceholder(/Enter groups/i);
     await groupsInput.waitFor({ state: "visible", timeout: 5000 });
     await groupsInput.fill(args.groups);
     await this.page.keyboard.press("Enter");
+  }
+
+  public async getGroups(): Promise<string> {
+    const groupsInput = this.panel().getByPlaceholder(/Enter groups/i);
+    await groupsInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await groupsInput.inputValue()) || "";
   }
 
   public async setTaskName(args: { taskName: string }) {
@@ -73,10 +85,31 @@ export class TaskPropertiesPanel extends PropertiesPanelBase {
     await this.page.keyboard.press("Enter");
   }
 
+  public async getTaskName(): Promise<string> {
+    const taskNameInput = this.panel().getByPlaceholder(/Enter task name/i);
+    await taskNameInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await taskNameInput.inputValue()) || "";
+  }
+
   public async setImplementation(args: { implementation: string }) {
     const implButton = this.panel().getByRole("button", { name: args.implementation, exact: true });
     await implButton.waitFor({ state: "visible", timeout: 10000 });
     await implButton.click();
+  }
+
+  public async getImplementation(): Promise<string> {
+    const implButtons = this.panel()
+      .getByRole("button")
+      .filter({ hasText: /Java|WebService|DMN/ });
+    const count = await implButtons.count();
+    for (let i = 0; i < count; i++) {
+      const button = implButtons.nth(i);
+      const isPressed = await button.getAttribute("aria-pressed");
+      if (isPressed === "true") {
+        return (await button.textContent()) || "";
+      }
+    }
+    return "";
   }
 
   public async setInterface(args: { interfaceName: string }) {

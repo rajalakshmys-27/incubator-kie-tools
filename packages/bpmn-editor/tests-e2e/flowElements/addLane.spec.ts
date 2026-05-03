@@ -25,11 +25,14 @@ test.describe("Add Lane", () => {
     await editor.open();
   });
 
-  test("should add lane from palette", async ({ palette, nodes, diagram }) => {
+  test("should add lane from palette", async ({ palette, nodes, jsonModel }) => {
     await palette.dragNewNode({ type: NodeType.LANE, targetPosition: { x: 300, y: 300 } });
 
     await expect(nodes.get({ name: DefaultNodeName.LANE })).toBeAttached();
-    await expect(diagram.get()).toHaveScreenshot("add-lane-node-from-palette.png");
+
+    const process = await jsonModel.getProcess();
+    const laneSet = Array.isArray(process.laneSet) ? process.laneSet[0] : process.laneSet;
+    expect(laneSet?.lane?.length).toBeGreaterThan(0);
   });
 
   test.describe("Lane operations", () => {

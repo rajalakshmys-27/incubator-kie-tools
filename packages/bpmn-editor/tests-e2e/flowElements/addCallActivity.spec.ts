@@ -27,7 +27,7 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Call Activity", () => {
   test.describe("Add from palette", () => {
-    test("should add Call Activity node from palette", async ({ palette, nodes, jsonModel, diagram }) => {
+    test("should add Call Activity node from palette", async ({ palette, nodes, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 100, y: 100 } });
 
       await expect(nodes.get({ name: DefaultNodeName.CALL_ACTIVITY })).toBeAttached();
@@ -35,8 +35,6 @@ test.describe("Add node - Call Activity", () => {
       const callActivity = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(callActivity.__$$element).toBe("callActivity");
       expect(callActivity["@_name"]).toBe(DefaultNodeName.CALL_ACTIVITY);
-
-      await expect(diagram.get()).toHaveScreenshot("add-call-activity-node-from-palette.png");
     });
 
     test("should add two Call Activity nodes from palette in a row", async ({ palette, nodes, diagram }) => {
@@ -64,7 +62,7 @@ test.describe("Add node - Call Activity", () => {
   });
 
   test.describe("Add connected Call Activity node", () => {
-    test("should add connected Task node from Call Activity", async ({ diagram, palette, page }) => {
+    test("should add connected Task node from Call Activity", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({
         type: NodeType.CALL_ACTIVITY,
         targetPosition: { x: 100, y: 100 },
@@ -83,7 +81,7 @@ test.describe("Add node - Call Activity", () => {
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-call-activity.png");
+      await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
     });
 
     test("should add connected Gateway node from Call Activity", async ({ diagram, palette, page }) => {

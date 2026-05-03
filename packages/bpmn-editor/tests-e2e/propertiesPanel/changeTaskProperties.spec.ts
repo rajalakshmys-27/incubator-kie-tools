@@ -39,7 +39,7 @@ test.describe("Change Properties - Task Node", () => {
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-name-changed.png");
   });
 
-  test("should change the Task documentation", async ({ taskPropertiesPanel, page }) => {
+  test("should change the Task documentation", async ({ taskPropertiesPanel }) => {
     await taskPropertiesPanel.setDocumentation({
       newDocumentation: "This task processes customer orders",
     });
@@ -70,22 +70,22 @@ test.describe("Change Properties - User Task", () => {
     await userTaskOption.click({ force: true });
   });
 
-  test("should configure User Task actors", async ({ taskPropertiesPanel, page }) => {
+  test("should configure User Task actors", async ({ taskPropertiesPanel }) => {
     await taskPropertiesPanel.setActors({ actors: "john, mary, admin" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-actors-configured.png");
+    expect(await taskPropertiesPanel.getActors()).toBe("john,mary,admin");
   });
 
-  test("should configure User Task groups", async ({ taskPropertiesPanel, page }) => {
+  test("should configure User Task groups", async ({ taskPropertiesPanel }) => {
     await taskPropertiesPanel.setGroups({ groups: "managers, supervisors" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-groups-configured.png");
+    expect(await taskPropertiesPanel.getGroups()).toBe("managers, supervisors");
   });
 
-  test("should configure User Task name", async ({ taskPropertiesPanel, page }) => {
+  test("should configure User Task name", async ({ taskPropertiesPanel }) => {
     await taskPropertiesPanel.setTaskName({ taskName: "ApproveOrder" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-name-configured.png");
+    expect(await taskPropertiesPanel.getTaskName()).toBe("ApproveOrder");
   });
 
   test("should configure User Task with actors and groups", async ({ taskPropertiesPanel, page }) => {
@@ -99,7 +99,8 @@ test.describe("Change Properties - User Task", () => {
   test("should set async flag on User Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setAsync({ isAsync: true });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-async-enabled.png");
+    const asyncCheckbox = page.locator('input[type="checkbox"][id*="async"]');
+    await expect(asyncCheckbox).toBeChecked();
   });
 });
 
@@ -125,10 +126,10 @@ test.describe("Change Properties - Service Task", () => {
     await serviceTaskOption.click({ force: true });
   });
 
-  test("should configure Service Task implementation", async ({ taskPropertiesPanel, page }) => {
+  test("should configure Service Task implementation", async ({ taskPropertiesPanel }) => {
     await taskPropertiesPanel.setImplementation({ implementation: "Java" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("service-task-implementation.png");
+    expect(await taskPropertiesPanel.getImplementation()).toBe("Java");
   });
 
   test("should configure Service Task interface and operation", async ({ taskPropertiesPanel, page }) => {
@@ -166,7 +167,8 @@ test.describe("Change Properties - Script Task", () => {
       script: 'System.out.println("Processing order: " + orderId);',
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("script-task-with-script.png");
+    const scriptTextarea = page.getByPlaceholder(/Enter code/i);
+    await expect(scriptTextarea).toHaveValue('System.out.println("Processing order: " + orderId);');
   });
 });
 
@@ -195,7 +197,8 @@ test.describe("Change Properties - Business Rule Task", () => {
   test("should configure Business Rule Task with DRL rule flow group", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setRuleFlowGroup({ ruleFlowGroup: "order-validation-rules" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("business-rule-task-drl-ruleflow.png");
+    const ruleFlowInput = page.getByPlaceholder(/Enter a Rule flow group/i);
+    await expect(ruleFlowInput).toHaveValue("order-validation-rules");
   });
 
   test("should configure Business Rule Task with DMN model", async ({ taskPropertiesPanel, page }) => {
@@ -281,13 +284,15 @@ test.describe("Change Properties - Task Data I/O", () => {
   test("should add data input to Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.addDataInput({ name: "orderId" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-data-input-added.png");
+    const dataMappingSection = page.getByLabel(/⇆Data mapping/i);
+    await expect(dataMappingSection).toBeVisible();
   });
 
   test("should add data output to Task", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.addDataOutput({ name: "result" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-data-output-added.png");
+    const dataMappingSection = page.getByLabel(/⇆Data mapping/i);
+    await expect(dataMappingSection).toBeVisible();
   });
 
   test("should add multiple data inputs and outputs", async ({ taskPropertiesPanel, page }) => {

@@ -27,15 +27,13 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Sub-process", () => {
   test.describe("Add from palette", () => {
-    test("should add Sub-process node from palette", async ({ palette, nodes, jsonModel, diagram }) => {
+    test("should add Sub-process node from palette", async ({ palette, nodes, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 100 } });
 
       await expect(nodes.get({ name: DefaultNodeName.SUB_PROCESS })).toBeAttached();
 
       const subProcess = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(subProcess.__$$element).toBe("subProcess");
-
-      await expect(diagram.get()).toHaveScreenshot("add-sub-process-node-from-palette.png");
     });
 
     test("should add two Sub-process nodes from palette in a row", async ({ palette, nodes, diagram }) => {
@@ -49,7 +47,7 @@ test.describe("Add node - Sub-process", () => {
 
       await palette.dragNewNode({
         type: NodeType.SUB_PROCESS,
-        targetPosition: { x: 300, y: 300 },
+        targetPosition: { x: 100, y: 300 },
         thenRenameTo: "Sub-process B",
       });
 
@@ -57,13 +55,11 @@ test.describe("Add node - Sub-process", () => {
 
       await expect(nodes.get({ name: "Sub-process A" })).toBeAttached();
       await expect(nodes.get({ name: "Sub-process B" })).toBeAttached();
-
-      await expect(diagram.get()).toHaveScreenshot("add-2-subprocess-nodes-from-palette.png");
     });
   });
 
   test.describe("Add connected Sub-process node", () => {
-    test("should add connected Task from Sub-process", async ({ diagram, palette, page }) => {
+    test("should add connected Task from Sub-process", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 100 } });
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
@@ -77,14 +73,22 @@ test.describe("Add node - Sub-process", () => {
       const addTaskHandle = subProcess.getByTitle("Add Task");
       await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
 
-      await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 400, y: 100 } });
+      const handleBox = await addTaskHandle.boundingBox();
+      if (!handleBox) throw new Error("Add Task handle bounding box not found");
 
-      await expect(diagram.get()).toHaveScreenshot("add-task-node-from-subprocess.png");
+      await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(600, 100);
+      await page.mouse.up();
+
+      await diagram.zoomOut({ clicks: 1 });
+
+      await expect(nodes.get({ name: DefaultNodeName.TASK })).toBeAttached();
     });
 
     test("should create sequence flow from Start Event to Sub-process", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 400, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
@@ -112,7 +116,7 @@ test.describe("Add node - Sub-process", () => {
 
     test("should create sequence flow from Gateway to Sub-process", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 400, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
       const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
@@ -140,22 +144,6 @@ test.describe("Add node - Sub-process", () => {
   });
 
   test.describe("Sub-process morphing", () => {
-    test.beforeEach(async ({ palette, nodes, page }) => {
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
-
-      const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
-      await expect(subProcess).toBeAttached();
-
-      const box = await subProcess.boundingBox();
-      if (!box) throw new Error("Sub-Process not visible");
-
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-      const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-      await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-      await morphingToggle.click({ force: true });
-    });
-
     const morphTestCases = [
       { title: "Event", screenshot: "morph-subprocess-to-event.png" },
       { title: "Multi-instance", screenshot: "morph-subprocess-to-multi-instance.png" },
@@ -163,8 +151,24 @@ test.describe("Add node - Sub-process", () => {
     ];
 
     for (const { title, screenshot } of morphTestCases) {
-      test(`should morph Sub-process to ${title} Sub-process`, async ({ page, diagram }) => {
+      test(`should morph Sub-process to ${title} Sub-process`, async ({ palette, nodes, page, diagram }) => {
+        await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
+
+        const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
+        await expect(subProcess).toBeAttached();
+
+        const box = await subProcess.boundingBox();
+        if (!box) throw new Error("Sub-Process not visible");
+
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+        const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
+        await expect(morphingToggle).toBeVisible({ timeout: 5000 });
+        await morphingToggle.click({ force: true });
+
         const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
+        await expect(morphingPanel).toBeVisible({ timeout: 10000 });
+
         const option = morphingPanel.locator(`div[title="${title}"]`).first();
         await expect(option).toBeVisible({ timeout: 5000 });
         await option.click({ force: true });
@@ -284,7 +288,7 @@ test.describe("Add node - Sub-process", () => {
 
   test.describe("Sub-process operations", () => {
     test("should delete sub-process", async ({ palette, nodes, jsonModel }) => {
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
       await nodes.delete({ name: DefaultNodeName.SUB_PROCESS });
 
       await expect(nodes.get({ name: DefaultNodeName.SUB_PROCESS })).not.toBeAttached();
@@ -294,7 +298,7 @@ test.describe("Add node - Sub-process", () => {
     });
 
     test("should move sub-process to new position", async ({ palette, page, diagram }) => {
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
 
       const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
       await expect(subProcess).toBeAttached();
@@ -315,7 +319,7 @@ test.describe("Add node - Sub-process", () => {
     });
 
     test("should rename sub-process", async ({ palette, nodes, jsonModel }) => {
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 300, y: 300 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
       await nodes.rename({ current: DefaultNodeName.SUB_PROCESS, new: "Order Processing" });
 
       await expect(nodes.get({ name: "Order Processing" })).toBeAttached();

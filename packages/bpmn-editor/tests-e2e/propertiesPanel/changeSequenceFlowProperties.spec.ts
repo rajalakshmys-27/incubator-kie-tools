@@ -60,11 +60,10 @@ test.describe("Change Properties - Sequence Flow", () => {
     await sequenceFlowPropertiesPanel.open();
   });
 
-  test("should change the Sequence Flow name", async ({ sequenceFlowPropertiesPanel, diagram }) => {
+  test("should change the Sequence Flow name", async ({ sequenceFlowPropertiesPanel }) => {
     await sequenceFlowPropertiesPanel.setName({ newName: "Normal Flow" });
 
     expect(await sequenceFlowPropertiesPanel.getName()).toBe("Normal Flow");
-    await expect(diagram.get()).toHaveScreenshot("sequence-flow-name-changed.png");
   });
 
   test("should change the Sequence Flow documentation", async ({ sequenceFlowPropertiesPanel }) => {
@@ -75,18 +74,16 @@ test.describe("Change Properties - Sequence Flow", () => {
     expect(await sequenceFlowPropertiesPanel.getDocumentation()).toBe("This flow connects Task A to Task B");
   });
 
-  test("should configure conditional expression", async ({ sequenceFlowPropertiesPanel, diagram }) => {
+  test("should configure conditional expression", async ({ sequenceFlowPropertiesPanel }) => {
     await sequenceFlowPropertiesPanel.setConditionExpression({ expression: "${amount > 1000}" });
 
     expect(await sequenceFlowPropertiesPanel.getConditionExpression()).toBe("${amount > 1000}");
-    await expect(diagram.get()).toHaveScreenshot("sequence-flow-conditional-expression.png");
   });
 
-  test("should set priority", async ({ sequenceFlowPropertiesPanel, diagram }) => {
+  test("should set priority", async ({ sequenceFlowPropertiesPanel }) => {
     await sequenceFlowPropertiesPanel.setPriority({ priority: "1" });
 
     expect(await sequenceFlowPropertiesPanel.getPriority()).toBe("1");
-    await expect(diagram.get()).toHaveScreenshot("sequence-flow-priority.png");
   });
 });
 

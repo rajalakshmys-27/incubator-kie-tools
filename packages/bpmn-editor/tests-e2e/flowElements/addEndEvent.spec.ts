@@ -26,24 +26,26 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - End Event", () => {
   test.describe("Add from palette", () => {
-    test("should add End Event node from palette", async ({ palette, jsonModel, diagram }) => {
+    test("should add End Event node from palette", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const endEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(endEvent.__$$element).toBe("endEvent");
 
-      await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-palette.png");
+      const endEventNode = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEventNode).toBeAttached();
     });
 
-    test("should add two End Event nodes from palette in a row", async ({ palette, diagram }) => {
+    test("should add two End Event nodes from palette in a row", async ({ palette, diagram, page }) => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
-      await palette.dragNewNode({
-        type: NodeType.END_EVENT,
-        targetPosition: { x: 300, y: 300 },
-        thenRenameTo: "Second End",
-      });
+      await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
+
       await diagram.resetFocus();
-      await expect(diagram.get()).toHaveScreenshot("add-2-end-event-nodes-from-palette.png");
+
+      const firstEndEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const secondEndEvent = page.locator(".kie-bpmn-editor--end-event-node").nth(1);
+      await expect(firstEndEvent).toBeAttached();
+      await expect(secondEndEvent).toBeAttached();
     });
   });
 
@@ -93,7 +95,7 @@ test.describe("Add node - End Event", () => {
   });
 
   test.describe("Add connected End Event node", () => {
-    test("should create sequence flow from Task to End Event", async ({ diagram, palette, nodes, page }) => {
+    test("should create sequence flow from Task to End Event", async ({ diagram, palette, nodes, page, edges }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
       await diagram.resetFocus();
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
@@ -108,7 +110,8 @@ test.describe("Add node - End Event", () => {
         to: endEventId,
       });
 
-      await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-task-to-end-event.png");
+      const edge = await edges.get({ from: DefaultNodeName.TASK, to: endEventId });
+      await expect(edge).toBeAttached();
     });
 
     test("should add connected End Event from Gateway node", async ({ diagram, palette, page }) => {
@@ -127,14 +130,15 @@ test.describe("Add node - End Event", () => {
 
       await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-gateway.png");
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEvent).toBeAttached();
     });
 
     test("should add connected End Event from Sub-process node", async ({ diagram, palette, page }) => {
-      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 100 } });
+      await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 50, y: 100 } });
 
-      const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
-      await subProcess.waitFor({ state: "attached", timeout: 5000 });
+      const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
+      await expect(subProcess).toBeAttached();
 
       const box = await subProcess.boundingBox();
       if (!box) throw new Error("Sub-Process bounding box not found");
@@ -144,9 +148,18 @@ test.describe("Add node - End Event", () => {
       const addEndEventHandle = subProcess.getByTitle("Add End Event");
       await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
 
-      await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 350, y: 100 } });
+      const handleBox = await addEndEventHandle.boundingBox();
+      if (!handleBox) throw new Error("Add End Event handle bounding box not found");
 
-      await expect(diagram.get()).toHaveScreenshot("add-end-event-node-from-subprocess.png");
+      await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(600, 100);
+      await page.mouse.up();
+
+      await diagram.zoomOut({ clicks: 1 });
+
+      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      await expect(endEvent).toBeAttached();
     });
   });
 

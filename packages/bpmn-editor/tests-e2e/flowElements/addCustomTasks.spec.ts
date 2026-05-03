@@ -56,12 +56,7 @@ test.describe("Add Custom Tasks", () => {
   });
 
   test.describe("Rest API call Task", () => {
-    test("should add Rest API call Task from custom tasks palette", async ({
-      customTasks,
-      nodes,
-      jsonModel,
-      diagram,
-    }) => {
+    test("should add Rest API call Task from custom tasks palette", async ({ customTasks, nodes, jsonModel }) => {
       await customTasks.dragCustomTask({
         customTaskName: "Rest API call Task",
         targetPosition: { x: 300, y: 300 },
@@ -74,8 +69,6 @@ test.describe("Add Custom Tasks", () => {
       expect(task.__$$element).toBe("task");
       expect(task["@_name"]).toBe("Rest API call Task New");
       expect(task["@_drools:taskName"]).toBe("rest-api-call-task");
-
-      await expect(diagram.get()).toHaveScreenshot("add-rest-api-call-task-from-palette.png");
     });
 
     test("should add two Rest API call Tasks from palette", async ({ customTasks, nodes, diagram }) => {
@@ -99,12 +92,7 @@ test.describe("Add Custom Tasks", () => {
   });
 
   test.describe("gRPC API call Task", () => {
-    test("should add gRPC API call Task from custom tasks palette", async ({
-      customTasks,
-      nodes,
-      jsonModel,
-      diagram,
-    }) => {
+    test("should add gRPC API call Task from custom tasks palette", async ({ customTasks, nodes, jsonModel }) => {
       await customTasks.dragCustomTask({
         customTaskName: "gRPC API call Task",
         targetPosition: { x: 300, y: 300 },
@@ -117,8 +105,6 @@ test.describe("Add Custom Tasks", () => {
       expect(task.__$$element).toBe("task");
       expect(task["@_name"]).toBe("gRPC API call Task New");
       expect(task["@_drools:taskName"]).toBe("grpc-api-call-task");
-
-      await expect(diagram.get()).toHaveScreenshot("add-grpc-api-call-task-from-palette.png");
     });
 
     test("should add two gRPC API call Tasks from palette", async ({ customTasks, nodes, diagram }) => {

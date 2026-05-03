@@ -89,6 +89,12 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     await this.page.keyboard.press("Enter");
   }
 
+  public async getSignalName(): Promise<string> {
+    const signalInput = this.panel().locator('input[type="text"]').first();
+    await signalInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await signalInput.inputValue()) || "";
+  }
+
   public async setErrorDefinition(args: { errorName: string; errorCode?: string; endEventLocator: Locator }) {
     await this.morphToEventType({ endEventLocator: args.endEventLocator, eventType: "Error" });
 
@@ -105,6 +111,19 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
         await errorCodeInput.blur();
       }
     }
+  }
+
+  public async getErrorName(): Promise<string> {
+    const errorInput = this.panel().locator('input[type="text"]').first();
+    await errorInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await errorInput.inputValue()) || "";
+  }
+
+  public async getErrorCode(): Promise<string> {
+    const errorCodeInput = this.panel().getByPlaceholder("Error code");
+    const isVisible = await errorCodeInput.isVisible().catch(() => false);
+    if (!isVisible) return "";
+    return (await errorCodeInput.inputValue()) || "";
   }
 
   public async setEscalationDefinition(args: {
@@ -129,7 +148,25 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
     }
   }
 
+  public async getEscalationName(): Promise<string> {
+    const escalationInput = this.panel().locator('input[type="text"]').first();
+    await escalationInput.waitFor({ state: "visible", timeout: 5000 });
+    return (await escalationInput.inputValue()) || "";
+  }
+
+  public async getEscalationCode(): Promise<string> {
+    const escalationCodeInput = this.panel().getByPlaceholder("Escalation code");
+    const isVisible = await escalationCodeInput.isVisible().catch(() => false);
+    if (!isVisible) return "";
+    return (await escalationCodeInput.inputValue()) || "";
+  }
+
   public async setCompensationDefinition(args: { endEventLocator: Locator }) {
     await this.morphToEventType({ endEventLocator: args.endEventLocator, eventType: "Compensation" });
+  }
+
+  public async isCompensationDefinitionSet(): Promise<boolean> {
+    const compensationSection = this.panel().getByText("Compensation");
+    return await compensationSection.isVisible().catch(() => false);
   }
 }

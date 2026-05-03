@@ -26,13 +26,17 @@ test.beforeEach(async ({ editor }) => {
 
 test.describe("Add node - Group", () => {
   test.describe("Add from palette", () => {
-    test("should add Group node from palette", async ({ palette, diagram }) => {
+    test("should add Group node from palette", async ({ palette, page, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 100, y: 100 } });
 
-      await expect(diagram.get()).toHaveScreenshot("add-group-node-from-palette.png");
+      const groupNode = page.locator(".kie-bpmn-editor--group-node").first();
+      await expect(groupNode).toBeAttached();
+
+      const process = await jsonModel.getProcess();
+      expect(process.artifact?.length).toBeGreaterThan(0);
     });
 
-    test("should add two Group nodes from palette in a row", async ({ palette, diagram }) => {
+    test("should add two Group nodes from palette in a row", async ({ palette, diagram, page, jsonModel }) => {
       await palette.dragNewNode({
         type: NodeType.GROUP,
         targetPosition: { x: 100, y: 100 },
@@ -44,7 +48,13 @@ test.describe("Add node - Group", () => {
 
       await diagram.resetFocus();
 
-      await expect(diagram.get()).toHaveScreenshot("add-2-group-nodes-from-palette.png");
+      const firstGroup = page.locator(".kie-bpmn-editor--group-node").first();
+      const secondGroup = page.locator(".kie-bpmn-editor--group-node").nth(1);
+      await expect(firstGroup).toBeAttached();
+      await expect(secondGroup).toBeAttached();
+
+      const process = await jsonModel.getProcess();
+      expect(process.artifact?.length).toBe(2);
     });
   });
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Page, Locator } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { Diagram } from "../diagram";
 
 export abstract class PropertiesPanelBase {

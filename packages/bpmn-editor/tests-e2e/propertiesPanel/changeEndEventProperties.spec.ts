@@ -35,14 +35,13 @@ test.describe("Change Properties - End Event", () => {
     await endEvent.click();
   });
 
-  test("should change the End Event name", async ({ endEventPropertiesPanel, page }) => {
+  test("should change the End Event name", async ({ endEventPropertiesPanel }) => {
     await endEventPropertiesPanel.setName({ newName: "Process Completed" });
 
     expect(await endEventPropertiesPanel.getName()).toBe("Process Completed");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-name-changed.png");
   });
 
-  test("should change the End Event documentation", async ({ endEventPropertiesPanel, page }) => {
+  test("should change the End Event documentation", async ({ endEventPropertiesPanel }) => {
     await endEventPropertiesPanel.setDocumentation({
       newDocumentation: "This event ends the process successfully",
     });
@@ -79,7 +78,7 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-signal.png");
+    expect(await endEventPropertiesPanel.getSignalName()).toBe("CompletionSignal");
   });
 
   test("should configure Error event definition", async ({ endEventPropertiesPanel, page }) => {
@@ -91,7 +90,7 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-error.png");
+    expect(await endEventPropertiesPanel.getErrorName()).toBe("ProcessError");
   });
 
   test("should configure Escalation event definition", async ({ endEventPropertiesPanel, page }) => {
@@ -103,16 +102,18 @@ test.describe("Change Properties - End Event", () => {
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-escalation.png");
+    expect(await endEventPropertiesPanel.getEscalationName()).toBe("ProcessEscalation");
   });
 
-  test("should configure Compensation event definition", async ({ endEventPropertiesPanel, page }) => {
+  test("should configure Compensation event definition", async ({ endEventPropertiesPanel, page, jsonModel }) => {
     const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
 
     await endEventPropertiesPanel.setCompensationDefinition({
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-compensation.png");
+    const flowElement = await jsonModel.getFlowElement({ elementIndex: 0 });
+    expect(flowElement.__$$element).toBe("endEvent");
+    expect(flowElement.eventDefinition[0].__$$element).toBe("compensateEventDefinition");
   });
 });

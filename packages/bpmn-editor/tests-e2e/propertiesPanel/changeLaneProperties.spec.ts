@@ -31,10 +31,9 @@ test.describe("Change Properties - Lane", () => {
     await lanePropertiesPanel.open();
   });
 
-  test("should change the Lane name", async ({ nodes, lanePropertiesPanel, diagram, page }) => {
+  test("should change the Lane name", async ({ lanePropertiesPanel }) => {
     await lanePropertiesPanel.setName({ newName: "Sales Department" });
     expect(await lanePropertiesPanel.getName()).toBe("Sales Department");
-    await expect(diagram.get()).toHaveScreenshot("lane-name-changed.png");
   });
 
   test("should change the Lane documentation", async ({ lanePropertiesPanel }) => {

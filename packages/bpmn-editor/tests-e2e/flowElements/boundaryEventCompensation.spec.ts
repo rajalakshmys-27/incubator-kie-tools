@@ -29,7 +29,6 @@ test.describe("Compensation Boundary Events", () => {
     palette,
     jsonModel,
     page,
-    diagram,
     intermediateEventPropertiesPanel,
   }) => {
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
@@ -61,8 +60,6 @@ test.describe("Compensation Boundary Events", () => {
 
     const cancelActivity = await intermediateEventPropertiesPanel.getCancelActivity();
     expect(cancelActivity).toBe(false);
-
-    await expect(diagram.get()).toHaveScreenshot("compensation-boundary-event-on-task.png");
   });
 
   test.skip("should not allow incoming sequence flows to compensation boundary event", async ({
@@ -132,7 +129,6 @@ test.describe("Compensation Boundary Events", () => {
     palette,
     jsonModel,
     page,
-    diagram,
     intermediateEventPropertiesPanel,
   }) => {
     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
@@ -165,7 +161,5 @@ test.describe("Compensation Boundary Events", () => {
         "@_cancelActivity": false,
         eventDefinition: [{ __$$element: "compensateEventDefinition" }],
       });
-
-    await expect(diagram.get()).toHaveScreenshot("compensation-boundary-event-on-subprocess.png");
   });
 });

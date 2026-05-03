@@ -35,17 +35,13 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
     await event.click();
   });
 
-  test("should change the Intermediate Catch Event name", async ({ intermediateEventPropertiesPanel, page }) => {
+  test("should change the Intermediate Catch Event name", async ({ intermediateEventPropertiesPanel }) => {
     await intermediateEventPropertiesPanel.setName({ newName: "Wait for Approval" });
 
     expect(await intermediateEventPropertiesPanel.getName()).toBe("Wait for Approval");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-name-changed.png");
   });
 
-  test("should change the Intermediate Catch Event documentation", async ({
-    intermediateEventPropertiesPanel,
-    page,
-  }) => {
+  test("should change the Intermediate Catch Event documentation", async ({ intermediateEventPropertiesPanel }) => {
     await intermediateEventPropertiesPanel.setDocumentation({
       newDocumentation: "This event waits for an external approval",
     });
@@ -74,13 +70,13 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
   test("should configure Conditional expression", async ({ intermediateEventPropertiesPanel, page }) => {
     await intermediateEventPropertiesPanel.setConditionalExpression({ expression: "${approved == true}" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-conditional.png");
+    expect(await intermediateEventPropertiesPanel.getConditionalExpression()).toBe("${approved == true}");
   });
 
   test("should configure Link definition", async ({ intermediateEventPropertiesPanel, page }) => {
     await intermediateEventPropertiesPanel.setLinkDefinition({ linkName: "ProcessLink" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-link.png");
+    expect(await intermediateEventPropertiesPanel.getLinkName()).toBe("ProcessLink");
   });
 
   test("should configure Error definition", async ({ intermediateEventPropertiesPanel, page }) => {
@@ -88,7 +84,7 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
       errorName: "ValidationError",
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-error.png");
+    expect(await intermediateEventPropertiesPanel.getErrorName()).toBe("ValidationError");
   });
 
   test("should configure Escalation definition", async ({ intermediateEventPropertiesPanel, page }) => {
@@ -96,7 +92,7 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
       escalationName: "ProcessEscalation",
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-escalation.png");
+    expect(await intermediateEventPropertiesPanel.getEscalationName()).toBe("ProcessEscalation");
   });
 });
 
@@ -110,17 +106,13 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
     await event.click();
   });
 
-  test("should change the Intermediate Throw Event name", async ({ intermediateEventPropertiesPanel, page }) => {
+  test("should change the Intermediate Throw Event name", async ({ intermediateEventPropertiesPanel }) => {
     await intermediateEventPropertiesPanel.setName({ newName: "Send Notification" });
 
     expect(await intermediateEventPropertiesPanel.getName()).toBe("Send Notification");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-name-changed.png");
   });
 
-  test("should change the Intermediate Throw Event documentation", async ({
-    intermediateEventPropertiesPanel,
-    page,
-  }) => {
+  test("should change the Intermediate Throw Event documentation", async ({ intermediateEventPropertiesPanel }) => {
     await intermediateEventPropertiesPanel.setDocumentation({
       newDocumentation: "This event sends a notification to external systems",
     });
@@ -142,13 +134,13 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
       scope: "project",
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-signal.png");
+    expect(await intermediateEventPropertiesPanel.getSignalName()).toBe("BroadcastSignal");
   });
 
   test("should configure Link definition", async ({ intermediateEventPropertiesPanel, page }) => {
     await intermediateEventPropertiesPanel.setLinkDefinition({ linkName: "TargetLink" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-link.png");
+    expect(await intermediateEventPropertiesPanel.getLinkName()).toBe("TargetLink");
   });
 
   test("should configure Escalation definition", async ({ intermediateEventPropertiesPanel, page }) => {
@@ -156,12 +148,14 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
       escalationName: "ThrowEscalation",
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-escalation.png");
+    expect(await intermediateEventPropertiesPanel.getEscalationName()).toBe("ThrowEscalation");
   });
 
-  test("should configure Compensation definition", async ({ intermediateEventPropertiesPanel, page }) => {
+  test("should configure Compensation definition", async ({ intermediateEventPropertiesPanel, jsonModel }) => {
     await intermediateEventPropertiesPanel.setCompensationDefinition({});
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-compensation.png");
+    const flowElement = await jsonModel.getFlowElement({ elementIndex: 0 });
+    expect(flowElement.__$$element).toBe("intermediateThrowEvent");
+    expect(flowElement.eventDefinition[0].__$$element).toBe("compensateEventDefinition");
   });
 });
