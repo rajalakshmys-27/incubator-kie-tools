@@ -19,6 +19,7 @@
 
 import * as React from "react";
 import "@kie-tools/bpmn-marshaller/dist/drools-extension";
+import { MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS } from "@kie-tools/bpmn-marshaller/dist/drools-extension";
 import { CustomTask } from "@kie-tools/bpmn-editor/dist/BpmnEditor";
 import { useBpmnEditorStoreApi, useBpmnEditorStore } from "@kie-tools/bpmn-editor/dist/store/StoreContext";
 import { PropertiesPanelHeaderFormSection } from "@kie-tools/bpmn-editor/dist/propertiesPanel/singleNodeProperties/_PropertiesPanelHeaderFormSection";
@@ -31,6 +32,10 @@ import { SlaDueDateInput } from "@kie-tools/bpmn-editor/dist/propertiesPanel/sla
 import { generateUuid } from "@kie-tools/xyflow-react-kie-diagram/dist/uuid/uuid";
 import { BpmnEditorEnvelopeI18n, bpmnEditorEnvelopeI18nDefaults, bpmnEditorEnvelopeI18nDictionaries } from "../i18n";
 import { I18n } from "@kie-tools-core/i18n/dist/core";
+import {
+  addOrGetItemDefinitions,
+  DEFAULT_DATA_TYPES,
+} from "@kie-tools/bpmn-editor/dist/mutations/addOrGetItemDefinitions";
 
 export const MILESTONE_TASK_ICON = (
   <svg
@@ -98,7 +103,7 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
           dataInput: [
             {
               "@_id": conditionInputId,
-              "@_name": "Condition",
+              "@_name": MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS.CONDITION,
               "@_drools:dtype": "String",
             },
           ],
@@ -121,24 +126,13 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
       };
     },
     onAdded: (state, task) => {
-      const definitions = state.bpmn.model.definitions;
-      definitions.rootElement ??= [];
-
-      let stringItemDefinition = definitions.rootElement.find(
-        (r) => r.__$$element === "itemDefinition" && r["@_structureRef"] === "String"
-      );
-
-      if (!stringItemDefinition) {
-        stringItemDefinition = {
-          __$$element: "itemDefinition",
-          "@_id": generateUuid(),
-          "@_structureRef": "String",
-        };
-        definitions.rootElement.push(stringItemDefinition);
-      }
+      const { itemDefinition } = addOrGetItemDefinitions({
+        definitions: state.bpmn.model.definitions,
+        dataType: DEFAULT_DATA_TYPES.STRING,
+      });
 
       if (task.ioSpecification?.dataInput?.[0]) {
-        task.ioSpecification.dataInput[0]["@_itemSubjectRef"] = stringItemDefinition["@_id"];
+        task.ioSpecification.dataInput[0]["@_itemSubjectRef"] = itemDefinition["@_id"];
       }
     },
     dataInputReservedNames: [],
