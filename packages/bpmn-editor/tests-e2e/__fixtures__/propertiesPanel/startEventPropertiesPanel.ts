@@ -112,22 +112,62 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
     await valueInput.blur();
   }
 
+  public async getTimerDefinition(): Promise<{ type: string; value: string }> {
+    const dateRadio = this.panel().getByLabel("Fire at a specific date");
+    const durationRadio = this.panel().getByLabel("Fire once after duration");
+    const cycleRadio = this.panel().getByLabel("Fire multiple times");
+
+    let type = "";
+    let placeholder = "";
+
+    if (await dateRadio.isChecked()) {
+      type = "date";
+      placeholder = "date value";
+    } else if (await durationRadio.isChecked()) {
+      type = "duration";
+      placeholder = "duration";
+    } else if (await cycleRadio.isChecked()) {
+      type = "cycle";
+      placeholder = "time cycle";
+    }
+
+    const valueInput = this.panel().locator(`input[placeholder*="${placeholder}"]`);
+    await valueInput.waitFor({ state: "visible", timeout: 5000 });
+    const value = (await valueInput.inputValue()) || "";
+
+    return { type, value };
+  }
+
   public async setMessageDefinition(args: { messageName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Message" });
 
-    const messageInput = this.panel().locator('input[type="text"]').first();
+    const messageInput = this.panel().locator('input[role="combobox"]').first();
     await messageInput.waitFor({ state: "visible", timeout: 10000 });
-    await messageInput.fill(args.messageName);
-    await this.page.keyboard.press("Enter");
+    await messageInput.click();
+    await this.page.keyboard.type(args.messageName);
+
+    const createOption = this.page.getByText(`Create Message "${args.messageName}"`, { exact: true });
+    if (await createOption.isVisible().catch(() => false)) {
+      await createOption.click();
+    } else {
+      await this.page.getByRole("option", { name: args.messageName, exact: true }).click();
+    }
   }
 
   public async setSignalDefinition(args: { signalName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Signal" });
 
-    const signalInput = this.panel().locator('input[type="text"]').first();
+    const signalInput = this.panel().locator('input[role="combobox"]').first();
     await signalInput.waitFor({ state: "visible", timeout: 10000 });
-    await signalInput.fill(args.signalName);
-    await this.page.keyboard.press("Enter");
+    await signalInput.click();
+    await this.page.keyboard.type(args.signalName);
+
+    const createOption = this.page.getByText(`Create Signal "${args.signalName}"`, { exact: true });
+    if (await createOption.isVisible().catch(() => false)) {
+      await createOption.click();
+    } else {
+      await this.page.getByRole("option", { name: args.signalName, exact: true }).click();
+    }
   }
 
   public async setConditionalExpression(args: { expression: string; startEventLocator: Locator }) {
@@ -148,14 +188,21 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setErrorDefinition(args: { errorName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Error" });
 
-    const errorInput = this.panel().locator('input[type="text"]').first();
+    const errorInput = this.panel().locator('input[role="combobox"]').first();
     await errorInput.waitFor({ state: "visible", timeout: 10000 });
-    await errorInput.fill(args.errorName);
-    await this.page.keyboard.press("Enter");
+    await errorInput.click();
+    await this.page.keyboard.type(args.errorName);
+
+    const createOption = this.page.getByText(`Create Error "${args.errorName}"`, { exact: true });
+    if (await createOption.isVisible().catch(() => false)) {
+      await createOption.click();
+    } else {
+      await this.page.getByRole("option", { name: args.errorName, exact: true }).click();
+    }
   }
 
   public async getErrorName(): Promise<string> {
-    const errorInput = this.panel().locator('input[type="text"]').first();
+    const errorInput = this.panel().locator('input[role="combobox"]').first();
     await errorInput.waitFor({ state: "visible", timeout: 5000 });
     return (await errorInput.inputValue()) || "";
   }
@@ -163,14 +210,21 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setEscalationDefinition(args: { escalationName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Escalation" });
 
-    const escalationInput = this.panel().locator('input[type="text"]').first();
+    const escalationInput = this.panel().locator('input[role="combobox"]').first();
     await escalationInput.waitFor({ state: "visible", timeout: 10000 });
-    await escalationInput.fill(args.escalationName);
-    await this.page.keyboard.press("Enter");
+    await escalationInput.click();
+    await this.page.keyboard.type(args.escalationName);
+
+    const createOption = this.page.getByText(`Create Escalation "${args.escalationName}"`, { exact: true });
+    if (await createOption.isVisible().catch(() => false)) {
+      await createOption.click();
+    } else {
+      await this.page.getByRole("option", { name: args.escalationName, exact: true }).click();
+    }
   }
 
   public async getEscalationName(): Promise<string> {
-    const escalationInput = this.panel().locator('input[type="text"]').first();
+    const escalationInput = this.panel().locator('input[role="combobox"]').first();
     await escalationInput.waitFor({ state: "visible", timeout: 5000 });
     return (await escalationInput.inputValue()) || "";
   }

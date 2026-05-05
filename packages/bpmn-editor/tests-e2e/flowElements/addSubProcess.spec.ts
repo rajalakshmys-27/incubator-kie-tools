@@ -157,21 +157,7 @@ test.describe("Add node - Sub-process", () => {
         const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
         await expect(subProcess).toBeAttached();
 
-        const box = await subProcess.boundingBox();
-        if (!box) throw new Error("Sub-Process not visible");
-
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-        const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-        await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-        await morphingToggle.click({ force: true });
-
-        const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-        await expect(morphingPanel).toBeVisible({ timeout: 10000 });
-
-        const option = morphingPanel.locator(`div[title="${title}"]`).first();
-        await expect(option).toBeVisible({ timeout: 5000 });
-        await option.click({ force: true });
+        await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: title });
 
         await expect(diagram.get()).toHaveScreenshot(screenshot);
       });

@@ -63,32 +63,4 @@ export class GatewayPropertiesPanel extends PropertiesPanelBase {
     await defaultFlowSelect.waitFor({ state: "visible", timeout: 10000 });
     return await defaultFlowSelect.inputValue();
   }
-
-  private async openMorphingPanel() {
-    const selectedGateway = this.page.locator(".kie-bpmn-editor--selected-gateway-node").first();
-    await selectedGateway.waitFor({ state: "attached", timeout: 5000 });
-
-    const box = await selectedGateway.boundingBox();
-    if (!box) throw new Error("Gateway not visible");
-
-    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(300);
-
-    const morphingToggle = selectedGateway.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await morphingToggle.waitFor({ state: "visible", timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
-    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
-
-    return morphingPanel;
-  }
-
-  public async morphToGateway(args: { type: "Parallel" | "Exclusive" | "Inclusive" | "Event" | "Complex" }) {
-    const morphingPanel = await this.openMorphingPanel();
-    const gatewayOption = morphingPanel.getByTitle(args.type);
-    await gatewayOption.waitFor({ state: "visible", timeout: 5000 });
-    await gatewayOption.click({ force: true });
-    await this.page.waitForTimeout(500);
-  }
 }

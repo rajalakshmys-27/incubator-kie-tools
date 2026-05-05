@@ -33,19 +33,10 @@ async function setupEventSubProcess(palette: Palette, nodes: Nodes, page: Page) 
   const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
   await expect(subProcess).toBeAttached();
 
+  await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Event" });
+
   const box = await subProcess.boundingBox();
   if (!box) throw new Error("Sub-Process not visible");
-
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-  const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-  await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-  await morphingToggle.click({ force: true });
-
-  const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-  const eventSubProcessOption = morphingPanel.locator('div[title="Event"]').first();
-  await expect(eventSubProcessOption).toBeVisible({ timeout: 5000 });
-  await eventSubProcessOption.click({ force: true });
 
   await palette.dragNewNode({
     type: NodeType.START_EVENT,

@@ -59,6 +59,10 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
+    const timerDef = await startEventPropertiesPanel.getTimerDefinition();
+    expect(timerDef.type).toBe("date");
+    expect(timerDef.value).toBe("2025-12-31T23:59:59");
+
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-timer-date.png");
   });
 
@@ -71,7 +75,9 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    // Timer definition is verified by the morphing operation itself
+    const timerDef = await startEventPropertiesPanel.getTimerDefinition();
+    expect(timerDef.type).toBe("duration");
+    expect(timerDef.value).toBe("PT5M");
   });
 
   test("should configure Timer event definition with cycle", async ({ startEventPropertiesPanel, page }) => {
@@ -83,7 +89,9 @@ test.describe("Change Properties - Start Event", () => {
       startEventLocator: startEvent,
     });
 
-    // Timer definition is verified by the morphing operation itself
+    const timerDef = await startEventPropertiesPanel.getTimerDefinition();
+    expect(timerDef.type).toBe("cycle");
+    expect(timerDef.value).toBe("R3/PT10M");
   });
 
   test("should configure Message event definition", async ({ startEventPropertiesPanel, page }) => {
@@ -119,28 +127,6 @@ test.describe("Change Properties - Start Event", () => {
     expect(await startEventPropertiesPanel.getConditionalExpression()).toBe("${amount > 1000}");
   });
 
-  test("should configure Error event definition", async ({ startEventPropertiesPanel, page }) => {
-    const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-
-    await startEventPropertiesPanel.setErrorDefinition({
-      errorName: "StartError",
-      startEventLocator: startEvent,
-    });
-
-    expect(await startEventPropertiesPanel.getErrorName()).toBe("StartError");
-  });
-
-  test("should configure Escalation event definition", async ({ startEventPropertiesPanel, page }) => {
-    const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
-
-    await startEventPropertiesPanel.setEscalationDefinition({
-      escalationName: "StartEscalation",
-      startEventLocator: startEvent,
-    });
-
-    expect(await startEventPropertiesPanel.getEscalationName()).toBe("StartEscalation");
-  });
-
   test("should configure Compensation event definition", async ({ startEventPropertiesPanel, page }) => {
     const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
 
@@ -159,19 +145,10 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
     await expect(subProcess).toBeAttached();
 
+    await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Event" });
+
     const box = await subProcess.boundingBox();
     if (!box) throw new Error("Sub-Process not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const eventSubProcessOption = morphingPanel.locator('div[title="Event"]').first();
-    await expect(eventSubProcessOption).toBeVisible({ timeout: 5000 });
-    await eventSubProcessOption.click({ force: true });
 
     const targetPosition = {
       x: box.x + box.width / 2 - 50,
@@ -207,5 +184,77 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     expect(await startEventPropertiesPanel.getInterrupting()).toBe(false);
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("start-event-non-interrupting.png");
+  });
+});
+
+test.describe("Change Properties - Error/Escalation Start Events in Event Sub-Process", () => {
+  test("should configure Error event definition in Event Sub-Process", async ({
+    startEventPropertiesPanel,
+    palette,
+    nodes,
+    page,
+  }) => {
+    // Setup: Create Event Sub-Process with Start Event
+    await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 200 } });
+
+    const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
+    await expect(subProcess).toBeAttached();
+
+    await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Event" });
+
+    const box = await subProcess.boundingBox();
+    if (!box) throw new Error("Sub-Process not visible");
+
+    await palette.dragNewNode({
+      type: NodeType.START_EVENT,
+      targetPosition: { x: box.x + box.width / 2 - 50, y: box.y + box.height / 2 + 50 },
+    });
+
+    const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await startEvent.click();
+
+    // Test: Configure Error definition
+    await startEventPropertiesPanel.setErrorDefinition({
+      errorName: "StartError",
+      startEventLocator: startEvent,
+    });
+
+    expect(await startEventPropertiesPanel.getErrorName()).toBe("StartError");
+  });
+
+  test("should configure Escalation event definition in Event Sub-Process", async ({
+    startEventPropertiesPanel,
+    palette,
+    nodes,
+    page,
+  }) => {
+    // Setup: Create Event Sub-Process with Start Event
+    await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 200 } });
+
+    const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
+    await expect(subProcess).toBeAttached();
+
+    await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Event" });
+
+    const box = await subProcess.boundingBox();
+    if (!box) throw new Error("Sub-Process not visible");
+
+    await palette.dragNewNode({
+      type: NodeType.START_EVENT,
+      targetPosition: { x: box.x + box.width / 2 - 50, y: box.y + box.height / 2 + 50 },
+    });
+
+    const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await startEvent.click();
+
+    // Test: Configure Escalation definition
+    await startEventPropertiesPanel.setEscalationDefinition({
+      escalationName: "StartEscalation",
+      startEventLocator: startEvent,
+    });
+
+    expect(await startEventPropertiesPanel.getEscalationName()).toBe("StartEscalation");
   });
 });

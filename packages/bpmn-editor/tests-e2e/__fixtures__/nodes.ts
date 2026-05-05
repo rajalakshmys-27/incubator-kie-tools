@@ -300,9 +300,13 @@ export class Nodes {
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
     await morphingToggle.click({ force: true });
 
-    const morphingOption = this.page.getByTitle(args.targetMorphType, { exact });
+    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
+    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
+
+    const morphingOption = morphingPanel.getByTitle(args.targetMorphType, { exact });
     await expect(morphingOption).toBeVisible({ timeout: 5000 });
     await morphingOption.click({ force: true });
+    await this.page.waitForTimeout(500);
   }
 
   private async getPositionalNodeHandleCoordinates(args: {

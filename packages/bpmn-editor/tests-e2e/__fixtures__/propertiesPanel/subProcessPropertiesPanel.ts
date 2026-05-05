@@ -65,10 +65,12 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     const collectionInputFormGroup = this.panel()
       .locator("div.pf-v5-c-form__group")
       .filter({ hasText: /Collection input/i });
-    const collectionInput = collectionInputFormGroup.locator('input[type="text"]').first();
+    const collectionInput = collectionInputFormGroup.locator('input[role="combobox"]').first();
     await collectionInput.waitFor({ state: "visible", timeout: 10000 });
+    await collectionInput.click();
+    await collectionInput.clear();
     await collectionInput.fill(args.expression);
-    await this.page.keyboard.press("Enter");
+    await this.page.getByRole("option", { name: args.expression, exact: true }).click();
   }
 
   public async setCompletionCondition(args: { condition: string }) {
@@ -95,40 +97,5 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
-  }
-  private async openMorphingPanel() {
-    const selectedSubProcess = this.page.locator(".kie-bpmn-editor--selected-sub-process-node").first();
-    await selectedSubProcess.waitFor({ state: "attached", timeout: 5000 });
-
-    const box = await selectedSubProcess.boundingBox();
-    if (!box) throw new Error("Sub-Process not visible");
-
-    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(300);
-
-    const morphingToggle = selectedSubProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await morphingToggle.waitFor({ state: "visible", timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
-    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
-
-    return morphingPanel;
-  }
-
-  public async morphToMultiInstanceSubProcess() {
-    const morphingPanel = await this.openMorphingPanel();
-    const multiInstanceOption = morphingPanel.getByTitle("Multi-instance");
-    await multiInstanceOption.waitFor({ state: "visible", timeout: 5000 });
-    await multiInstanceOption.click({ force: true });
-    await this.page.waitForTimeout(500);
-  }
-
-  public async morphToAdHocSubProcess() {
-    const morphingPanel = await this.openMorphingPanel();
-    const adHocOption = morphingPanel.getByTitle("Ad-hoc");
-    await adHocOption.waitFor({ state: "visible", timeout: 5000 });
-    await adHocOption.click({ force: true });
-    await this.page.waitForTimeout(500);
   }
 }

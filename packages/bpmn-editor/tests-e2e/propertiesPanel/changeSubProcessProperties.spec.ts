@@ -48,37 +48,28 @@ test.describe("Change Properties - Sub-Process", () => {
 });
 
 test.describe("Change Properties - Sub-Process Multi-Instance", () => {
-  test.beforeEach(async ({ palette, nodes, subProcessPropertiesPanel, page }) => {
+  test.beforeEach(async ({ palette, nodes, page }) => {
+    await palette.addProcessVariable({ name: "orderItems", dataType: "Object" });
+    await palette.addProcessVariable({ name: "tasks", dataType: "Object" });
+
     await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 200 } });
 
     const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
     await expect(subProcess).toBeAttached();
 
-    const box = await subProcess.boundingBox();
-    if (!box) throw new Error("Sub-Process not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const multiInstanceOption = morphingPanel.getByTitle("Multi-instance");
-    await expect(multiInstanceOption).toBeVisible({ timeout: 5000 });
-    await multiInstanceOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Multi-instance" });
   });
 
   test("should configure Sub-Process multi-instance parallel", async ({ subProcessPropertiesPanel, page }) => {
     await subProcessPropertiesPanel.setMultiInstance({ type: "parallel" });
-    await subProcessPropertiesPanel.setCollectionExpression({ expression: "${orderItems}" });
+    await subProcessPropertiesPanel.setCollectionExpression({ expression: "orderItems" });
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("subprocess-multi-instance-parallel.png");
   });
 
   test("should configure Sub-Process multi-instance sequential", async ({ subProcessPropertiesPanel, page }) => {
     await subProcessPropertiesPanel.setMultiInstance({ type: "sequential" });
-    await subProcessPropertiesPanel.setCollectionExpression({ expression: "${tasks}" });
+    await subProcessPropertiesPanel.setCollectionExpression({ expression: "tasks" });
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("subprocess-multi-instance-sequential.png");
   });
@@ -91,19 +82,7 @@ test.describe("Change Properties - Ad-Hoc Sub-Process", () => {
     const subProcess = nodes.get({ name: DefaultNodeName.SUB_PROCESS });
     await expect(subProcess).toBeAttached();
 
-    const box = await subProcess.boundingBox();
-    if (!box) throw new Error("Sub-Process not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = subProcess.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const adHocOption = morphingPanel.getByTitle("Ad-hoc");
-    await expect(adHocOption).toBeVisible({ timeout: 5000 });
-    await adHocOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: subProcess, targetMorphType: "Ad-hoc" });
   });
 
   test("should configure Ad-Hoc Sub-Process", async ({ subProcessPropertiesPanel, page }) => {

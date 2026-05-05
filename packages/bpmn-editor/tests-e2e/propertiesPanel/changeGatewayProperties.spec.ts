@@ -67,14 +67,14 @@ test.describe("Change Properties - Exclusive Gateway with Default Flow", () => {
 });
 
 test.describe("Change Properties - Parallel Gateway", () => {
-  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+  test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
-    await gatewayPropertiesPanel.morphToGateway({ type: "Parallel" });
+    await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Parallel" });
   });
 
   test("should configure Parallel Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
@@ -85,14 +85,14 @@ test.describe("Change Properties - Parallel Gateway", () => {
 });
 
 test.describe("Change Properties - Inclusive Gateway", () => {
-  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+  test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
-    await gatewayPropertiesPanel.morphToGateway({ type: "Inclusive" });
+    await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Inclusive" });
   });
 
   test("should configure Inclusive Gateway properties", async ({ gatewayPropertiesPanel }) => {
@@ -103,14 +103,14 @@ test.describe("Change Properties - Inclusive Gateway", () => {
 });
 
 test.describe("Change Properties - Event-Based Gateway", () => {
-  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+  test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
-    await gatewayPropertiesPanel.morphToGateway({ type: "Event" });
+    await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Event" });
   });
 
   test("should configure Event-Based Gateway name", async ({ gatewayPropertiesPanel }) => {
@@ -121,14 +121,14 @@ test.describe("Change Properties - Event-Based Gateway", () => {
 });
 
 test.describe("Change Properties - Complex Gateway", () => {
-  test.beforeEach(async ({ palette, page, gatewayPropertiesPanel }) => {
+  test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
-    await gatewayPropertiesPanel.morphToGateway({ type: "Complex" });
+    await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Complex" });
   });
 
   test("should configure Complex Gateway name", async ({ gatewayPropertiesPanel }) => {

@@ -49,25 +49,13 @@ test.describe("Change Properties - Task Node", () => {
 });
 
 test.describe("Change Properties - User Task", () => {
-  test.beforeEach(async ({ palette, nodes, taskPropertiesPanel, page }) => {
+  test.beforeEach(async ({ palette, nodes, page }) => {
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const userTaskOption = morphingPanel.getByTitle("User task");
-    await expect(userTaskOption).toBeVisible({ timeout: 5000 });
-    await userTaskOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "User task" });
   });
 
   test("should configure User Task actors", async ({ taskPropertiesPanel }) => {
@@ -111,19 +99,7 @@ test.describe("Change Properties - Service Task", () => {
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const serviceTaskOption = morphingPanel.getByTitle("Service task");
-    await expect(serviceTaskOption).toBeVisible({ timeout: 5000 });
-    await serviceTaskOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "Service task" });
   });
 
   test("should configure Service Task implementation", async ({ taskPropertiesPanel }) => {
@@ -141,25 +117,13 @@ test.describe("Change Properties - Service Task", () => {
 });
 
 test.describe("Change Properties - Script Task", () => {
-  test.beforeEach(async ({ palette, nodes, taskPropertiesPanel, page }) => {
+  test.beforeEach(async ({ palette, nodes, page }) => {
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const scriptTaskOption = morphingPanel.getByTitle("Script task");
-    await expect(scriptTaskOption).toBeVisible({ timeout: 5000 });
-    await scriptTaskOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "Script task" });
   });
 
   test("should configure Script Task script content", async ({ taskPropertiesPanel, page }) => {
@@ -173,25 +137,13 @@ test.describe("Change Properties - Script Task", () => {
 });
 
 test.describe("Change Properties - Business Rule Task", () => {
-  test.beforeEach(async ({ palette, nodes, taskPropertiesPanel, page }) => {
+  test.beforeEach(async ({ palette, nodes, page }) => {
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const businessRuleTaskOption = morphingPanel.getByTitle("Business rule task");
-    await expect(businessRuleTaskOption).toBeVisible({ timeout: 5000 });
-    await businessRuleTaskOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "Business rule task" });
   });
 
   test("should configure Business Rule Task with DRL rule flow group", async ({ taskPropertiesPanel, page }) => {
@@ -219,19 +171,7 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const callActivityOption = morphingPanel.getByTitle("Call activity");
-    await expect(callActivityOption).toBeVisible({ timeout: 5000 });
-    await callActivityOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "User task" });
   });
 
   test("should configure parallel multi-instance", async ({ taskPropertiesPanel, page }) => {
@@ -266,19 +206,7 @@ test.describe("Change Properties - Task Data I/O", () => {
     const task = nodes.get({ name: DefaultNodeName.TASK });
     await expect(task).toBeAttached();
 
-    const box = await task.boundingBox();
-    if (!box) throw new Error("Task not visible");
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const userTaskOption = morphingPanel.getByTitle("User task");
-    await expect(userTaskOption).toBeVisible({ timeout: 5000 });
-    await userTaskOption.click({ force: true });
+    await nodes.morphNode({ nodeLocator: task, targetMorphType: "User task" });
   });
 
   test("should add data input to Task", async ({ taskPropertiesPanel, page }) => {

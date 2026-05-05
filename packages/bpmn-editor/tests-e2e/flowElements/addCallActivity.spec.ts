@@ -141,7 +141,7 @@ test.describe("Add node - Call Activity", () => {
       await expect(diagram.get()).toHaveScreenshot("create-sequence-flow-call-activity-to-end-event.png");
     });
 
-    test("should add connected Call Activity from Start Event", async ({ diagram, palette, page }) => {
+    test("should add connected Call Activity from Start Event", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({
         type: NodeType.START_EVENT,
         targetPosition: { x: 100, y: 100 },
@@ -163,19 +163,7 @@ test.describe("Add node - Call Activity", () => {
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      const taskBox = await task.boundingBox();
-      if (!taskBox) throw new Error("Task bounding box not found");
-
-      await page.mouse.move(taskBox.x + taskBox.width / 2, taskBox.y + taskBox.height / 2);
-
-      const morphingToggle = task.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-      await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-      await morphingToggle.click({ force: true });
-
-      const morphingPanel = page.locator(".kie-bpmn-editor--node-morphing-panel");
-      const callActivityOption = morphingPanel.getByTitle("Call activity");
-      await expect(callActivityOption).toBeVisible({ timeout: 5000 });
-      await callActivityOption.click({ force: true });
+      await nodes.morphNode({ nodeLocator: task, targetMorphType: "Call activity" });
 
       await expect(diagram.get()).toHaveScreenshot("add-call-activity-from-start-event.png");
     });
