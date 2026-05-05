@@ -19,7 +19,10 @@
 
 import * as React from "react";
 import "@kie-tools/bpmn-marshaller/dist/drools-extension";
-import { MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS } from "@kie-tools/bpmn-marshaller/dist/drools-extension";
+import {
+  MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS,
+  MILESTONE_TASK_VALUES,
+} from "@kie-tools/bpmn-marshaller/dist/drools-extension";
 import { CustomTask } from "@kie-tools/bpmn-editor/dist/BpmnEditor";
 import { useBpmnEditorStoreApi, useBpmnEditorStore } from "@kie-tools/bpmn-editor/dist/store/StoreContext";
 import { PropertiesPanelHeaderFormSection } from "@kie-tools/bpmn-editor/dist/propertiesPanel/singleNodeProperties/_PropertiesPanelHeaderFormSection";
@@ -93,6 +96,7 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
     matches: (task) => task["@_drools:taskName"] === "Milestone",
     produce: () => {
       const conditionInputId = generateUuid();
+      const taskNameInputId = generateUuid();
       return {
         __$$element: "task",
         "@_id": generateUuid(),
@@ -106,11 +110,16 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
               "@_name": MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS.CONDITION,
               "@_drools:dtype": "String",
             },
+            {
+              "@_id": taskNameInputId,
+              "@_name": MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS.TASK_NAME,
+              "@_drools:dtype": "Object",
+            },
           ],
           inputSet: [
             {
               "@_id": generateUuid(),
-              dataInputRefs: [{ __$$text: conditionInputId }],
+              dataInputRefs: [{ __$$text: conditionInputId }, { __$$text: taskNameInputId }],
             },
           ],
           dataOutput: [],
@@ -121,21 +130,47 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
             },
           ],
         },
-        dataInputAssociation: [],
+        dataInputAssociation: [
+          {
+            "@_id": generateUuid(),
+            targetRef: { __$$text: taskNameInputId },
+            sourceRef: [],
+            assignment: [
+              {
+                "@_id": generateUuid(),
+                from: {
+                  "@_id": generateUuid(),
+                  "@_xsi:type": "tFormalExpression",
+                  __$$text: MILESTONE_TASK_VALUES.TASK_NAME_VALUE,
+                } as any,
+                to: { "@_id": generateUuid(), __$$text: taskNameInputId },
+              },
+            ],
+          },
+        ],
         dataOutputAssociation: [],
       };
     },
     onAdded: (state, task) => {
-      const { itemDefinition } = addOrGetItemDefinitions({
+      const { itemDefinition: stringItemDefinition } = addOrGetItemDefinitions({
         definitions: state.bpmn.model.definitions,
         dataType: DEFAULT_DATA_TYPES.STRING,
       });
 
+      const { itemDefinition: objectItemDefinition } = addOrGetItemDefinitions({
+        definitions: state.bpmn.model.definitions,
+        dataType: DEFAULT_DATA_TYPES.OBJECT,
+      });
+
       if (task.ioSpecification?.dataInput?.[0]) {
-        task.ioSpecification.dataInput[0]["@_itemSubjectRef"] = itemDefinition["@_id"];
+        task.ioSpecification.dataInput[0]["@_itemSubjectRef"] = stringItemDefinition["@_id"];
+      }
+
+      if (task.ioSpecification?.dataInput?.[1]) {
+        task.ioSpecification.dataInput[1]["@_itemSubjectRef"] = objectItemDefinition["@_id"];
       }
     },
-    dataInputReservedNames: [],
+    dataInputReservedNames: [MILESTONE_TASK_IO_SPECIFICATION_DATA_INPUTS_CONSTANTS.TASK_NAME],
     dataOutputReservedNames: [],
   };
 }
