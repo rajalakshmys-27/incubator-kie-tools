@@ -146,20 +146,14 @@ test.describe("Add node - Start Event", () => {
       palette,
       diagram,
       page,
+      nodes,
     }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
       const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
-      const box = await startEvent.boundingBox();
-      if (!box) throw new Error("Start Event not visible");
-
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-      const morphingToggle = startEvent.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-      await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-      await morphingToggle.click({ force: true });
+      await nodes.openMorphingPanel({ nodeLocator: startEvent });
 
       await expect(page.getByTitle("Error")).toHaveClass(/disabled/);
       await expect(page.getByTitle("Escalation")).toHaveClass(/disabled/);
@@ -252,14 +246,7 @@ test.describe("Add node - Start Event", () => {
     }) => {
       const startEvent = await setupRegularSubProcess(palette, nodes, page);
 
-      const box = await startEvent.boundingBox();
-      if (!box) throw new Error("Start Event not visible");
-
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-      const morphingToggle = startEvent.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-      await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-      await morphingToggle.click({ force: true });
+      await nodes.openMorphingPanel({ nodeLocator: startEvent });
 
       await expect(page.getByTitle("Message")).toHaveClass(/disabled/);
       await expect(page.getByTitle("Timer")).toHaveClass(/disabled/);

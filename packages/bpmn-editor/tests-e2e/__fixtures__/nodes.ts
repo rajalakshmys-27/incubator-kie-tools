@@ -309,6 +309,25 @@ export class Nodes {
     await this.page.waitForTimeout(500);
   }
 
+  public async openMorphingPanel(args: { nodeLocator: Locator; hoverDelay?: number }): Promise<void> {
+    const hoverDelay = args.hoverDelay ?? 300;
+
+    const box = await args.nodeLocator.boundingBox();
+    if (!box) {
+      throw new Error("Node not visible - cannot retrieve bounding box for morphing panel");
+    }
+
+    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await this.page.waitForTimeout(hoverDelay);
+
+    const morphingToggle = args.nodeLocator.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
+    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
+    await morphingToggle.click({ force: true });
+
+    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
+    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
+  }
+
   private async getPositionalNodeHandleCoordinates(args: {
     node: Locator;
     position: NodePosition;
