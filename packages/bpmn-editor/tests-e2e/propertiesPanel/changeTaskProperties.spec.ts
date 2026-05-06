@@ -166,6 +166,11 @@ test.describe("Change Properties - Business Rule Task", () => {
 
 test.describe("Change Properties - Task Multi-Instance", () => {
   test.beforeEach(async ({ palette, nodes, page }) => {
+    await palette.addProcessVariable({ name: "orderItems", dataType: "Object" });
+    await palette.addProcessVariable({ name: "approvers", dataType: "Object" });
+    await palette.addProcessVariable({ name: "tasks", dataType: "Object" });
+    await palette.closeProcessVariables();
+
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 100, y: 100 } });
 
     const task = nodes.get({ name: DefaultNodeName.TASK });
@@ -176,21 +181,21 @@ test.describe("Change Properties - Task Multi-Instance", () => {
 
   test("should configure parallel multi-instance", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setMultiInstance({ type: "parallel" });
-    await taskPropertiesPanel.setCollectionExpression({ expression: "${orderItems}" });
+    await taskPropertiesPanel.setCollectionExpression({ expression: "orderItems" });
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-parallel.png");
   });
 
   test("should configure sequential multi-instance", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setMultiInstance({ type: "sequential" });
-    await taskPropertiesPanel.setCollectionExpression({ expression: "${approvers}" });
+    await taskPropertiesPanel.setCollectionExpression({ expression: "approvers" });
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-sequential.png");
   });
 
   test("should configure multi-instance with completion condition", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setMultiInstance({ type: "parallel" });
-    await taskPropertiesPanel.setCollectionExpression({ expression: "${tasks}" });
+    await taskPropertiesPanel.setCollectionExpression({ expression: "tasks" });
     await taskPropertiesPanel.setCompletionCondition({ condition: "${nrOfCompletedInstances >= 3}" });
 
     await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot(

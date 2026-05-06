@@ -58,6 +58,20 @@ export class Palette {
     await variablesPanel.waitFor({ state: "visible", timeout: 10000 });
   }
 
+  public async closeProcessVariables() {
+    const variablesPanel = this.page.locator(".kie-bpmn-editor--palette-nodes-popover.variables");
+    const isPanelVisible = await variablesPanel.isVisible().catch(() => false);
+
+    if (!isPanelVisible) {
+      return;
+    }
+
+    const toggle = this.page.getByTitle("Process Variables");
+    await toggle.waitFor({ state: "visible", timeout: 10000 });
+    await toggle.click();
+    await variablesPanel.waitFor({ state: "hidden", timeout: 10000 });
+  }
+
   public async addProcessVariable(args: { name: string; dataType?: string }) {
     await this.openProcessVariables();
 

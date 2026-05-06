@@ -81,11 +81,11 @@ export const test = base.extend<BpmnEditorFixtures>({
   stories: async ({ baseURL, page }, use) => {
     await use(new Stories(page, baseURL));
   },
-  startEventPropertiesPanel: async ({ diagram, page }, use) => {
-    await use(new StartEventPropertiesPanel(diagram, page));
+  startEventPropertiesPanel: async ({ diagram, page, nodes }, use) => {
+    await use(new StartEventPropertiesPanel(diagram, page, nodes));
   },
-  endEventPropertiesPanel: async ({ diagram, page }, use) => {
-    await use(new EndEventPropertiesPanel(diagram, page));
+  endEventPropertiesPanel: async ({ diagram, page, nodes }, use) => {
+    await use(new EndEventPropertiesPanel(diagram, page, nodes));
   },
   taskPropertiesPanel: async ({ diagram, page }, use) => {
     await use(new TaskPropertiesPanel(diagram, page));
@@ -96,8 +96,8 @@ export const test = base.extend<BpmnEditorFixtures>({
   subProcessPropertiesPanel: async ({ diagram, page }, use) => {
     await use(new SubProcessPropertiesPanel(diagram, page));
   },
-  intermediateEventPropertiesPanel: async ({ diagram, page }, use) => {
-    await use(new IntermediateEventPropertiesPanel(diagram, page));
+  intermediateEventPropertiesPanel: async ({ diagram, page, nodes }, use) => {
+    await use(new IntermediateEventPropertiesPanel(diagram, page, nodes));
   },
   sequenceFlowPropertiesPanel: async ({ diagram, page }, use) => {
     await use(new SequenceFlowPropertiesPanel(diagram, page));

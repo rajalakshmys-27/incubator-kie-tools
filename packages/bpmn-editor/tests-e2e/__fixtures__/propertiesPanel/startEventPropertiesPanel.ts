@@ -20,6 +20,7 @@
 import { Page, Locator } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
+import { Nodes } from "../nodes";
 import { NameProperties } from "./parts/nameProperties";
 import { DocumentationProperties } from "./parts/documentationProperties";
 
@@ -29,7 +30,8 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
 
   constructor(
     public diagram: Diagram,
-    public page: Page
+    public page: Page,
+    public nodes: Nodes
   ) {
     super(diagram, page);
     this.nameProperties = new NameProperties(this.panel(), page);
@@ -37,20 +39,10 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   private async morphToEventType(args: { startEventLocator: Locator; eventType: string }) {
-    const box = await args.startEventLocator.boundingBox();
-    if (!box) throw new Error("Start Event not visible");
-
-    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(300);
-
-    const morphingToggle = args.startEventLocator.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await morphingToggle.waitFor({ state: "visible", timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingOption = this.page.getByTitle(args.eventType);
-    await morphingOption.waitFor({ state: "visible", timeout: 5000 });
-    await morphingOption.click({ force: true });
-    await this.page.waitForTimeout(500);
+    await this.nodes.morphNode({
+      nodeLocator: args.startEventLocator,
+      targetMorphType: args.eventType,
+    });
   }
 
   public async setName(args: { newName: string }) {

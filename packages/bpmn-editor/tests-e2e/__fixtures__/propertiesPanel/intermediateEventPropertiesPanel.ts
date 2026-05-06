@@ -20,6 +20,7 @@
 import { expect, Page } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
+import { Nodes } from "../nodes";
 import { NameProperties } from "./parts/nameProperties";
 import { DocumentationProperties } from "./parts/documentationProperties";
 
@@ -29,7 +30,8 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
   constructor(
     public diagram: Diagram,
-    public page: Page
+    public page: Page,
+    public nodes: Nodes
   ) {
     super(diagram, page);
     this.nameProperties = new NameProperties(this.panel(), page);
@@ -59,15 +61,10 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
     await expect(selectedNode).toBeVisible({ timeout: 5000 });
 
-    const morphingToggle = selectedNode.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
-    await morphingToggle.click({ force: true });
-
-    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
-    const eventTypeOption = morphingPanel.getByTitle(args.eventType);
-    await expect(eventTypeOption).toBeVisible({ timeout: 5000 });
-    await eventTypeOption.click({ force: true });
-    await this.page.waitForTimeout(500);
+    await this.nodes.morphNode({
+      nodeLocator: selectedNode,
+      targetMorphType: args.eventType,
+    });
   }
 
   public async setTimerDefinition(args: { type: "date" | "duration" | "cycle"; value: string }) {
