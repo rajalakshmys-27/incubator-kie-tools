@@ -38,11 +38,11 @@ module.exports = composeEnv([require("@kie-tools/root-env/env")], {
       description: "Enable or disable Webkit project",
     },
     PLAYWRIGHT_BASE__projectTimeout: {
-      default: "180000",
+      default: "90000",
       description: "The timeout of a test in the project (Chromium, Google Chrome and Webkit)",
     },
     PLAYWRIGHT_BASE__expectTimeout: {
-      default: "60000",
+      default: "30000",
       description: "The timeout of an expect assertion",
     },
     PLAYWRIGHT_BASE__maxDiffPixelRatio: {
