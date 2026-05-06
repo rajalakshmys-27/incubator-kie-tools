@@ -31,7 +31,7 @@ const customConfig = defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "pnpm start",
-    url: `http://localhost:${buildEnv.bpmnEditor.storybook.port}/iframe.html?args=&id=use-cases-empty--empty&viewMode=story`,
+    url: `http://localhost:${buildEnv.bpmnEditor.storybook.port}/iframe.html?args=&id=misc-empty--empty&viewMode=story`,
     reuseExistingServer: true,
     stdout: "pipe",
     timeout: 180000,
