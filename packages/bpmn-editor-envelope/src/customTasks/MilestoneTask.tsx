@@ -35,7 +35,10 @@ import { SlaDueDateInput } from "@kie-tools/bpmn-editor/dist/propertiesPanel/sla
 import { generateUuid } from "@kie-tools/xyflow-react-kie-diagram/dist/uuid/uuid";
 import { BpmnEditorEnvelopeI18n, bpmnEditorEnvelopeI18nDefaults, bpmnEditorEnvelopeI18nDictionaries } from "../i18n";
 import { I18n } from "@kie-tools-core/i18n/dist/core";
-import { DEFAULT_DATA_TYPES } from "@kie-tools/bpmn-editor/dist/mutations/addOrGetItemDefinitions";
+import {
+  addOrGetItemDefinitions,
+  DEFAULT_DATA_TYPES,
+} from "@kie-tools/bpmn-editor/dist/mutations/addOrGetItemDefinitions";
 import { DataMapping, setInputAndOutputDataMapping } from "@kie-tools/bpmn-editor/dist/mutations/_dataMapping";
 
 export const MILESTONE_TASK_ICON = (
@@ -101,6 +104,16 @@ export function getMilestoneTask(i18n: BpmnEditorEnvelopeI18n): CustomTask {
       };
     },
     onAdded: (state, task) => {
+      // Make sure String and Object data types are available
+      addOrGetItemDefinitions({
+        definitions: state.bpmn.model.definitions,
+        dataType: DEFAULT_DATA_TYPES.STRING,
+      });
+      addOrGetItemDefinitions({
+        definitions: state.bpmn.model.definitions,
+        dataType: DEFAULT_DATA_TYPES.OBJECT,
+      });
+
       const inputs: DataMapping[] = [
         {
           dtype: DEFAULT_DATA_TYPES.STRING,
