@@ -28,6 +28,15 @@ index.domParser.getDomDocument = (xml: string | Buffer) => {
   // console.time("parsing dom took (jsdom)");
   const domdoc = new jsdom.JSDOM(xml, { contentType: "application/xml" }).window.document;
   // console.timeEnd("parsing dom took (jsdom)");
+
+  const parsererrorElements = domdoc.querySelectorAll("parsererror");
+  if (parsererrorElements.length > 0) {
+    console.warn("XML parsing error detected and filtered. Document may be incomplete.");
+    parsererrorElements.forEach((element) => {
+      element.parentNode?.removeChild(element);
+    });
+  }
+
   return domdoc;
 };
 
