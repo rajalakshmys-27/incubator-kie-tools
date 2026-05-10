@@ -133,9 +133,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setMessageDefinition(args: { messageName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Message" });
 
-    const messageInput = this.panel().locator('input[role="combobox"]').first();
-    await messageInput.waitFor({ state: "visible", timeout: 10000 });
-    await messageInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.messageName);
 
     const createOption = this.page.getByText(`Create Message "${args.messageName}"`, { exact: true });
@@ -149,9 +147,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setSignalDefinition(args: { signalName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Signal" });
 
-    const signalInput = this.panel().locator('input[role="combobox"]').first();
-    await signalInput.waitFor({ state: "visible", timeout: 10000 });
-    await signalInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.signalName);
 
     const createOption = this.page.getByText(`Create Signal "${args.signalName}"`, { exact: true });
@@ -180,9 +176,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setErrorDefinition(args: { errorName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Error" });
 
-    const errorInput = this.panel().locator('input[role="combobox"]').first();
-    await errorInput.waitFor({ state: "visible", timeout: 10000 });
-    await errorInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.errorName);
 
     const createOption = this.page.getByText(`Create Error "${args.errorName}"`, { exact: true });
@@ -194,7 +188,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getErrorName(): Promise<string> {
-    const errorInput = this.panel().locator('input[role="combobox"]').first();
+    const errorInput = this.panel().getByRole("combobox").first();
     await errorInput.waitFor({ state: "visible", timeout: 5000 });
     return (await errorInput.inputValue()) || "";
   }
@@ -202,9 +196,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   public async setEscalationDefinition(args: { escalationName: string; startEventLocator: Locator }) {
     await this.morphToEventType({ startEventLocator: args.startEventLocator, eventType: "Escalation" });
 
-    const escalationInput = this.panel().locator('input[role="combobox"]').first();
-    await escalationInput.waitFor({ state: "visible", timeout: 10000 });
-    await escalationInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.escalationName);
 
     const createOption = this.page.getByText(`Create Escalation "${args.escalationName}"`, { exact: true });
@@ -216,7 +208,7 @@ export class StartEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getEscalationName(): Promise<string> {
-    const escalationInput = this.panel().locator('input[role="combobox"]').first();
+    const escalationInput = this.panel().getByRole("combobox").first();
     await escalationInput.waitFor({ state: "visible", timeout: 5000 });
     return (await escalationInput.inputValue()) || "";
   }

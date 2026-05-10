@@ -53,9 +53,7 @@ export class DataObjectPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async setItemSubjectRef(args: { itemSubjectRef: string }) {
-    const dataTypeInput = this.panel().locator('input[role="combobox"]').first();
-
-    await dataTypeInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.itemSubjectRef);
 
     const createOption = this.page.getByText(`Create Data Type "${args.itemSubjectRef}"`, { exact: true });
@@ -67,7 +65,6 @@ export class DataObjectPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getItemSubjectRef(): Promise<string> {
-    const dataTypeInput = this.panel().locator('input[role="combobox"]').first();
-    return (await dataTypeInput.inputValue()).trim();
+    return (await this.panel().getByRole("combobox").first().inputValue()).trim();
   }
 }

@@ -29,13 +29,13 @@ export class CustomTasks {
   ) {}
 
   public async openPalette() {
-    const customTasksButton = this.page.locator(".kie-bpmn-editor--palette-custom-tasks-button");
+    const customTasksButton = this.page.getByTitle("Custom Tasks");
     await customTasksButton.click();
     await this.page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks").waitFor({ state: "visible" });
   }
 
   public async closePalette() {
-    const customTasksButton = this.page.locator(".kie-bpmn-editor--palette-custom-tasks-button");
+    const customTasksButton = this.page.getByTitle("Custom Tasks");
     await customTasksButton.click();
     await this.page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks").waitFor({ state: "hidden" });
   }

@@ -29,10 +29,11 @@ export class Palette {
   ) {}
 
   public async dragNewNode(args: { type: NodeType; targetPosition: { x: number; y: number }; thenRenameTo?: string }) {
-    const { cssClass, nodeName } = this.getNewNodeProperties(args.type);
+    const { title, nodeName } = this.getNewNodeProperties(args.type);
 
     await this.page
-      .locator(`.kie-bpmn-editor--palette-button.${cssClass}`)
+      .getByTestId("rf__wrapper")
+      .getByTitle(title)
       .dragTo(this.diagram.get(), { targetPosition: args.targetPosition });
 
     if (nodeName) {
@@ -94,9 +95,8 @@ export class Palette {
     if (args.dataType) {
       const variableEntries = variablesPanel.locator(".kie-bpmn-editor--properties-panel--variables-entry");
       const lastEntry = variableEntries.last();
-      const dataTypeInput = lastEntry.locator('input[role="combobox"]').first();
+      const dataTypeInput = lastEntry.getByRole("combobox").first();
 
-      await dataTypeInput.waitFor({ state: "visible", timeout: 10000 });
       await dataTypeInput.click();
       await this.page.keyboard.type(args.dataType);
 
@@ -120,29 +120,29 @@ export class Palette {
   private getNewNodeProperties(type: NodeType) {
     switch (type) {
       case NodeType.START_EVENT:
-        return { cssClass: "start-event", nodeName: DefaultNodeName.START_EVENT };
+        return { title: "Start Events", nodeName: DefaultNodeName.START_EVENT };
       case NodeType.INTERMEDIATE_CATCH_EVENT:
-        return { cssClass: "intermediate-catch-event", nodeName: DefaultNodeName.INTERMEDIATE_CATCH_EVENT };
+        return { title: "Intermediate Catch Events", nodeName: DefaultNodeName.INTERMEDIATE_CATCH_EVENT };
       case NodeType.INTERMEDIATE_THROW_EVENT:
-        return { cssClass: "intermediate-throw-event", nodeName: DefaultNodeName.INTERMEDIATE_THROW_EVENT };
+        return { title: "Intermediate Throw Events", nodeName: DefaultNodeName.INTERMEDIATE_THROW_EVENT };
       case NodeType.END_EVENT:
-        return { cssClass: "end-event", nodeName: DefaultNodeName.END_EVENT };
+        return { title: "End Events", nodeName: DefaultNodeName.END_EVENT };
       case NodeType.TASK:
-        return { cssClass: "task", nodeName: DefaultNodeName.TASK };
+        return { title: "Tasks", nodeName: DefaultNodeName.TASK };
       case NodeType.CALL_ACTIVITY:
-        return { cssClass: "callActivity", nodeName: DefaultNodeName.CALL_ACTIVITY };
+        return { title: "Call Activity", nodeName: DefaultNodeName.CALL_ACTIVITY };
       case NodeType.SUB_PROCESS:
-        return { cssClass: "subProcess", nodeName: DefaultNodeName.SUB_PROCESS };
+        return { title: "Sub-processes", nodeName: DefaultNodeName.SUB_PROCESS };
       case NodeType.GATEWAY:
-        return { cssClass: "gateway", nodeName: DefaultNodeName.GATEWAY };
+        return { title: "Gateways", nodeName: DefaultNodeName.GATEWAY };
       case NodeType.DATA_OBJECT:
-        return { cssClass: "data-object", nodeName: DefaultNodeName.DATA_OBJECT };
+        return { title: "Data Object", nodeName: DefaultNodeName.DATA_OBJECT };
       case NodeType.TEXT_ANNOTATION:
-        return { cssClass: "text-annotation", nodeName: DefaultNodeName.TEXT_ANNOTATION };
+        return { title: "Text Annotation", nodeName: DefaultNodeName.TEXT_ANNOTATION };
       case NodeType.GROUP:
-        return { cssClass: "group", nodeName: DefaultNodeName.GROUP };
+        return { title: "Group", nodeName: DefaultNodeName.GROUP };
       case NodeType.LANE:
-        return { cssClass: "lane", nodeName: DefaultNodeName.LANE };
+        return { title: "Lanes", nodeName: DefaultNodeName.LANE };
     }
   }
 }

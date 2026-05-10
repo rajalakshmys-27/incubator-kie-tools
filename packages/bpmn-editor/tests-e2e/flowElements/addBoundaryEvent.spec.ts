@@ -30,24 +30,24 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
+      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      await expect(boundaryEventNode).toBeAttached();
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
-
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(boundaryEventNode).toBeAttached();
     });
 
     test("should attach intermediate catch event to subprocess", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 550, y: 350 } });
 
+      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      await expect(boundaryEventNode).toBeAttached();
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
-
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
-      await expect(boundaryEventNode).toBeAttached();
     });
 
     test("should attach multiple boundary events to same task", async ({ palette, jsonModel, diagram }) => {
@@ -55,6 +55,8 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 280 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 350, y: 350 } });
+
+      await expect(diagram.get()).toHaveScreenshot("attach-multiple-boundary-events-to-task.png");
 
       const process = await jsonModel.getProcess();
       const boundaryEvents = process.flowElement?.filter(
@@ -65,8 +67,6 @@ test.describe("Add Boundary Event", () => {
         expect(event.__$$element).toBe("boundaryEvent");
         expect(event["@_attachedToRef"]).toBeDefined();
       });
-
-      await expect(diagram.get()).toHaveScreenshot("attach-multiple-boundary-events-to-task.png");
     });
   });
 
@@ -85,11 +85,11 @@ test.describe("Add Boundary Event", () => {
 
       await boundaryEventNode.dragTo(diagram.get(), { targetPosition: { x: 500, y: 100 } });
 
+      await expect(diagram.get()).toHaveScreenshot("detach-boundary-event-from-task.png");
+
       const detachedEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(detachedEvent.__$$element).toBe("intermediateCatchEvent");
       expect(detachedEvent["@_attachedToRef"]).toBeUndefined();
-
-      await expect(diagram.get()).toHaveScreenshot("detach-boundary-event-from-task.png");
     });
   });
 
@@ -98,12 +98,12 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
+      await expect(diagram.get()).toHaveScreenshot("interrupting-boundary-event.png");
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
       expect(boundaryEvent["@_cancelActivity"]).not.toBe(false);
-
-      await expect(diagram.get()).toHaveScreenshot("interrupting-boundary-event.png");
     });
 
     test("should create non-interrupting boundary event", async ({
@@ -148,22 +148,22 @@ test.describe("Add Boundary Event", () => {
 
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
+      await expect(diagram.get()).toHaveScreenshot("attach-boundary-event-to-user-task.png");
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
-
-      await expect(diagram.get()).toHaveScreenshot("attach-boundary-event-to-user-task.png");
     });
 
     test("should attach to call activity", async ({ palette, jsonModel, diagram }) => {
       await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
+      await expect(diagram.get()).toHaveScreenshot("attach-boundary-event-to-call-activity.png");
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
-
-      await expect(diagram.get()).toHaveScreenshot("attach-boundary-event-to-call-activity.png");
     });
   });
 
@@ -177,13 +177,13 @@ test.describe("Add Boundary Event", () => {
       await boundaryEventNode.click();
       await boundaryEventNode.press("Delete");
 
+      await expect(boundaryEventNode).not.toBeAttached();
+
       const process = await jsonModel.getProcess();
       expect(
         process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent")
       ).toBeUndefined();
       expect(process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "task")).toBeDefined();
-
-      await expect(boundaryEventNode).not.toBeAttached();
     });
 
     test.skip("should delete task with boundary event", async ({ palette, nodes, jsonModel, diagram }) => {
@@ -219,11 +219,11 @@ test.describe("Add Boundary Event", () => {
         force: true,
       });
 
+      await expect(diagram.get()).toHaveScreenshot("move-task-with-boundary-event.png");
+
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
       expect(boundaryEvent.__$$element).toBe("boundaryEvent");
       expect(boundaryEvent["@_attachedToRef"]).toBeDefined();
-
-      await expect(diagram.get()).toHaveScreenshot("move-task-with-boundary-event.png");
     });
   });
 });

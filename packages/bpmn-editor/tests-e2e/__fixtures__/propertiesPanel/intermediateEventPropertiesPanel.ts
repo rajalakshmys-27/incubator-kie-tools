@@ -70,15 +70,15 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   public async setTimerDefinition(args: { type: "date" | "duration" | "cycle"; value: string }) {
     if (args.type === "duration") {
       await this.panel().getByLabel("Fire once after duration").click();
-      const valueInput = this.panel().locator("#fire-once-input");
+      const valueInput = this.panel().getByPlaceholder("Enter duration or expression #{expression}");
       await valueInput.fill(args.value);
     } else if (args.type === "cycle") {
       await this.panel().getByLabel("Fire multiple times").click();
-      const valueInput = this.panel().locator("#fire-multiple-input");
+      const valueInput = this.panel().getByPlaceholder("Enter time cycle or expression #{expression}");
       await valueInput.fill(args.value);
     } else {
       await this.panel().getByLabel("Fire at a specific date").click();
-      const valueInput = this.panel().locator("#specific-date-input");
+      const valueInput = this.panel().getByPlaceholder("Enter date value or expression #{expression}");
       await valueInput.fill(args.value);
     }
 
@@ -88,8 +88,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   public async setMessageDefinition(args: { messageName: string }) {
     await this.selectEventDefinition({ eventType: "Message" });
 
-    const messageInput = this.panel().locator('input[role="combobox"]').first();
-    await messageInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.messageName);
 
     const createOption = this.page.getByText(`Create Message "${args.messageName}"`, { exact: true });
@@ -106,8 +105,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   }) {
     await this.selectEventDefinition({ eventType: "Signal" });
 
-    const signalInput = this.panel().locator('input[role="combobox"]').first();
-    await signalInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.signalName);
 
     const createOption = this.page.getByText(`Create Signal "${args.signalName}"`, { exact: true });
@@ -155,7 +153,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getSignalName(): Promise<string> {
-    const signalInput = this.panel().locator('input[role="combobox"]').first();
+    const signalInput = this.panel().getByRole("combobox").first();
     await signalInput.waitFor({ state: "visible", timeout: 5000 });
     return (await signalInput.inputValue()) || "";
   }
@@ -163,8 +161,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   public async setErrorDefinition(args: { errorName: string; errorCode?: string }) {
     await this.selectEventDefinition({ eventType: "Error" });
 
-    const errorInput = this.panel().locator('input[role="combobox"]').first();
-    await errorInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.errorName);
 
     const createOption = this.page.getByText(`Create Error "${args.errorName}"`, { exact: true });
@@ -182,7 +179,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getErrorName(): Promise<string> {
-    const errorInput = this.panel().locator('input[role="combobox"]').first();
+    const errorInput = this.panel().getByRole("combobox").first();
     await errorInput.waitFor({ state: "visible", timeout: 5000 });
     return (await errorInput.inputValue()) || "";
   }
@@ -190,8 +187,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   public async setEscalationDefinition(args: { escalationName: string; escalationCode?: string }) {
     await this.selectEventDefinition({ eventType: "Escalation" });
 
-    const escalationInput = this.panel().locator('input[role="combobox"]').first();
-    await escalationInput.click();
+    await this.panel().getByRole("combobox").first().click();
     await this.page.keyboard.type(args.escalationName);
 
     const createOption = this.page.getByText(`Create Escalation "${args.escalationName}"`, { exact: true });
@@ -209,7 +205,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async getEscalationName(): Promise<string> {
-    const escalationInput = this.panel().locator('input[role="combobox"]').first();
+    const escalationInput = this.panel().getByRole("combobox").first();
     await escalationInput.waitFor({ state: "visible", timeout: 5000 });
     return (await escalationInput.inputValue()) || "";
   }
@@ -218,8 +214,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await this.selectEventDefinition({ eventType: "Compensation" });
 
     if (args.activityRef) {
-      const activityInput = this.panel().locator('input[role="combobox"]').first();
-      await activityInput.click();
+      await this.panel().getByRole("combobox").first().click();
       await this.page.keyboard.type(args.activityRef);
 
       const option = this.page.getByRole("option", { name: args.activityRef, exact: true });

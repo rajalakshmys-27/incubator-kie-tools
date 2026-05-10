@@ -65,8 +65,7 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
     const collectionInputFormGroup = this.panel()
       .locator("div.pf-v5-c-form__group")
       .filter({ hasText: /Collection input/i });
-    const collectionInput = collectionInputFormGroup.locator('input[role="combobox"]').first();
-    await collectionInput.waitFor({ state: "visible", timeout: 10000 });
+    const collectionInput = collectionInputFormGroup.getByRole("combobox").first();
     await collectionInput.click();
     await collectionInput.clear();
     await collectionInput.fill(args.expression);
