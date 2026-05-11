@@ -296,11 +296,11 @@ export class Nodes {
     await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await this.page.waitForTimeout(hoverDelay);
 
-    const morphingToggle = args.nodeLocator.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
+    const morphingToggle = args.nodeLocator.getByRole("button", { name: /morph/i });
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
     await morphingToggle.click({ force: true });
 
-    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
+    const morphingPanel = this.page.getByTestId("kie-tools--bpmn-editor--morphing-panel");
     await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
 
     const morphingOption = morphingPanel.getByTitle(args.targetMorphType, { exact });
@@ -320,11 +320,11 @@ export class Nodes {
     await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await this.page.waitForTimeout(hoverDelay);
 
-    const morphingToggle = args.nodeLocator.locator(".kie-bpmn-editor--node-morphing-panel-toggle > div");
+    const morphingToggle = args.nodeLocator.getByRole("button", { name: /morph/i });
     await expect(morphingToggle).toBeVisible({ timeout: 5000 });
     await morphingToggle.click({ force: true });
 
-    const morphingPanel = this.page.locator(".kie-bpmn-editor--node-morphing-panel");
+    const morphingPanel = this.page.getByTestId("kie-tools--bpmn-editor--morphing-panel");
     await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
   }
 

@@ -36,7 +36,7 @@ test.describe("Change Properties - Task Node", () => {
     await taskPropertiesPanel.setName({ newName: "Process Order" });
 
     expect(await taskPropertiesPanel.getName()).toBe("Process Order");
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-name-changed.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("task-name-changed.png");
   });
 
   test("should change the Task documentation", async ({ taskPropertiesPanel }) => {
@@ -81,7 +81,7 @@ test.describe("Change Properties - User Task", () => {
     await taskPropertiesPanel.setGroups({ groups: "managers" });
     await taskPropertiesPanel.setTaskName({ taskName: "ReviewDocument" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("user-task-full-configuration.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("user-task-full-configuration.png");
   });
 
   test("should set async flag on User Task", async ({ taskPropertiesPanel, page }) => {
@@ -112,7 +112,9 @@ test.describe("Change Properties - Service Task", () => {
     await taskPropertiesPanel.setInterface({ interfaceName: "OrderService" });
     await taskPropertiesPanel.setOperation({ operationName: "processOrder" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("service-task-interface-operation.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "service-task-interface-operation.png"
+    );
   });
 });
 
@@ -160,7 +162,7 @@ test.describe("Change Properties - Business Rule Task", () => {
       modelName: "OrderDecision",
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("business-rule-task-dmn-model.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("business-rule-task-dmn-model.png");
   });
 });
 
@@ -183,14 +185,16 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     await taskPropertiesPanel.setMultiInstance({ type: "parallel" });
     await taskPropertiesPanel.setCollectionExpression({ expression: "orderItems" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-parallel.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("task-multi-instance-parallel.png");
   });
 
   test("should configure sequential multi-instance", async ({ taskPropertiesPanel, page }) => {
     await taskPropertiesPanel.setMultiInstance({ type: "sequential" });
     await taskPropertiesPanel.setCollectionExpression({ expression: "approvers" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multi-instance-sequential.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "task-multi-instance-sequential.png"
+    );
   });
 
   test("should configure multi-instance with completion condition", async ({ taskPropertiesPanel, page }) => {
@@ -198,7 +202,7 @@ test.describe("Change Properties - Task Multi-Instance", () => {
     await taskPropertiesPanel.setCollectionExpression({ expression: "tasks" });
     await taskPropertiesPanel.setCompletionCondition({ condition: "${nrOfCompletedInstances >= 3}" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot(
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
       "task-multi-instance-completion-condition.png"
     );
   });
@@ -239,6 +243,6 @@ test.describe("Change Properties - Task Data I/O", () => {
 
     await taskPropertiesPanel.closeDataMappingModal();
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("task-multiple-data-io.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("task-multiple-data-io.png");
   });
 });

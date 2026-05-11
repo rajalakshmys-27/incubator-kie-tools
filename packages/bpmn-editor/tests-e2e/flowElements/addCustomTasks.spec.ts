@@ -27,14 +27,14 @@ test.beforeEach(async ({ editor, nodes }) => {
 test.describe("Add Custom Tasks", () => {
   test.describe("Custom Tasks Palette", () => {
     test("should display custom tasks button in palette", async ({ page }) => {
-      const customTasksButton = page.locator(".kie-bpmn-editor--palette-custom-tasks-button");
+      const customTasksButton = page.getByTitle("Custom Tasks");
       await expect(customTasksButton).toBeVisible();
     });
 
     test("should open custom tasks palette on click", async ({ customTasks, page }) => {
       await customTasks.openPalette();
 
-      const popover = page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks");
+      const popover = page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover");
       await expect(popover).toBeVisible();
     });
 
@@ -42,7 +42,7 @@ test.describe("Add Custom Tasks", () => {
       await customTasks.openPalette();
       await customTasks.closePalette();
 
-      const popover = page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks");
+      const popover = page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover");
       await expect(popover).not.toBeVisible();
     });
 
@@ -156,7 +156,7 @@ test.describe("Add Custom Tasks", () => {
       thenRenameTo: "Move Test Task",
     });
 
-    const task = page.locator(".kie-bpmn-editor--task-node").first();
+    const task = page.getByTestId("kie-tools--bpmn-editor--node-task").first();
     await expect(task).toBeAttached();
 
     await task.scrollIntoViewIfNeeded();
@@ -191,13 +191,13 @@ test.describe("Add Custom Tasks", () => {
       });
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 500, y: 200 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeAttached();
 
       const restApiTask = nodes.get({ name: "Rest API call Task Flow" });
       await expect(restApiTask).toBeAttached();
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
       // Connect Start Event -> Rest API call Task

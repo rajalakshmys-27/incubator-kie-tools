@@ -29,7 +29,7 @@ test.describe("Change Properties - Exclusive Gateway", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
 
     await gateway.click();
@@ -54,7 +54,7 @@ test.describe("Change Properties - Exclusive Gateway with Default Flow", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
   });
@@ -62,7 +62,7 @@ test.describe("Change Properties - Exclusive Gateway with Default Flow", () => {
   test("should configure Exclusive Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
     await gatewayPropertiesPanel.setName({ newName: "Exclusive Decision" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("exclusive-gateway-configured.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("exclusive-gateway-configured.png");
   });
 });
 
@@ -70,7 +70,7 @@ test.describe("Change Properties - Parallel Gateway", () => {
   test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
@@ -80,7 +80,7 @@ test.describe("Change Properties - Parallel Gateway", () => {
   test("should configure Parallel Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
     await gatewayPropertiesPanel.setName({ newName: "Parallel Split" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("parallel-gateway-configured.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("parallel-gateway-configured.png");
   });
 });
 
@@ -88,7 +88,7 @@ test.describe("Change Properties - Inclusive Gateway", () => {
   test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
@@ -106,7 +106,7 @@ test.describe("Change Properties - Event-Based Gateway", () => {
   test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 
@@ -124,7 +124,7 @@ test.describe("Change Properties - Complex Gateway", () => {
   test.beforeEach(async ({ palette, page, nodes }) => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     await gateway.click();
 

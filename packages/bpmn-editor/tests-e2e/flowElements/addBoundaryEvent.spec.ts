@@ -30,7 +30,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
       await expect(boundaryEventNode).toBeAttached();
 
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
@@ -42,7 +42,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 550, y: 350 } });
 
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
       await expect(boundaryEventNode).toBeAttached();
 
       const boundaryEvent = await jsonModel.getFlowElement({ elementIndex: 1 });
@@ -80,7 +80,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
       await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
 
       await boundaryEventNode.dragTo(diagram.get(), { targetPosition: { x: 500, y: 100 } });
@@ -116,7 +116,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
       await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
       await boundaryEventNode.click();
 
@@ -172,7 +172,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
-      const boundaryEventNode = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+      const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
       await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
       await boundaryEventNode.click();
       await boundaryEventNode.press("Delete");
@@ -206,7 +206,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
-      const taskNode = page.locator(".kie-bpmn-editor--task-node").first();
+      const taskNode = page.getByTestId("kie-tools--bpmn-editor--node-task").first();
       await expect(taskNode).toBeAttached();
       await taskNode.scrollIntoViewIfNeeded();
 

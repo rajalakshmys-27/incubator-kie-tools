@@ -62,6 +62,7 @@ export function CustomTasksPalette({ onDragStart }: { onDragStart: any }) {
                 gap={{ default: "gapSm" }}
                 draggable={true}
                 onDragStart={(event) => onDragStart(event, NODE_TYPES.task, "task", customTask.produce())}
+                role="button"
               >
                 <FlexItem>{customTask.iconSvgElement}</FlexItem>
                 <FlexItem

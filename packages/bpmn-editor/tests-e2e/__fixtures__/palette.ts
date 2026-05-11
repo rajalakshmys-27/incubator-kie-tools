@@ -46,7 +46,7 @@ export class Palette {
   }
 
   public async openProcessVariables() {
-    const variablesPanel = this.page.locator(".kie-bpmn-editor--palette-nodes-popover.variables");
+    const variablesPanel = this.page.getByTestId("kie-tools--bpmn-editor--variables-popover");
     const isPanelVisible = await variablesPanel.isVisible().catch(() => false);
 
     if (isPanelVisible) {
@@ -60,7 +60,7 @@ export class Palette {
   }
 
   public async closeProcessVariables() {
-    const variablesPanel = this.page.locator(".kie-bpmn-editor--palette-nodes-popover.variables");
+    const variablesPanel = this.page.getByTestId("kie-tools--bpmn-editor--variables-popover");
     const isPanelVisible = await variablesPanel.isVisible().catch(() => false);
 
     if (!isPanelVisible) {
@@ -76,7 +76,7 @@ export class Palette {
   public async addProcessVariable(args: { name: string; dataType?: string }) {
     await this.openProcessVariables();
 
-    const variablesPanel = this.page.locator(".kie-bpmn-editor--palette-nodes-popover.variables");
+    const variablesPanel = this.page.getByTestId("kie-tools--bpmn-editor--variables-popover");
     const emptyStateAddButton = this.page.getByRole("button", { name: "Add Variable", exact: true });
     const isEmptyState = await emptyStateAddButton.isVisible().catch(() => false);
 
@@ -93,7 +93,7 @@ export class Palette {
     await variableNameInput.fill(args.name);
 
     if (args.dataType) {
-      const variableEntries = variablesPanel.locator(".kie-bpmn-editor--properties-panel--variables-entry");
+      const variableEntries = variablesPanel.getByTestId("kie-tools--bpmn-editor--variable-entry");
       const lastEntry = variableEntries.last();
       const dataTypeInput = lastEntry.getByRole("combobox").first();
 

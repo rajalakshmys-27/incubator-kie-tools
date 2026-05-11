@@ -90,7 +90,7 @@ test.describe("Add node - Sub-process", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
@@ -118,7 +118,7 @@ test.describe("Add node - Sub-process", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
@@ -237,13 +237,13 @@ test.describe("Add node - Sub-process", () => {
         targetPosition: { x: box.x + box.width - 100, y: box.y + 100 },
       });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
       // Connect Start Event -> Task
@@ -286,7 +286,7 @@ test.describe("Add node - Sub-process", () => {
     test("should move sub-process to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 100, y: 300 } });
 
-      const subProcess = page.locator(".kie-bpmn-editor--sub-process-node").first();
+      const subProcess = page.getByTestId("kie-tools--bpmn-editor--node-subprocess").first();
       await expect(subProcess).toBeAttached();
       await subProcess.scrollIntoViewIfNeeded();
 

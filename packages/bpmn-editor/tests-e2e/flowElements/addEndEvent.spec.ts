@@ -32,7 +32,7 @@ test.describe("Add node - End Event", () => {
       const endEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(endEvent.__$$element).toBe("endEvent");
 
-      const endEventNode = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEventNode = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEventNode).toBeAttached();
     });
 
@@ -42,8 +42,8 @@ test.describe("Add node - End Event", () => {
 
       await diagram.resetFocus();
 
-      const firstEndEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
-      const secondEndEvent = page.locator(".kie-bpmn-editor--end-event-node").nth(1);
+      const firstEndEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
+      const secondEndEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").nth(1);
       await expect(firstEndEvent).toBeAttached();
       await expect(secondEndEvent).toBeAttached();
     });
@@ -72,7 +72,7 @@ test.describe("Add node - End Event", () => {
       }) => {
         await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
-        const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+        const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
         await expect(endEvent).toBeVisible({ timeout: 5000 });
 
         await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: morphType });
@@ -100,7 +100,7 @@ test.describe("Add node - End Event", () => {
       await diagram.resetFocus();
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
@@ -117,7 +117,7 @@ test.describe("Add node - End Event", () => {
     test("should add connected End Event from Gateway node", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const box = await gateway.boundingBox();
@@ -130,7 +130,7 @@ test.describe("Add node - End Event", () => {
 
       await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeAttached();
     });
 
@@ -158,7 +158,7 @@ test.describe("Add node - End Event", () => {
 
       await diagram.zoomOut({ clicks: 1 });
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeAttached();
     });
   });
@@ -167,7 +167,7 @@ test.describe("Add node - End Event", () => {
     test("should delete end event", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible();
       await endEvent.click();
       await page.keyboard.press("Delete");
@@ -181,7 +181,7 @@ test.describe("Add node - End Event", () => {
     test("should move end event to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeAttached();
       await endEvent.scrollIntoViewIfNeeded();
 

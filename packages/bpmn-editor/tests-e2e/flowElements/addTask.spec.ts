@@ -128,7 +128,7 @@ test.describe("Add node - Task", () => {
     test("should add connected Task from Start Event", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const box = await startEvent.boundingBox();
@@ -145,7 +145,7 @@ test.describe("Add node - Task", () => {
     test("should add connected Task from Gateway", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const box = await gateway.boundingBox();
@@ -185,7 +185,7 @@ test.describe("Add node - Task", () => {
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
@@ -214,7 +214,7 @@ test.describe("Add node - Task", () => {
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
@@ -251,7 +251,7 @@ test.describe("Add node - Task", () => {
     test("should move task to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 300 } });
 
-      const task = page.locator(".kie-bpmn-editor--task-node").first();
+      const task = page.getByTestId("kie-tools--bpmn-editor--node-task").first();
       await expect(task).toBeAttached();
       await task.scrollIntoViewIfNeeded();
 

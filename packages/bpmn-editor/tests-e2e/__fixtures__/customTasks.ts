@@ -31,13 +31,13 @@ export class CustomTasks {
   public async openPalette() {
     const customTasksButton = this.page.getByTitle("Custom Tasks");
     await customTasksButton.click();
-    await this.page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks").waitFor({ state: "visible" });
+    await this.page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover").waitFor({ state: "visible" });
   }
 
   public async closePalette() {
     const customTasksButton = this.page.getByTitle("Custom Tasks");
     await customTasksButton.click();
-    await this.page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks").waitFor({ state: "hidden" });
+    await this.page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover").waitFor({ state: "hidden" });
   }
 
   public async dragCustomTask(args: {
@@ -45,16 +45,14 @@ export class CustomTasks {
     targetPosition: { x: number; y: number };
     thenRenameTo?: string;
   }) {
-    const popover = this.page.locator(".kie-bpmn-editor--palette-nodes-popover.custom-tasks");
+    const popover = this.page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover");
     const isVisible = await popover.isVisible().catch(() => false);
 
     if (!isVisible) {
       await this.openPalette();
     }
 
-    const customTaskElement = this.page
-      .locator(".kie-bpmn-editor--custom-tasks-palette--custom-task")
-      .filter({ hasText: args.customTaskName });
+    const customTaskElement = popover.getByRole("button").filter({ hasText: args.customTaskName });
 
     await customTaskElement.waitFor({ state: "visible" });
 
@@ -83,14 +81,16 @@ export class CustomTasks {
   public async getAvailableCustomTasks(): Promise<string[]> {
     await this.openPalette();
 
-    const customTaskElements = this.page.locator(".kie-bpmn-editor--custom-tasks-palette--custom-task--name");
+    const popover = this.page.getByTestId("kie-tools--bpmn-editor--custom-tasks-popover");
+    const customTaskElements = popover.getByRole("button");
     const count = await customTaskElements.count();
 
     const taskNames: string[] = [];
     for (let i = 0; i < count; i++) {
       const text = await customTaskElements.nth(i).textContent();
       if (text) {
-        taskNames.push(text.trim());
+        const cleanedText = text.replace(/[^\w\s-]/g, "").trim();
+        taskNames.push(cleanedText);
       }
     }
 

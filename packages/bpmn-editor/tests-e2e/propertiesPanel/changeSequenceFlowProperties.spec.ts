@@ -95,7 +95,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
 
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 400 }, thenRenameTo: "Low Amount" });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
@@ -146,7 +146,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     nodes,
     page,
   }) => {
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
     await sequenceFlowPropertiesPanel.setName({ newName: "High Amount Path" });
@@ -165,7 +165,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     nodes,
     page,
   }) => {
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
     await sequenceFlowPropertiesPanel.setName({ newName: "High Amount" });
@@ -192,7 +192,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
       thenRenameTo: "Default Path",
     });
 
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     await expect(gateway).toBeVisible({ timeout: 5000 });
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
@@ -232,7 +232,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
   });
 
   test("should configure default flow", async ({ edges, sequenceFlowPropertiesPanel, diagram, nodes, page }) => {
-    const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+    const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
     const edge1 = await edges.get({ from: gatewayId, to: "Condition A" });

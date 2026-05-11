@@ -29,7 +29,7 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
-    const event = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+    const event = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
     await expect(event).toBeVisible({ timeout: 5000 });
 
     await event.click();
@@ -50,13 +50,13 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
   });
 
   test("should configure Timer definition with duration", async ({ intermediateEventPropertiesPanel, page, nodes }) => {
-    const catchEvent = page.locator(".kie-bpmn-editor--intermediate-catch-event-node").first();
+    const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
     await expect(catchEvent).toBeVisible({ timeout: 5000 });
 
     await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Timer" });
     await intermediateEventPropertiesPanel.setTimerDefinition({ type: "duration", value: "PT1H" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot(
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
       "intermediate-catch-event-timer-duration.png"
     );
   });
@@ -64,7 +64,9 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
   test("should configure Message definition", async ({ intermediateEventPropertiesPanel, page }) => {
     await intermediateEventPropertiesPanel.setMessageDefinition({ messageName: "ApprovalMessage" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-catch-event-message.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "intermediate-catch-event-message.png"
+    );
   });
 
   test("should configure Conditional expression", async ({ intermediateEventPropertiesPanel, page }) => {
@@ -100,7 +102,7 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
-    const event = page.locator(".kie-bpmn-editor--intermediate-throw-event-node").first();
+    const event = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
     await expect(event).toBeVisible({ timeout: 5000 });
 
     await event.click();
@@ -125,7 +127,9 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
   test("should configure Message definition", async ({ intermediateEventPropertiesPanel, page }) => {
     await intermediateEventPropertiesPanel.setMessageDefinition({ messageName: "NotificationMessage" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("intermediate-throw-event-message.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "intermediate-throw-event-message.png"
+    );
   });
 
   test("should configure Signal definition", async ({ intermediateEventPropertiesPanel, page }) => {

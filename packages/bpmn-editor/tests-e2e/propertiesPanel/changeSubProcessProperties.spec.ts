@@ -64,14 +64,18 @@ test.describe("Change Properties - Sub-Process Multi-Instance", () => {
     await subProcessPropertiesPanel.setMultiInstance({ type: "parallel" });
     await subProcessPropertiesPanel.setCollectionExpression({ expression: "orderItems" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("subprocess-multi-instance-parallel.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "subprocess-multi-instance-parallel.png"
+    );
   });
 
   test("should configure Sub-Process multi-instance sequential", async ({ subProcessPropertiesPanel, page }) => {
     await subProcessPropertiesPanel.setMultiInstance({ type: "sequential" });
     await subProcessPropertiesPanel.setCollectionExpression({ expression: "tasks" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("subprocess-multi-instance-sequential.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot(
+      "subprocess-multi-instance-sequential.png"
+    );
   });
 });
 
@@ -88,13 +92,13 @@ test.describe("Change Properties - Ad-Hoc Sub-Process", () => {
   test("should configure Ad-Hoc Sub-Process", async ({ subProcessPropertiesPanel, page }) => {
     await subProcessPropertiesPanel.setAdHocOrdering({ ordering: "Parallel" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("adhoc-subprocess-parallel.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("adhoc-subprocess-parallel.png");
   });
 
   test("should configure Ad-Hoc Sub-Process with sequential ordering", async ({ subProcessPropertiesPanel, page }) => {
     await subProcessPropertiesPanel.setAdHocOrdering({ ordering: "Sequential" });
     await subProcessPropertiesPanel.setAdHocCompletionCondition({ condition: "${allTasksCompleted}" });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("adhoc-subprocess-sequential.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("adhoc-subprocess-sequential.png");
   });
 });

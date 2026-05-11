@@ -29,7 +29,7 @@ test.describe("Change Properties - End Event", () => {
   test.beforeEach(async ({ palette, page }) => {
     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
 
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
     await expect(endEvent).toBeVisible({ timeout: 5000 });
 
     await endEvent.click();
@@ -50,28 +50,28 @@ test.describe("Change Properties - End Event", () => {
   });
 
   test("should configure Terminate event definition", async ({ endEventPropertiesPanel, page }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setTerminateDefinition({
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-terminate.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("end-event-terminate.png");
   });
 
   test("should configure Message event definition", async ({ endEventPropertiesPanel, page }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setMessageDefinition({
       messageName: "CompletionMessage",
       endEventLocator: endEvent,
     });
 
-    await expect(page.locator(".kie-bpmn-editor--root")).toHaveScreenshot("end-event-message.png");
+    await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("end-event-message.png");
   });
 
   test("should configure Signal event definition", async ({ endEventPropertiesPanel, page }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setSignalDefinition({
       signalName: "CompletionSignal",
@@ -82,7 +82,7 @@ test.describe("Change Properties - End Event", () => {
   });
 
   test("should configure Error event definition", async ({ endEventPropertiesPanel, page }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setErrorDefinition({
       errorName: "ProcessError",
@@ -94,7 +94,7 @@ test.describe("Change Properties - End Event", () => {
   });
 
   test("should configure Escalation event definition", async ({ endEventPropertiesPanel, page }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setEscalationDefinition({
       escalationName: "ProcessEscalation",
@@ -106,7 +106,7 @@ test.describe("Change Properties - End Event", () => {
   });
 
   test("should configure Compensation event definition", async ({ endEventPropertiesPanel, page, jsonModel }) => {
-    const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+    const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
     await endEventPropertiesPanel.setCompensationDefinition({
       endEventLocator: endEvent,

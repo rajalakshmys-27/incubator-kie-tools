@@ -29,7 +29,7 @@ test.describe("Add node - Group", () => {
     test("should add Group node from palette", async ({ palette, page, jsonModel }) => {
       await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 100, y: 100 } });
 
-      const groupNode = page.locator(".kie-bpmn-editor--group-node").first();
+      const groupNode = page.getByTestId("kie-tools--bpmn-editor--node-group").first();
       await expect(groupNode).toBeAttached();
 
       const process = await jsonModel.getProcess();
@@ -48,8 +48,8 @@ test.describe("Add node - Group", () => {
 
       await diagram.resetFocus();
 
-      const firstGroup = page.locator(".kie-bpmn-editor--group-node").first();
-      const secondGroup = page.locator(".kie-bpmn-editor--group-node").nth(1);
+      const firstGroup = page.getByTestId("kie-tools--bpmn-editor--node-group").first();
+      const secondGroup = page.getByTestId("kie-tools--bpmn-editor--node-group").nth(1);
       await expect(firstGroup).toBeAttached();
       await expect(secondGroup).toBeAttached();
 
@@ -71,7 +71,7 @@ test.describe("Add node - Group", () => {
     test("should move group to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.GROUP, targetPosition: { x: 300, y: 300 } });
 
-      const group = page.locator(".kie-bpmn-editor--group-node").first();
+      const group = page.getByTestId("kie-tools--bpmn-editor--node-group").first();
       await expect(group).toBeAttached();
 
       await group.scrollIntoViewIfNeeded();

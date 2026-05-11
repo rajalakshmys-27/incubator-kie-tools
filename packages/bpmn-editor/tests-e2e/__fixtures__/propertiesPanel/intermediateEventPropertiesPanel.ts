@@ -55,9 +55,10 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
   }
 
   public async selectEventDefinition(args: { eventType: string }) {
-    const selectedNode = this.page
-      .locator(".kie-bpmn-editor--intermediate-catch-event-node, .kie-bpmn-editor--intermediate-throw-event-node")
-      .first();
+    const catchEvent = this.page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event");
+    const throwEvent = this.page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event");
+
+    const selectedNode = (await catchEvent.count()) > 0 ? catchEvent.first() : throwEvent.first();
 
     await expect(selectedNode).toBeVisible({ timeout: 5000 });
 

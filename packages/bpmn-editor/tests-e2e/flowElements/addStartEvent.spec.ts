@@ -43,7 +43,7 @@ async function setupEventSubProcess(palette: Palette, nodes: Nodes, page: Page) 
     targetPosition: { x: box.x + box.width / 2 - 50, y: box.y + box.height / 2 + 50 },
   });
 
-  const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+  const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
   await expect(startEvent).toBeVisible({ timeout: 5000 });
 
   return startEvent;
@@ -63,7 +63,7 @@ async function setupRegularSubProcess(palette: Palette, nodes: Nodes, page: Page
     targetPosition: { x: box.x + box.width / 2 - 50, y: box.y + box.height / 2 + 50 },
   });
 
-  const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+  const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
   await expect(startEvent).toBeVisible({ timeout: 5000 });
 
   return startEvent;
@@ -77,7 +77,7 @@ test.describe("Add node - Start Event", () => {
       const startEvent = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(startEvent.__$$element).toBe("startEvent");
 
-      const startEventNode = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEventNode = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEventNode).toBeAttached();
     });
 
@@ -91,8 +91,8 @@ test.describe("Add node - Start Event", () => {
 
       await diagram.resetFocus();
 
-      const firstStartEvent = page.locator(".kie-bpmn-editor--task-node").first();
-      const secondStartEvent = page.locator(".kie-bpmn-editor--task-node").nth(1);
+      const firstStartEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
+      const secondStartEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").nth(1);
       await expect(firstStartEvent).toBeAttached();
       await expect(secondStartEvent).toBeAttached();
     });
@@ -121,7 +121,7 @@ test.describe("Add node - Start Event", () => {
       }) => {
         await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
-        const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+        const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
         await expect(startEvent).toBeVisible({ timeout: 5000 });
 
         await nodes.morphNode({ nodeLocator: startEvent, targetMorphType: morphType });
@@ -150,7 +150,7 @@ test.describe("Add node - Start Event", () => {
     }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       await nodes.openMorphingPanel({ nodeLocator: startEvent });
@@ -264,7 +264,7 @@ test.describe("Add node - Start Event", () => {
     test("should add connected Task node from Start Event", async ({ diagram, palette, page, nodes }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const box = await startEvent.boundingBox();
@@ -284,7 +284,7 @@ test.describe("Add node - Start Event", () => {
     test("should add connected Gateway node from Start Event", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
 
       const box = await startEvent.boundingBox();
@@ -297,7 +297,7 @@ test.describe("Add node - Start Event", () => {
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeAttached();
     });
 
@@ -305,7 +305,7 @@ test.describe("Add node - Start Event", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 350, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible({ timeout: 5000 });
       const startEventId = (await startEvent.getAttribute("data-nodehref")) ?? "";
 
@@ -336,7 +336,7 @@ test.describe("Add node - Start Event", () => {
     test("should delete start event", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeVisible();
       await startEvent.click();
       await page.keyboard.press("Delete");
@@ -350,7 +350,7 @@ test.describe("Add node - Start Event", () => {
     test("should move start event to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeAttached();
       await startEvent.scrollIntoViewIfNeeded();
 

@@ -31,7 +31,7 @@ test.describe("Add node - Gateway", () => {
       const gateway = await jsonModel.getFlowElement({ elementIndex: 0 });
       expect(gateway.__$$element).toBe("exclusiveGateway");
 
-      const gatewayNode = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gatewayNode = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gatewayNode).toBeAttached();
     });
 
@@ -45,8 +45,8 @@ test.describe("Add node - Gateway", () => {
 
       await diagram.resetFocus();
 
-      const firstGateway = page.locator(".kie-bpmn-editor--gateway-node").first();
-      const secondGateway = page.locator(".kie-bpmn-editor--gateway-node").nth(1);
+      const firstGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
+      const secondGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").nth(1);
       await expect(firstGateway).toBeAttached();
       await expect(secondGateway).toBeAttached();
     });
@@ -73,7 +73,7 @@ test.describe("Add node - Gateway", () => {
       }) => {
         await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
-        const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+        const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
         await expect(gateway).toBeVisible({ timeout: 5000 });
 
         await nodes.morphNode({ nodeLocator: gateway, targetMorphType: morphType, exact });
@@ -100,7 +100,7 @@ test.describe("Add node - Gateway", () => {
     }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Parallel" });
@@ -129,7 +129,7 @@ test.describe("Add node - Gateway", () => {
     test("should add connected Task node from Gateway", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const box = await gateway.boundingBox();
@@ -142,14 +142,14 @@ test.describe("Add node - Gateway", () => {
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const gatewayNode = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gatewayNode = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gatewayNode).toBeAttached();
     });
 
     test("should add connected Gateway node from Gateway", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const box = await gateway.boundingBox();
@@ -162,7 +162,7 @@ test.describe("Add node - Gateway", () => {
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const secondGateway = page.locator(".kie-bpmn-editor--gateway-node").nth(1);
+      const secondGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").nth(1);
       await expect(secondGateway).toBeAttached();
     });
 
@@ -170,7 +170,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 350, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
@@ -201,11 +201,11 @@ test.describe("Add node - Gateway", () => {
       await diagram.resetFocus();
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
@@ -232,11 +232,11 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 350, y: 100 } });
 
-      const firstGateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const firstGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(firstGateway).toBeVisible({ timeout: 5000 });
       const firstGatewayId = (await firstGateway.getAttribute("data-nodehref")) ?? "";
 
-      const secondGateway = page.locator(".kie-bpmn-editor--gateway-node").nth(1);
+      const secondGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").nth(1);
       await expect(secondGateway).toBeAttached();
       const secondGatewayId = (await secondGateway.getAttribute("data-nodehref")) ?? "";
 
@@ -265,7 +265,7 @@ test.describe("Add node - Gateway", () => {
     test("should add connected Gateway from Start Event", async ({ diagram, palette, page }) => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeAttached();
 
       const box = await startEvent.boundingBox();
@@ -278,7 +278,7 @@ test.describe("Add node - Gateway", () => {
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeAttached();
     });
 
@@ -298,7 +298,7 @@ test.describe("Add node - Gateway", () => {
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeAttached();
     });
   });
@@ -307,7 +307,7 @@ test.describe("Add node - Gateway", () => {
     test("should delete gateway", async ({ palette, jsonModel, page }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible();
       await gateway.click();
       await page.keyboard.press("Delete");
@@ -321,7 +321,7 @@ test.describe("Add node - Gateway", () => {
     test("should move gateway to new position", async ({ palette, page, diagram }) => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeAttached();
       await gateway.scrollIntoViewIfNeeded();
 

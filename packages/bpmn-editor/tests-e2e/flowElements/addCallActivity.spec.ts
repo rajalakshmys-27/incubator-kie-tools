@@ -120,7 +120,7 @@ test.describe("Add node - Call Activity", () => {
       const callActivity = page.locator('[data-nodelabel="New Call Activity"]').first();
       await expect(callActivity).toBeAttached();
 
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
       await expect(endEvent).toBeVisible({ timeout: 5000 });
 
       const box = await callActivity.boundingBox();
@@ -147,7 +147,7 @@ test.describe("Add node - Call Activity", () => {
         targetPosition: { x: 100, y: 100 },
       });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeAttached();
 
       const box = await startEvent.boundingBox();
@@ -223,7 +223,7 @@ test.describe("Add node - Call Activity", () => {
         targetPosition: { x: 350, y: 100 },
       });
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const callActivity = page.locator('[data-nodelabel="New Call Activity"]').first();
@@ -264,7 +264,7 @@ test.describe("Add node - Call Activity", () => {
       const callActivity = page.locator('[data-nodelabel="New Call Activity"]').first();
       await expect(callActivity).toBeAttached();
 
-      const gateway = page.locator(".kie-bpmn-editor--gateway-node").first();
+      const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
       await expect(gateway).toBeVisible({ timeout: 5000 });
 
       const box = await callActivity.boundingBox();
@@ -317,13 +317,13 @@ test.describe("Add node - Call Activity", () => {
       });
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 1000, y: 150 } });
 
-      const startEvent = page.locator(".kie-bpmn-editor--task-node").first();
+      const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
       await expect(startEvent).toBeAttached();
 
       const prepareData = nodes.get({ name: "Prepare Data" });
       const callActivity = nodes.get({ name: "Execute Subprocess" });
       const processResults = nodes.get({ name: "Process Results" });
-      const endEvent = page.locator(".kie-bpmn-editor--end-event-node").first();
+      const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
 
       // Connect Start Event -> Prepare Data
       let box = await startEvent.boundingBox();
@@ -401,7 +401,7 @@ test.describe("Add node - Call Activity", () => {
     test("should move call activity to new position", async ({ palette, diagram, page }) => {
       await palette.dragNewNode({ type: NodeType.CALL_ACTIVITY, targetPosition: { x: 300, y: 300 } });
 
-      const callActivity = page.locator(".kie-bpmn-editor--task-node").first();
+      const callActivity = page.getByTestId("kie-tools--bpmn-editor--node-task").first();
       await expect(callActivity).toBeAttached();
       await callActivity.scrollIntoViewIfNeeded();
 
