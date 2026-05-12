@@ -81,7 +81,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
       const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
+      await expect(boundaryEventNode).toBeVisible();
 
       await boundaryEventNode.dragTo(diagram.get(), { targetPosition: { x: 500, y: 100 } });
 
@@ -117,18 +117,15 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
       const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
+      await expect(boundaryEventNode).toBeVisible();
       await boundaryEventNode.click();
 
       await intermediateEventPropertiesPanel.setCancelActivity({ cancelActivity: false });
 
       await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 1 });
-          },
-          { timeout: 10000 }
-        )
+        .poll(async () => {
+          return await jsonModel.getFlowElement({ elementIndex: 1 });
+        })
         .toMatchObject({
           __$$element: "boundaryEvent",
           "@_attachedToRef": expect.stringMatching(/.+/),
@@ -173,7 +170,7 @@ test.describe("Add Boundary Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 450, y: 300 } });
 
       const boundaryEventNode = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(boundaryEventNode).toBeVisible({ timeout: 5000 });
+      await expect(boundaryEventNode).toBeVisible();
       await boundaryEventNode.click();
       await boundaryEventNode.press("Delete");
 

@@ -30,23 +30,25 @@ test.describe("Change Properties - End Event", () => {
     await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 100, y: 100 } });
 
     const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-    await expect(endEvent).toBeVisible({ timeout: 5000 });
+    await expect(endEvent).toBeVisible();
 
     await endEvent.click();
   });
 
   test("should change the End Event name", async ({ endEventPropertiesPanel }) => {
-    await endEventPropertiesPanel.setName({ newName: "Process Completed" });
+    await endEventPropertiesPanel.nameProperties.setName({ newName: "Process Completed" });
 
-    expect(await endEventPropertiesPanel.getName()).toBe("Process Completed");
+    expect(await endEventPropertiesPanel.nameProperties.getName()).toBe("Process Completed");
   });
 
   test("should change the End Event documentation", async ({ endEventPropertiesPanel }) => {
-    await endEventPropertiesPanel.setDocumentation({
+    await endEventPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This event ends the process successfully",
     });
 
-    expect(await endEventPropertiesPanel.getDocumentation()).toBe("This event ends the process successfully");
+    expect(await endEventPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This event ends the process successfully"
+    );
   });
 
   test("should configure Terminate event definition", async ({ endEventPropertiesPanel, page }) => {

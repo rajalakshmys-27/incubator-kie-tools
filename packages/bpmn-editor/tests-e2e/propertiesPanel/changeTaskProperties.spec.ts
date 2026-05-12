@@ -33,18 +33,20 @@ test.describe("Change Properties - Task Node", () => {
   });
 
   test("should change the Task name", async ({ taskPropertiesPanel, page }) => {
-    await taskPropertiesPanel.setName({ newName: "Process Order" });
+    await taskPropertiesPanel.nameProperties.setName({ newName: "Process Order" });
 
-    expect(await taskPropertiesPanel.getName()).toBe("Process Order");
+    expect(await taskPropertiesPanel.nameProperties.getName()).toBe("Process Order");
     await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("task-name-changed.png");
   });
 
   test("should change the Task documentation", async ({ taskPropertiesPanel }) => {
-    await taskPropertiesPanel.setDocumentation({
+    await taskPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This task processes customer orders",
     });
 
-    expect(await taskPropertiesPanel.getDocumentation()).toBe("This task processes customer orders");
+    expect(await taskPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This task processes customer orders"
+    );
   });
 });
 

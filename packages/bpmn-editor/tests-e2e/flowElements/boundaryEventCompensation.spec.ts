@@ -45,12 +45,9 @@ test.describe("Compensation Boundary Events", () => {
     await intermediateEventPropertiesPanel.setCancelActivity({ cancelActivity: false });
 
     await expect
-      .poll(
-        async () => {
-          return await jsonModel.getFlowElement({ elementIndex: 1 });
-        },
-        { timeout: 10000 }
-      )
+      .poll(async () => {
+        return await jsonModel.getFlowElement({ elementIndex: 1 });
+      })
       .toMatchObject({
         __$$element: "boundaryEvent",
         "@_attachedToRef": expect.stringMatching(/.+/),
@@ -80,13 +77,10 @@ test.describe("Compensation Boundary Events", () => {
     await intermediateEventPropertiesPanel.setCompensationDefinition({});
 
     await expect
-      .poll(
-        async () => {
-          const process = await jsonModel.getProcess();
-          return process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
-        },
-        { timeout: 10000 }
-      )
+      .poll(async () => {
+        const process = await jsonModel.getProcess();
+        return process.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
+      })
       .toMatchObject({
         __$$element: "boundaryEvent",
         eventDefinition: [{ __$$element: "compensateEventDefinition" }],
@@ -106,7 +100,7 @@ test.describe("Compensation Boundary Events", () => {
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
-    await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+    await expect(addSequenceFlowHandle).toBeVisible();
 
     const eventBox = await eventNode.boundingBox();
     if (!eventBox) throw new Error("Boundary Event bounding box not found");
@@ -148,13 +142,10 @@ test.describe("Compensation Boundary Events", () => {
     await intermediateEventPropertiesPanel.setCancelActivity({ cancelActivity: false });
 
     await expect
-      .poll(
-        async () => {
-          const updatedProcess = await jsonModel.getProcess();
-          return updatedProcess.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
-        },
-        { timeout: 10000 }
-      )
+      .poll(async () => {
+        const updatedProcess = await jsonModel.getProcess();
+        return updatedProcess.flowElement?.find((e: { __$$element: string }) => e.__$$element === "boundaryEvent");
+      })
       .toMatchObject({
         __$$element: "boundaryEvent",
         "@_attachedToRef": subProcessElement["@_id"],

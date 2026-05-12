@@ -21,21 +21,14 @@ import { Page, Locator } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
 import { Nodes } from "../nodes";
-import { NameProperties } from "./parts/nameProperties";
-import { DocumentationProperties } from "./parts/documentationProperties";
 
 export class EndEventPropertiesPanel extends PropertiesPanelBase {
-  private nameProperties: NameProperties;
-  private documentationProperties: DocumentationProperties;
-
   constructor(
     public diagram: Diagram,
     public page: Page,
     public nodes: Nodes
   ) {
     super(diagram, page);
-    this.nameProperties = new NameProperties(this.panel(), page);
-    this.documentationProperties = new DocumentationProperties(this.panel(), page);
   }
 
   private async morphToEventType(args: { endEventLocator: Locator; eventType: string }) {
@@ -43,22 +36,6 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
       nodeLocator: args.endEventLocator,
       targetMorphType: args.eventType,
     });
-  }
-
-  public async setName(args: { newName: string }) {
-    await this.nameProperties.setName({ ...args });
-  }
-
-  public async getName(): Promise<string> {
-    return await this.nameProperties.getName();
-  }
-
-  public async setDocumentation(args: { newDocumentation: string }) {
-    await this.documentationProperties.setDocumentation({ ...args });
-  }
-
-  public async getDocumentation(): Promise<string> {
-    return await this.documentationProperties.getDocumentation();
   }
 
   public async setTerminateDefinition(args: { endEventLocator: Locator }) {
@@ -95,7 +72,7 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
 
   public async getSignalName(): Promise<string> {
     const signalInput = this.panel().getByRole("combobox").first();
-    await signalInput.waitFor({ state: "visible", timeout: 5000 });
+    await signalInput.waitFor({ state: "visible" });
     return (await signalInput.inputValue()) || "";
   }
 
@@ -124,7 +101,7 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
 
   public async getErrorName(): Promise<string> {
     const errorInput = this.panel().getByRole("combobox").first();
-    await errorInput.waitFor({ state: "visible", timeout: 5000 });
+    await errorInput.waitFor({ state: "visible" });
     return (await errorInput.inputValue()) || "";
   }
 
@@ -164,7 +141,7 @@ export class EndEventPropertiesPanel extends PropertiesPanelBase {
 
   public async getEscalationName(): Promise<string> {
     const escalationInput = this.panel().getByRole("combobox").first();
-    await escalationInput.waitFor({ state: "visible", timeout: 5000 });
+    await escalationInput.waitFor({ state: "visible" });
     return (await escalationInput.inputValue()) || "";
   }
 

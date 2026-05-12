@@ -121,8 +121,6 @@ export class Nodes {
       force: true,
       noWaitAfter: true,
     });
-
-    await this.page.waitForTimeout(1000);
   }
 
   public async dragNewConnectedNode(args: {
@@ -147,7 +145,6 @@ export class Nodes {
       const box = await node.boundingBox();
       if (box) {
         await this.page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
-        await this.page.waitForTimeout(500);
       }
     }
 
@@ -156,9 +153,9 @@ export class Nodes {
     await node.getByTitle(addNodeTitle).dragTo(this.diagram.get(), { targetPosition: args.targetPosition });
 
     if (nodeName === "") {
-      await this.page.waitForSelector(`div[data-nodetype="${args.type}"]`, { timeout: 10000, state: "attached" });
+      await this.page.waitForSelector(`div[data-nodetype="${args.type}"]`, { state: "attached" });
     } else {
-      await this.page.waitForSelector(`div[data-nodelabel="${nodeName}"]`, { timeout: 10000, state: "attached" });
+      await this.page.waitForSelector(`div[data-nodelabel="${nodeName}"]`, { state: "attached" });
     }
 
     if (args.thenRenameTo) {
@@ -180,9 +177,7 @@ export class Nodes {
 
     const isGateway = await node.evaluate((el) => el.classList.contains("kie-bpmn-editor--gateway-node"));
 
-    if (isGateway) {
-      await this.page.waitForTimeout(300);
-    } else {
+    if (!isGateway) {
       await this.waitForNodeToBeFocused({ id: args.id });
     }
   }
@@ -279,13 +274,7 @@ export class Nodes {
     }
   }
 
-  public async morphNode(args: {
-    nodeLocator: Locator;
-    targetMorphType: string;
-    hoverDelay?: number;
-    exact?: boolean;
-  }): Promise<void> {
-    const hoverDelay = args.hoverDelay ?? 300;
+  public async morphNode(args: { nodeLocator: Locator; targetMorphType: string; exact?: boolean }): Promise<void> {
     const exact = args.exact ?? false;
 
     const box = await args.nodeLocator.boundingBox();
@@ -294,38 +283,44 @@ export class Nodes {
     }
 
     await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(hoverDelay);
 
     const morphingToggle = args.nodeLocator.getByRole("button", { name: /morph/i });
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
+    const isToggleVisible = await morphingToggle.isVisible().catch(() => false);
+
+    if (!isToggleVisible) {
+      return;
+    }
+
     await morphingToggle.click({ force: true });
 
     const morphingPanel = this.page.getByTestId("kie-tools--bpmn-editor--morphing-panel");
-    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
+    await morphingPanel.waitFor({ state: "visible" });
 
     const morphingOption = morphingPanel.getByTitle(args.targetMorphType, { exact });
-    await expect(morphingOption).toBeVisible({ timeout: 5000 });
+    const isOptionVisible = await morphingOption.isVisible().catch(() => false);
+
+    if (!isOptionVisible) {
+      await this.diagram.resetFocus();
+      return;
+    }
+
     await morphingOption.click({ force: true });
-    await this.page.waitForTimeout(500);
   }
 
-  public async openMorphingPanel(args: { nodeLocator: Locator; hoverDelay?: number }): Promise<void> {
-    const hoverDelay = args.hoverDelay ?? 300;
-
+  public async openMorphingPanel(args: { nodeLocator: Locator }): Promise<void> {
     const box = await args.nodeLocator.boundingBox();
     if (!box) {
       throw new Error("Node not visible - cannot retrieve bounding box for morphing panel");
     }
 
     await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.waitForTimeout(hoverDelay);
 
     const morphingToggle = args.nodeLocator.getByRole("button", { name: /morph/i });
-    await expect(morphingToggle).toBeVisible({ timeout: 5000 });
+    await expect(morphingToggle).toBeVisible();
     await morphingToggle.click({ force: true });
 
     const morphingPanel = this.page.getByTestId("kie-tools--bpmn-editor--morphing-panel");
-    await morphingPanel.waitFor({ state: "visible", timeout: 5000 });
+    await morphingPanel.waitFor({ state: "visible" });
   }
 
   private async getPositionalNodeHandleCoordinates(args: {

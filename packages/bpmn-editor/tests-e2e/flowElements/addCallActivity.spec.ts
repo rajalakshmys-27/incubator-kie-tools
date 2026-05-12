@@ -77,7 +77,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = callActivity.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -99,7 +99,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = callActivity.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -121,7 +121,7 @@ test.describe("Add node - Call Activity", () => {
       await expect(callActivity).toBeAttached();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
 
       const box = await callActivity.boundingBox();
       if (!box) throw new Error("Call Activity bounding box not found");
@@ -129,7 +129,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = callActivity.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
@@ -156,7 +156,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = startEvent.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -197,7 +197,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = firstCallActivity.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const secondCallActivityBox = await secondCallActivity.boundingBox();
       if (!secondCallActivityBox) throw new Error("Second Call Activity bounding box not found");
@@ -224,7 +224,7 @@ test.describe("Add node - Call Activity", () => {
       });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const callActivity = page.locator('[data-nodelabel="New Call Activity"]').first();
       await expect(callActivity).toBeAttached();
@@ -235,7 +235,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const callActivityBox = await callActivity.boundingBox();
       if (!callActivityBox) throw new Error("Call Activity bounding box not found");
@@ -265,7 +265,7 @@ test.describe("Add node - Call Activity", () => {
       await expect(callActivity).toBeAttached();
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const box = await callActivity.boundingBox();
       if (!box) throw new Error("Call Activity bounding box not found");
@@ -273,7 +273,7 @@ test.describe("Add node - Call Activity", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = callActivity.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const gatewayBox = await gateway.boundingBox();
       if (!gatewayBox) throw new Error("Gateway bounding box not found");
@@ -330,7 +330,7 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Start Event not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle1 = startEvent.getByTitle("Add Sequence Flow");
-      await expect(handle1).toBeVisible({ timeout: 5000 });
+      await expect(handle1).toBeVisible();
       let targetBox = await prepareData.boundingBox();
       if (!targetBox) throw new Error("Prepare Data not visible");
       await handle1.dragTo(diagram.get(), {
@@ -342,7 +342,7 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Prepare Data not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle2 = prepareData.getByTitle("Add Sequence Flow");
-      await expect(handle2).toBeVisible({ timeout: 5000 });
+      await expect(handle2).toBeVisible();
       targetBox = await callActivity.boundingBox();
       if (!targetBox) throw new Error("Call Activity not visible");
       await handle2.dragTo(diagram.get(), {
@@ -354,7 +354,7 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Call Activity not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle3 = callActivity.getByTitle("Add Sequence Flow");
-      await expect(handle3).toBeVisible({ timeout: 5000 });
+      await expect(handle3).toBeVisible();
       targetBox = await processResults.boundingBox();
       if (!targetBox) throw new Error("Process Results not visible");
       await handle3.dragTo(diagram.get(), {
@@ -366,7 +366,7 @@ test.describe("Add node - Call Activity", () => {
       if (!box) throw new Error("Process Results not visible");
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
       const handle4 = processResults.getByTitle("Add Sequence Flow");
-      await expect(handle4).toBeVisible({ timeout: 5000 });
+      await expect(handle4).toBeVisible();
       targetBox = await endEvent.boundingBox();
       if (!targetBox) throw new Error("End Event not visible");
       await handle4.dragTo(diagram.get(), {

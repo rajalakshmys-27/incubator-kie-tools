@@ -73,17 +73,14 @@ test.describe("Add node - End Event", () => {
         await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 300 } });
 
         const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-        await expect(endEvent).toBeVisible({ timeout: 5000 });
+        await expect(endEvent).toBeVisible();
 
         await nodes.morphNode({ nodeLocator: endEvent, targetMorphType: morphType });
 
         await expect
-          .poll(
-            async () => {
-              return await jsonModel.getFlowElement({ elementIndex: 0 });
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            return await jsonModel.getFlowElement({ elementIndex: 0 });
+          })
           .toMatchObject({
             __$$element: "endEvent",
             eventDefinition: [{ __$$element: eventDefinition }],
@@ -101,7 +98,7 @@ test.describe("Add node - End Event", () => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
       await nodes.dragNewConnectedEdge({
@@ -118,7 +115,7 @@ test.describe("Add node - End Event", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
@@ -126,7 +123,7 @@ test.describe("Add node - End Event", () => {
       await page.mouse.move(box.x + box.width / 2, box.y + 10);
 
       const addEndEventHandle = gateway.getByTitle("Add End Event");
-      await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
+      await expect(addEndEventHandle).toBeVisible();
 
       await addEndEventHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -146,7 +143,7 @@ test.describe("Add node - End Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addEndEventHandle = subProcess.getByTitle("Add End Event");
-      await expect(addEndEventHandle).toBeVisible({ timeout: 5000 });
+      await expect(addEndEventHandle).toBeVisible();
 
       const handleBox = await addEndEventHandle.boundingBox();
       if (!handleBox) throw new Error("Add End Event handle bounding box not found");

@@ -44,7 +44,7 @@ test.describe("Change Properties - Sequence Flow", () => {
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addSequenceFlowHandle = taskA.getByTitle("Add Sequence Flow");
-    await addSequenceFlowHandle.waitFor({ state: "visible", timeout: 5000 });
+    await addSequenceFlowHandle.waitFor({ state: "visible" });
 
     const taskBBox = await taskB.boundingBox();
     if (!taskBBox) throw new Error("Task B bounding box not found");
@@ -61,17 +61,19 @@ test.describe("Change Properties - Sequence Flow", () => {
   });
 
   test("should change the Sequence Flow name", async ({ sequenceFlowPropertiesPanel }) => {
-    await sequenceFlowPropertiesPanel.setName({ newName: "Normal Flow" });
+    await sequenceFlowPropertiesPanel.nameProperties.setName({ newName: "Normal Flow" });
 
-    expect(await sequenceFlowPropertiesPanel.getName()).toBe("Normal Flow");
+    expect(await sequenceFlowPropertiesPanel.nameProperties.getName()).toBe("Normal Flow");
   });
 
   test("should change the Sequence Flow documentation", async ({ sequenceFlowPropertiesPanel }) => {
-    await sequenceFlowPropertiesPanel.setDocumentation({
+    await sequenceFlowPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This flow connects Task A to Task B",
     });
 
-    expect(await sequenceFlowPropertiesPanel.getDocumentation()).toBe("This flow connects Task A to Task B");
+    expect(await sequenceFlowPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This flow connects Task A to Task B"
+    );
   });
 
   test("should configure conditional expression", async ({ sequenceFlowPropertiesPanel }) => {
@@ -96,7 +98,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 300, y: 400 }, thenRenameTo: "Low Amount" });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
     const highAmountTask = nodes.get({ name: "High Amount" });
@@ -110,7 +112,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addTaskHandle1 = gateway.getByTitle("Add Sequence Flow");
-    await expect(addTaskHandle1).toBeVisible({ timeout: 5000 });
+    await expect(addTaskHandle1).toBeVisible();
 
     let taskBox = await highAmountTask.boundingBox();
     if (!taskBox) throw new Error("High Amount task bounding box not found");
@@ -124,7 +126,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addTaskHandle2 = gateway.getByTitle("Add Sequence Flow");
-    await expect(addTaskHandle2).toBeVisible({ timeout: 5000 });
+    await expect(addTaskHandle2).toBeVisible();
 
     taskBox = await lowAmountTask.boundingBox();
     if (!taskBox) throw new Error("Low Amount task bounding box not found");
@@ -149,7 +151,7 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
-    await sequenceFlowPropertiesPanel.setName({ newName: "High Amount Path" });
+    await sequenceFlowPropertiesPanel.nameProperties.setName({ newName: "High Amount Path" });
     await sequenceFlowPropertiesPanel.setConditionExpression({ expression: "${amount > 5000}" });
 
     const edge = await edges.get({ from: gatewayId, to: "High Amount" });
@@ -168,12 +170,12 @@ test.describe("Change Properties - Conditional Sequence Flow from Gateway", () =
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
-    await sequenceFlowPropertiesPanel.setName({ newName: "High Amount" });
+    await sequenceFlowPropertiesPanel.nameProperties.setName({ newName: "High Amount" });
     await sequenceFlowPropertiesPanel.setConditionExpression({ expression: "${amount > 5000}" });
 
     const edge2 = await edges.get({ from: gatewayId, to: "Low Amount" });
     await edge2.click();
-    await sequenceFlowPropertiesPanel.setName({ newName: "Low Amount" });
+    await sequenceFlowPropertiesPanel.nameProperties.setName({ newName: "Low Amount" });
     await sequenceFlowPropertiesPanel.setConditionExpression({ expression: "${amount <= 5000}" });
 
     await expect(diagram.get()).toHaveScreenshot("gateway-multiple-conditional-flows.png");
@@ -193,7 +195,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
     const conditionATask = nodes.get({ name: "Condition A" });
@@ -207,7 +209,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addTaskHandle1 = gateway.getByTitle("Add Sequence Flow");
-    await expect(addTaskHandle1).toBeVisible({ timeout: 5000 });
+    await expect(addTaskHandle1).toBeVisible();
 
     let taskBox = await conditionATask.boundingBox();
     if (!taskBox) throw new Error("Condition A task bounding box not found");
@@ -221,7 +223,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
     await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
     const addTaskHandle2 = gateway.getByTitle("Add Sequence Flow");
-    await expect(addTaskHandle2).toBeVisible({ timeout: 5000 });
+    await expect(addTaskHandle2).toBeVisible();
 
     taskBox = await defaultPathTask.boundingBox();
     if (!taskBox) throw new Error("Default Path task bounding box not found");
@@ -241,7 +243,7 @@ test.describe("Change Properties - Default Sequence Flow", () => {
 
     const edge2 = await edges.get({ from: gatewayId, to: "Default Path" });
     await edge2.click();
-    await sequenceFlowPropertiesPanel.setName({ newName: "Default" });
+    await sequenceFlowPropertiesPanel.nameProperties.setName({ newName: "Default" });
 
     await expect(diagram.get()).toHaveScreenshot("gateway-default-flow.png");
   });

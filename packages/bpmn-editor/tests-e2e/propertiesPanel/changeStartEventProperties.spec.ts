@@ -30,24 +30,26 @@ test.describe("Change Properties - Start Event", () => {
     await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
     const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await expect(startEvent).toBeVisible();
 
     await startEvent.click();
   });
 
   test("should change the Start Event name", async ({ startEventPropertiesPanel, page }) => {
-    await startEventPropertiesPanel.setName({ newName: "Process Started" });
+    await startEventPropertiesPanel.nameProperties.setName({ newName: "Process Started" });
 
-    expect(await startEventPropertiesPanel.getName()).toBe("Process Started");
+    expect(await startEventPropertiesPanel.nameProperties.getName()).toBe("Process Started");
     await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("start-event-name-changed.png");
   });
 
   test("should change the Start Event documentation", async ({ startEventPropertiesPanel }) => {
-    await startEventPropertiesPanel.setDocumentation({
+    await startEventPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This event starts the process",
     });
 
-    expect(await startEventPropertiesPanel.getDocumentation()).toBe("This event starts the process");
+    expect(await startEventPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This event starts the process"
+    );
   });
 
   test("should configure Timer event definition with date", async ({ startEventPropertiesPanel, page }) => {
@@ -158,7 +160,7 @@ test.describe("Change Properties - Start Event in Event Sub-Process", () => {
     await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition });
 
     const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await expect(startEvent).toBeVisible();
     await startEvent.click();
 
     await startEventPropertiesPanel.setMessageDefinition({
@@ -211,7 +213,7 @@ test.describe("Change Properties - Error/Escalation Start Events in Event Sub-Pr
     });
 
     const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await expect(startEvent).toBeVisible();
     await startEvent.click();
 
     // Test: Configure Error definition
@@ -246,7 +248,7 @@ test.describe("Change Properties - Error/Escalation Start Events in Event Sub-Pr
     });
 
     const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-    await expect(startEvent).toBeVisible({ timeout: 5000 });
+    await expect(startEvent).toBeVisible();
     await startEvent.click();
 
     // Test: Configure Escalation definition

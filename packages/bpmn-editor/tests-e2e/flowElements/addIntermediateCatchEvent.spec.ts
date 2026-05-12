@@ -80,17 +80,14 @@ test.describe("Add node - Intermediate Catch Event", () => {
         await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 300, y: 300 } });
 
         const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-        await expect(catchEvent).toBeVisible({ timeout: 5000 });
+        await expect(catchEvent).toBeVisible();
 
         await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: morphType });
 
         await expect
-          .poll(
-            async () => {
-              return await jsonModel.getFlowElement({ elementIndex: 0 });
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            return await jsonModel.getFlowElement({ elementIndex: 0 });
+          })
           .toMatchObject({
             __$$element: "intermediateCatchEvent",
             eventDefinition: [{ __$$element: eventDefinition }],
@@ -108,7 +105,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+      await expect(catchEvent).toBeVisible();
 
       const box = await catchEvent.boundingBox();
       if (!box) throw new Error("Intermediate Catch Event bounding box not found");
@@ -116,7 +113,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = catchEvent.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -127,7 +124,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+      await expect(catchEvent).toBeVisible();
 
       const box = await catchEvent.boundingBox();
       if (!box) throw new Error("Intermediate Catch Event bounding box not found");
@@ -135,7 +132,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = catchEvent.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -151,10 +148,10 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+      await expect(catchEvent).toBeVisible();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
 
       const box = await catchEvent.boundingBox();
       if (!box) throw new Error("Intermediate Catch Event bounding box not found");
@@ -162,7 +159,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = catchEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
@@ -186,7 +183,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await expect(startEvent).toBeAttached();
 
       const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+      await expect(catchEvent).toBeVisible();
 
       const startBox = await startEvent.boundingBox();
       if (!startBox) throw new Error("Start Event bounding box not found");
@@ -194,7 +191,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const catchBox = await catchEvent.boundingBox();
       if (!catchBox) throw new Error("Intermediate Catch Event bounding box not found");
@@ -215,7 +212,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await expect(task).toBeAttached();
 
       const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-      await expect(catchEvent).toBeVisible({ timeout: 5000 });
+      await expect(catchEvent).toBeVisible();
 
       const taskBox = await task.boundingBox();
       if (!taskBox) throw new Error("Task bounding box not found");
@@ -223,7 +220,7 @@ test.describe("Add node - Intermediate Catch Event", () => {
       await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
 
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const catchBox = await catchEvent.boundingBox();
       if (!catchBox) throw new Error("Intermediate Catch Event bounding box not found");

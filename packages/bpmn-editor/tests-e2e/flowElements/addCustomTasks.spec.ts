@@ -198,14 +198,14 @@ test.describe("Add Custom Tasks", () => {
       await expect(restApiTask).toBeAttached();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
 
       // Connect Start Event -> Rest API call Task
       const startBox = await startEvent.boundingBox();
       if (!startBox) throw new Error("Start Event bounding box not found");
       await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
       const handle1 = startEvent.getByTitle("Add Sequence Flow");
-      await expect(handle1).toBeVisible({ timeout: 5000 });
+      await expect(handle1).toBeVisible();
       const taskBox = await restApiTask.boundingBox();
       if (!taskBox) throw new Error("Rest API call Task bounding box not found");
       await handle1.dragTo(diagram.get(), {
@@ -215,7 +215,7 @@ test.describe("Add Custom Tasks", () => {
       // Connect Rest API call Task -> End Event
       await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
       const handle2 = restApiTask.getByTitle("Add Sequence Flow");
-      await expect(handle2).toBeVisible({ timeout: 5000 });
+      await expect(handle2).toBeVisible();
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
       await handle2.dragTo(diagram.get(), {

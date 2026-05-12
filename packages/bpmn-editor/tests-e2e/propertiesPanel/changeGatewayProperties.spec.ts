@@ -30,23 +30,25 @@ test.describe("Change Properties - Exclusive Gateway", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
 
     await gateway.click();
   });
 
   test("should change the Gateway name", async ({ gatewayPropertiesPanel }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Decision Point" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Decision Point" });
 
-    expect(await gatewayPropertiesPanel.getName()).toBe("Decision Point");
+    expect(await gatewayPropertiesPanel.nameProperties.getName()).toBe("Decision Point");
   });
 
   test("should change the Gateway documentation", async ({ gatewayPropertiesPanel }) => {
-    await gatewayPropertiesPanel.setDocumentation({
+    await gatewayPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This gateway routes based on order amount",
     });
 
-    expect(await gatewayPropertiesPanel.getDocumentation()).toBe("This gateway routes based on order amount");
+    expect(await gatewayPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This gateway routes based on order amount"
+    );
   });
 });
 
@@ -55,12 +57,12 @@ test.describe("Change Properties - Exclusive Gateway with Default Flow", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     await gateway.click();
   });
 
   test("should configure Exclusive Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Exclusive Decision" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Exclusive Decision" });
 
     await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("exclusive-gateway-configured.png");
   });
@@ -71,14 +73,14 @@ test.describe("Change Properties - Parallel Gateway", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     await gateway.click();
 
     await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Parallel" });
   });
 
   test("should configure Parallel Gateway properties", async ({ gatewayPropertiesPanel, page }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Parallel Split" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Parallel Split" });
 
     await expect(page.getByTestId("kie-tools--bpmn-editor--root")).toHaveScreenshot("parallel-gateway-configured.png");
   });
@@ -89,16 +91,16 @@ test.describe("Change Properties - Inclusive Gateway", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     await gateway.click();
 
     await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Inclusive" });
   });
 
   test("should configure Inclusive Gateway properties", async ({ gatewayPropertiesPanel }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Inclusive Decision" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Inclusive Decision" });
 
-    expect(await gatewayPropertiesPanel.getName()).toBe("Inclusive Decision");
+    expect(await gatewayPropertiesPanel.nameProperties.getName()).toBe("Inclusive Decision");
   });
 });
 
@@ -107,16 +109,16 @@ test.describe("Change Properties - Event-Based Gateway", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     await gateway.click();
 
     await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Event" });
   });
 
   test("should configure Event-Based Gateway name", async ({ gatewayPropertiesPanel }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Event Gateway" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Event Gateway" });
 
-    expect(await gatewayPropertiesPanel.getName()).toBe("Event Gateway");
+    expect(await gatewayPropertiesPanel.nameProperties.getName()).toBe("Event Gateway");
   });
 });
 
@@ -125,15 +127,15 @@ test.describe("Change Properties - Complex Gateway", () => {
     await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
     const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-    await expect(gateway).toBeVisible({ timeout: 5000 });
+    await expect(gateway).toBeVisible();
     await gateway.click();
 
     await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Complex" });
   });
 
   test("should configure Complex Gateway name", async ({ gatewayPropertiesPanel }) => {
-    await gatewayPropertiesPanel.setName({ newName: "Complex Decision" });
+    await gatewayPropertiesPanel.nameProperties.setName({ newName: "Complex Decision" });
 
-    expect(await gatewayPropertiesPanel.getName()).toBe("Complex Decision");
+    expect(await gatewayPropertiesPanel.nameProperties.getName()).toBe("Complex Decision");
   });
 });

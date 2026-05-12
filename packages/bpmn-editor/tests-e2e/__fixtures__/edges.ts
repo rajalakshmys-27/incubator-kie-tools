@@ -38,7 +38,7 @@ export class Edges {
 
     const toId = args.to.startsWith("_") ? args.to : await this.nodes.getId({ name: args.to });
 
-    await this.page.locator(".react-flow__edge").first().waitFor({ state: "attached", timeout: 15000 });
+    await this.page.locator(".react-flow__edge").first().waitFor({ state: "attached" });
 
     const allEdges = this.page.locator(".react-flow__edge");
     const edgeCount = await allEdges.count();

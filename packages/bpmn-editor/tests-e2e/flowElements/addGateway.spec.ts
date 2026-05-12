@@ -74,17 +74,14 @@ test.describe("Add node - Gateway", () => {
         await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
         const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-        await expect(gateway).toBeVisible({ timeout: 5000 });
+        await expect(gateway).toBeVisible();
 
         await nodes.morphNode({ nodeLocator: gateway, targetMorphType: morphType, exact });
 
         await expect
-          .poll(
-            async () => {
-              return await jsonModel.getFlowElement({ elementIndex: 0 });
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            return await jsonModel.getFlowElement({ elementIndex: 0 });
+          })
           .toMatchObject({ __$$element: expectedElement });
 
         await expect(diagram.get()).toHaveScreenshot(`morph-gateway-to-${morphType.toLowerCase()}.png`);
@@ -101,7 +98,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 300, y: 300 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Parallel" });
 
@@ -113,12 +110,9 @@ test.describe("Add node - Gateway", () => {
       await nodes.morphNode({ nodeLocator: gateway, targetMorphType: "Exclusive" });
 
       await expect
-        .poll(
-          async () => {
-            return await jsonModel.getFlowElement({ elementIndex: 0 });
-          },
-          { timeout: 10000 }
-        )
+        .poll(async () => {
+          return await jsonModel.getFlowElement({ elementIndex: 0 });
+        })
         .toMatchObject({ __$$element: "exclusiveGateway" });
 
       await expect(diagram.get()).toHaveScreenshot("morph-gateway-parallel-to-exclusive.png");
@@ -130,7 +124,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
@@ -138,7 +132,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = gateway.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -150,7 +144,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
@@ -158,7 +152,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = gateway.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -171,7 +165,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.TASK, targetPosition: { x: 350, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
@@ -183,7 +177,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const taskBox = await task.boundingBox();
       if (!taskBox) throw new Error("Task bounding box not found");
@@ -202,11 +196,11 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
       const box = await gateway.boundingBox();
@@ -215,7 +209,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const endEventBox = await endEvent.boundingBox();
       if (!endEventBox) throw new Error("End Event bounding box not found");
@@ -233,7 +227,7 @@ test.describe("Add node - Gateway", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 350, y: 100 } });
 
       const firstGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(firstGateway).toBeVisible({ timeout: 5000 });
+      await expect(firstGateway).toBeVisible();
       const firstGatewayId = (await firstGateway.getAttribute("data-nodehref")) ?? "";
 
       const secondGateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").nth(1);
@@ -246,7 +240,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = firstGateway.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const secondGatewayBox = await secondGateway.boundingBox();
       if (!secondGatewayBox) throw new Error("Second Gateway bounding box not found");
@@ -274,7 +268,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = startEvent.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -294,7 +288,7 @@ test.describe("Add node - Gateway", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = task.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 

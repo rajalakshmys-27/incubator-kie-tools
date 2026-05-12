@@ -129,7 +129,7 @@ test.describe("Add node - Task", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
@@ -146,7 +146,7 @@ test.describe("Add node - Task", () => {
       await palette.dragNewNode({ type: NodeType.GATEWAY, targetPosition: { x: 100, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const box = await gateway.boundingBox();
       if (!box) throw new Error("Gateway bounding box not found");
@@ -186,7 +186,7 @@ test.describe("Add node - Task", () => {
       await expect(task).toBeAttached();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
       const endEventId = (await endEvent.getAttribute("data-nodehref")) ?? "";
 
       const box = await task.boundingBox();
@@ -215,7 +215,7 @@ test.describe("Add node - Task", () => {
       await expect(task).toBeAttached();
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
       const gatewayId = (await gateway.getAttribute("data-nodehref")) ?? "";
 
       const box = await task.boundingBox();

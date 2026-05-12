@@ -20,47 +20,24 @@
 import { Page } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
-import { NameProperties } from "./parts/nameProperties";
-import { DocumentationProperties } from "./parts/documentationProperties";
 
 export class GatewayPropertiesPanel extends PropertiesPanelBase {
-  private nameProperties: NameProperties;
-  private documentationProperties: DocumentationProperties;
-
   constructor(
     public diagram: Diagram,
     public page: Page
   ) {
     super(diagram, page);
-    this.nameProperties = new NameProperties(this.panel(), page);
-    this.documentationProperties = new DocumentationProperties(this.panel(), page);
-  }
-
-  public async setName(args: { newName: string }) {
-    await this.nameProperties.setName({ ...args });
-  }
-
-  public async getName(): Promise<string> {
-    return await this.nameProperties.getName();
-  }
-
-  public async setDocumentation(args: { newDocumentation: string }) {
-    await this.documentationProperties.setDocumentation({ ...args });
-  }
-
-  public async getDocumentation(): Promise<string> {
-    return await this.documentationProperties.getDocumentation();
   }
 
   public async setDefaultFlow(args: { flowId: string }) {
     const defaultFlowSelect = this.panel().locator("select").first();
-    await defaultFlowSelect.waitFor({ state: "visible", timeout: 10000 });
+    await defaultFlowSelect.waitFor({ state: "visible" });
     await defaultFlowSelect.selectOption(args.flowId);
   }
 
   public async getDefaultFlow(): Promise<string> {
     const defaultFlowSelect = this.panel().locator("select").first();
-    await defaultFlowSelect.waitFor({ state: "visible", timeout: 10000 });
+    await defaultFlowSelect.waitFor({ state: "visible" });
     return await defaultFlowSelect.inputValue();
   }
 }

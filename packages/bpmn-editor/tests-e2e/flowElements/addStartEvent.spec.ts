@@ -44,7 +44,7 @@ async function setupEventSubProcess(palette: Palette, nodes: Nodes, page: Page) 
   });
 
   const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-  await expect(startEvent).toBeVisible({ timeout: 5000 });
+  await expect(startEvent).toBeVisible();
 
   return startEvent;
 }
@@ -64,7 +64,7 @@ async function setupRegularSubProcess(palette: Palette, nodes: Nodes, page: Page
   });
 
   const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-  await expect(startEvent).toBeVisible({ timeout: 5000 });
+  await expect(startEvent).toBeVisible();
 
   return startEvent;
 }
@@ -122,17 +122,14 @@ test.describe("Add node - Start Event", () => {
         await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
         const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-        await expect(startEvent).toBeVisible({ timeout: 5000 });
+        await expect(startEvent).toBeVisible();
 
         await nodes.morphNode({ nodeLocator: startEvent, targetMorphType: morphType });
 
         await expect
-          .poll(
-            async () => {
-              return await jsonModel.getFlowElement({ elementIndex: 0 });
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            return await jsonModel.getFlowElement({ elementIndex: 0 });
+          })
           .toMatchObject({
             __$$element: "startEvent",
             eventDefinition: [{ __$$element: eventDefinition }],
@@ -151,7 +148,7 @@ test.describe("Add node - Start Event", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 300, y: 300 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       await nodes.openMorphingPanel({ nodeLocator: startEvent });
 
@@ -192,15 +189,12 @@ test.describe("Add node - Start Event", () => {
         await nodes.morphNode({ nodeLocator: startEvent, targetMorphType: morphType });
 
         await expect
-          .poll(
-            async () => {
-              const subProcessElement = await jsonModel.getFlowElement({ elementIndex: 0 });
-              return subProcessElement.flowElement?.find(
-                (el: { __$$element: string }) => el.__$$element === "startEvent"
-              );
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            const subProcessElement = await jsonModel.getFlowElement({ elementIndex: 0 });
+            return subProcessElement.flowElement?.find(
+              (el: { __$$element: string }) => el.__$$element === "startEvent"
+            );
+          })
           .toMatchObject({
             __$$element: "startEvent",
             eventDefinition: [{ __$$element: eventDefinition }],
@@ -224,15 +218,10 @@ test.describe("Add node - Start Event", () => {
       await setupRegularSubProcess(palette, nodes, page);
 
       await expect
-        .poll(
-          async () => {
-            const subProcessElement = await jsonModel.getFlowElement({ elementIndex: 0 });
-            return subProcessElement.flowElement?.find(
-              (el: { __$$element: string }) => el.__$$element === "startEvent"
-            );
-          },
-          { timeout: 10000 }
-        )
+        .poll(async () => {
+          const subProcessElement = await jsonModel.getFlowElement({ elementIndex: 0 });
+          return subProcessElement.flowElement?.find((el: { __$$element: string }) => el.__$$element === "startEvent");
+        })
         .toMatchObject({ __$$element: "startEvent" });
 
       await expect(diagram.get()).toHaveScreenshot("regular-subprocess-start-event-none.png");
@@ -265,7 +254,7 @@ test.describe("Add node - Start Event", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
@@ -273,7 +262,7 @@ test.describe("Add node - Start Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = startEvent.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
       await diagram.resetFocus();
@@ -285,7 +274,7 @@ test.describe("Add node - Start Event", () => {
       await palette.dragNewNode({ type: NodeType.START_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       const box = await startEvent.boundingBox();
       if (!box) throw new Error("Start Event bounding box not found");
@@ -293,7 +282,7 @@ test.describe("Add node - Start Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = startEvent.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -306,7 +295,7 @@ test.describe("Add node - Start Event", () => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 350, y: 100 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
       const startEventId = (await startEvent.getAttribute("data-nodehref")) ?? "";
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
@@ -318,7 +307,7 @@ test.describe("Add node - Start Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const subProcessBox = await subProcess.boundingBox();
       if (!subProcessBox) throw new Error("Sub-process bounding box not found");

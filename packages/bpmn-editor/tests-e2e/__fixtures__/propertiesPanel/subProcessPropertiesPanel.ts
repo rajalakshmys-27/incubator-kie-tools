@@ -20,36 +20,13 @@
 import { Page } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
-import { NameProperties } from "./parts/nameProperties";
-import { DocumentationProperties } from "./parts/documentationProperties";
 
 export class SubProcessPropertiesPanel extends PropertiesPanelBase {
-  private nameProperties: NameProperties;
-  private documentationProperties: DocumentationProperties;
-
   constructor(
     public diagram: Diagram,
     public page: Page
   ) {
     super(diagram, page);
-    this.nameProperties = new NameProperties(this.panel(), page);
-    this.documentationProperties = new DocumentationProperties(this.panel(), page);
-  }
-
-  public async setName(args: { newName: string }) {
-    await this.nameProperties.setName({ ...args });
-  }
-
-  public async getName(): Promise<string> {
-    return await this.nameProperties.getName();
-  }
-
-  public async setDocumentation(args: { newDocumentation: string }) {
-    await this.documentationProperties.setDocumentation({ ...args });
-  }
-
-  public async getDocumentation(): Promise<string> {
-    return await this.documentationProperties.getDocumentation();
   }
 
   public async setMultiInstance(args: { type: "parallel" | "sequential" }) {
@@ -57,7 +34,7 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
       name: args.type === "parallel" ? "Parallel" : "Sequential",
       exact: true,
     });
-    await executionModeButton.waitFor({ state: "visible", timeout: 10000 });
+    await executionModeButton.waitFor({ state: "visible" });
     await executionModeButton.click();
   }
 
@@ -74,7 +51,7 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
 
   public async setCompletionCondition(args: { condition: string }) {
     const conditionTextarea = this.panel().getByLabel("Completion condition");
-    await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
+    await conditionTextarea.waitFor({ state: "visible" });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
   }
@@ -84,7 +61,7 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
       .locator("div.pf-v5-c-form__group")
       .filter({ hasText: /Ad-hoc ordering/i });
     const orderingSelect = orderingFormGroup.locator("select").first();
-    await orderingSelect.waitFor({ state: "visible", timeout: 10000 });
+    await orderingSelect.waitFor({ state: "visible" });
     await orderingSelect.selectOption(args.ordering);
   }
 
@@ -93,7 +70,7 @@ export class SubProcessPropertiesPanel extends PropertiesPanelBase {
       .locator("div.pf-v5-c-form__group")
       .filter({ hasText: /Ad-hoc completion condition/i });
     const conditionTextarea = completionConditionFormGroup.locator("textarea").first();
-    await conditionTextarea.waitFor({ state: "visible", timeout: 10000 });
+    await conditionTextarea.waitFor({ state: "visible" });
     await conditionTextarea.fill(args.condition);
     await conditionTextarea.blur();
   }

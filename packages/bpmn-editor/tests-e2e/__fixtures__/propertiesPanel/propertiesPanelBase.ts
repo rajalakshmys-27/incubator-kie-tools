@@ -19,12 +19,20 @@
 
 import { Page } from "@playwright/test";
 import { Diagram } from "../diagram";
+import { NameProperties } from "./parts/nameProperties";
+import { DocumentationProperties } from "./parts/documentationProperties";
 
 export abstract class PropertiesPanelBase {
+  public nameProperties: NameProperties;
+  public documentationProperties: DocumentationProperties;
+
   constructor(
     public diagram: Diagram,
     public page: Page
-  ) {}
+  ) {
+    this.nameProperties = new NameProperties(this.panel(), page);
+    this.documentationProperties = new DocumentationProperties(this.panel(), page);
+  }
 
   public panel() {
     return this.page.getByTestId("kie-tools--bpmn-editor--properties-panel-container");

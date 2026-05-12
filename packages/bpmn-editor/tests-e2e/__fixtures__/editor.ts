@@ -27,21 +27,17 @@ export class Editor {
   ) {}
 
   public async open() {
-    await this.page.goto(`${this.baseURL}/iframe.html?args=&id=misc-empty--empty&viewMode=story`, {
-      timeout: 180000,
-    });
+    await this.page.goto(`${this.baseURL}/iframe.html?args=&id=misc-empty--empty&viewMode=story`, {});
     await this.initializeEditor();
   }
 
   public async openWithLocale(locale: string) {
-    await this.page.goto(`${this.baseURL}/iframe.html?args=locale:${locale}&id=misc-empty--empty&viewMode=story`, {
-      timeout: 180000,
-    });
+    await this.page.goto(`${this.baseURL}/iframe.html?args=locale:${locale}&id=misc-empty--empty&viewMode=story`, {});
     await this.initializeEditor();
   }
 
   private async initializeEditor() {
-    await this.page.locator(".react-flow").waitFor({ state: "visible", timeout: 180000 });
+    await this.page.locator(".react-flow").waitFor({ state: "visible" });
 
     const processIdInput = this.page.getByPlaceholder("e.g., hiring");
     if (await processIdInput.isVisible().catch(() => false)) {

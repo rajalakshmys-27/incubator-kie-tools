@@ -21,37 +21,14 @@ import { expect, Page } from "@playwright/test";
 import { PropertiesPanelBase } from "./propertiesPanelBase";
 import { Diagram } from "../diagram";
 import { Nodes } from "../nodes";
-import { NameProperties } from "./parts/nameProperties";
-import { DocumentationProperties } from "./parts/documentationProperties";
 
 export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
-  private nameProperties: NameProperties;
-  private documentationProperties: DocumentationProperties;
-
   constructor(
     public diagram: Diagram,
     public page: Page,
     public nodes: Nodes
   ) {
     super(diagram, page);
-    this.nameProperties = new NameProperties(this.panel(), page);
-    this.documentationProperties = new DocumentationProperties(this.panel(), page);
-  }
-
-  public async setName(args: { newName: string }) {
-    await this.nameProperties.setName({ ...args });
-  }
-
-  public async getName(): Promise<string> {
-    return await this.nameProperties.getName();
-  }
-
-  public async setDocumentation(args: { newDocumentation: string }) {
-    await this.documentationProperties.setDocumentation({ ...args });
-  }
-
-  public async getDocumentation(): Promise<string> {
-    return await this.documentationProperties.getDocumentation();
   }
 
   public async selectEventDefinition(args: { eventType: string }) {
@@ -60,7 +37,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
     const selectedNode = (await catchEvent.count()) > 0 ? catchEvent.first() : throwEvent.first();
 
-    await expect(selectedNode).toBeVisible({ timeout: 5000 });
+    await expect(selectedNode).toBeVisible();
 
     await this.nodes.morphNode({
       nodeLocator: selectedNode,
@@ -118,7 +95,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
     if (args.scope) {
       const scopeSelect = this.panel().locator("select").first();
-      await scopeSelect.waitFor({ state: "visible", timeout: 10000 });
+      await scopeSelect.waitFor({ state: "visible" });
       await scopeSelect.selectOption(args.scope);
     }
   }
@@ -127,14 +104,14 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await this.selectEventDefinition({ eventType: "Conditional" });
 
     const expressionInput = this.panel().locator("textarea").first();
-    await expressionInput.waitFor({ state: "visible", timeout: 10000 });
+    await expressionInput.waitFor({ state: "visible" });
     await expressionInput.fill(args.expression);
     await expressionInput.blur();
   }
 
   public async getConditionalExpression(): Promise<string> {
     const expressionInput = this.panel().locator("textarea").first();
-    await expressionInput.waitFor({ state: "visible", timeout: 5000 });
+    await expressionInput.waitFor({ state: "visible" });
     return (await expressionInput.inputValue()) || "";
   }
 
@@ -142,20 +119,20 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
     await this.selectEventDefinition({ eventType: "Link" });
 
     const linkInput = this.panel().locator('input[type="text"]').first();
-    await linkInput.waitFor({ state: "visible", timeout: 10000 });
+    await linkInput.waitFor({ state: "visible" });
     await linkInput.fill(args.linkName);
     await linkInput.blur();
   }
 
   public async getLinkName(): Promise<string> {
     const linkInput = this.panel().locator('input[type="text"]').first();
-    await linkInput.waitFor({ state: "visible", timeout: 5000 });
+    await linkInput.waitFor({ state: "visible" });
     return (await linkInput.inputValue()) || "";
   }
 
   public async getSignalName(): Promise<string> {
     const signalInput = this.panel().getByRole("combobox").first();
-    await signalInput.waitFor({ state: "visible", timeout: 5000 });
+    await signalInput.waitFor({ state: "visible" });
     return (await signalInput.inputValue()) || "";
   }
 
@@ -181,7 +158,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
   public async getErrorName(): Promise<string> {
     const errorInput = this.panel().getByRole("combobox").first();
-    await errorInput.waitFor({ state: "visible", timeout: 5000 });
+    await errorInput.waitFor({ state: "visible" });
     return (await errorInput.inputValue()) || "";
   }
 
@@ -207,7 +184,7 @@ export class IntermediateEventPropertiesPanel extends PropertiesPanelBase {
 
   public async getEscalationName(): Promise<string> {
     const escalationInput = this.panel().getByRole("combobox").first();
-    await escalationInput.waitFor({ state: "visible", timeout: 5000 });
+    await escalationInput.waitFor({ state: "visible" });
     return (await escalationInput.inputValue()) || "";
   }
 

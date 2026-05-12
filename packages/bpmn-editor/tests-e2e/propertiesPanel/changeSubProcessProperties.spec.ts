@@ -33,17 +33,19 @@ test.describe("Change Properties - Sub-Process", () => {
   });
 
   test("should change the Sub-Process name", async ({ subProcessPropertiesPanel }) => {
-    await subProcessPropertiesPanel.setName({ newName: "Order Processing" });
+    await subProcessPropertiesPanel.nameProperties.setName({ newName: "Order Processing" });
 
-    expect(await subProcessPropertiesPanel.getName()).toBe("Order Processing");
+    expect(await subProcessPropertiesPanel.nameProperties.getName()).toBe("Order Processing");
   });
 
   test("should change the Sub-Process documentation", async ({ subProcessPropertiesPanel }) => {
-    await subProcessPropertiesPanel.setDocumentation({
+    await subProcessPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This sub-process handles order processing logic",
     });
 
-    expect(await subProcessPropertiesPanel.getDocumentation()).toBe("This sub-process handles order processing logic");
+    expect(await subProcessPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This sub-process handles order processing logic"
+    );
   });
 });
 

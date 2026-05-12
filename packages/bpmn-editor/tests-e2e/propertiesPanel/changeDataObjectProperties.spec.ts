@@ -36,17 +36,19 @@ test.describe("Change Properties - Data Object", () => {
   });
 
   test("should change the Data Object name", async ({ dataObjectPropertiesPanel }) => {
-    await dataObjectPropertiesPanel.setName({ newName: "Customer Data" });
+    await dataObjectPropertiesPanel.nameProperties.setName({ newName: "Customer Data" });
 
-    expect(await dataObjectPropertiesPanel.getName()).toBe("Customer Data");
+    expect(await dataObjectPropertiesPanel.nameProperties.getName()).toBe("Customer Data");
   });
 
   test("should change the Data Object documentation", async ({ dataObjectPropertiesPanel }) => {
-    await dataObjectPropertiesPanel.setDocumentation({
+    await dataObjectPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "Contains customer information for processing",
     });
 
-    expect(await dataObjectPropertiesPanel.getDocumentation()).toBe("Contains customer information for processing");
+    expect(await dataObjectPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "Contains customer information for processing"
+    );
   });
 
   test("should set item subject reference", async ({ dataObjectPropertiesPanel }) => {

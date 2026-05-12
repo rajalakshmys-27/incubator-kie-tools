@@ -30,28 +30,30 @@ test.describe("Change Properties - Intermediate Catch Event", () => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_CATCH_EVENT, targetPosition: { x: 100, y: 100 } });
 
     const event = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-    await expect(event).toBeVisible({ timeout: 5000 });
+    await expect(event).toBeVisible();
 
     await event.click();
   });
 
   test("should change the Intermediate Catch Event name", async ({ intermediateEventPropertiesPanel }) => {
-    await intermediateEventPropertiesPanel.setName({ newName: "Wait for Approval" });
+    await intermediateEventPropertiesPanel.nameProperties.setName({ newName: "Wait for Approval" });
 
-    expect(await intermediateEventPropertiesPanel.getName()).toBe("Wait for Approval");
+    expect(await intermediateEventPropertiesPanel.nameProperties.getName()).toBe("Wait for Approval");
   });
 
   test("should change the Intermediate Catch Event documentation", async ({ intermediateEventPropertiesPanel }) => {
-    await intermediateEventPropertiesPanel.setDocumentation({
+    await intermediateEventPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This event waits for an external approval",
     });
 
-    expect(await intermediateEventPropertiesPanel.getDocumentation()).toBe("This event waits for an external approval");
+    expect(await intermediateEventPropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "This event waits for an external approval"
+    );
   });
 
   test("should configure Timer definition with duration", async ({ intermediateEventPropertiesPanel, page, nodes }) => {
     const catchEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-catch-event").first();
-    await expect(catchEvent).toBeVisible({ timeout: 5000 });
+    await expect(catchEvent).toBeVisible();
 
     await nodes.morphNode({ nodeLocator: catchEvent, targetMorphType: "Timer" });
     await intermediateEventPropertiesPanel.setTimerDefinition({ type: "duration", value: "PT1H" });
@@ -103,23 +105,23 @@ test.describe("Change Properties - Intermediate Throw Event", () => {
     await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
     const event = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-    await expect(event).toBeVisible({ timeout: 5000 });
+    await expect(event).toBeVisible();
 
     await event.click();
   });
 
   test("should change the Intermediate Throw Event name", async ({ intermediateEventPropertiesPanel }) => {
-    await intermediateEventPropertiesPanel.setName({ newName: "Send Notification" });
+    await intermediateEventPropertiesPanel.nameProperties.setName({ newName: "Send Notification" });
 
-    expect(await intermediateEventPropertiesPanel.getName()).toBe("Send Notification");
+    expect(await intermediateEventPropertiesPanel.nameProperties.getName()).toBe("Send Notification");
   });
 
   test("should change the Intermediate Throw Event documentation", async ({ intermediateEventPropertiesPanel }) => {
-    await intermediateEventPropertiesPanel.setDocumentation({
+    await intermediateEventPropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "This event sends a notification to external systems",
     });
 
-    expect(await intermediateEventPropertiesPanel.getDocumentation()).toBe(
+    expect(await intermediateEventPropertiesPanel.documentationProperties.getDocumentation()).toBe(
       "This event sends a notification to external systems"
     );
   });

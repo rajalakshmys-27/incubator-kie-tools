@@ -71,7 +71,7 @@ test.describe("Add node - Sub-process", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = subProcess.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       const handleBox = await addTaskHandle.boundingBox();
       if (!handleBox) throw new Error("Add Task handle bounding box not found");
@@ -91,7 +91,7 @@ test.describe("Add node - Sub-process", () => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
       await expect(subProcess).toBeAttached();
@@ -102,7 +102,7 @@ test.describe("Add node - Sub-process", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const subProcessBox = await subProcess.boundingBox();
       if (!subProcessBox) throw new Error("Sub-process bounding box not found");
@@ -119,7 +119,7 @@ test.describe("Add node - Sub-process", () => {
       await palette.dragNewNode({ type: NodeType.SUB_PROCESS, targetPosition: { x: 200, y: 100 } });
 
       const gateway = page.getByTestId("kie-tools--bpmn-editor--node-gateway").first();
-      await expect(gateway).toBeVisible({ timeout: 5000 });
+      await expect(gateway).toBeVisible();
 
       const subProcess = page.locator('[data-nodelabel="New Sub-process"]').first();
       await expect(subProcess).toBeAttached();
@@ -130,7 +130,7 @@ test.describe("Add node - Sub-process", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = gateway.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const subProcessBox = await subProcess.boundingBox();
       if (!subProcessBox) throw new Error("Sub-process bounding box not found");
@@ -238,20 +238,20 @@ test.describe("Add node - Sub-process", () => {
       });
 
       const startEvent = page.getByTestId("kie-tools--bpmn-editor--node-start-event").first();
-      await expect(startEvent).toBeVisible({ timeout: 5000 });
+      await expect(startEvent).toBeVisible();
 
       const task = page.locator('[data-nodelabel="New Task"]').first();
       await expect(task).toBeAttached();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
 
       // Connect Start Event -> Task
       const startBox = await startEvent.boundingBox();
       if (!startBox) throw new Error("Start Event bounding box not found");
       await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
       const handle1 = startEvent.getByTitle("Add Sequence Flow");
-      await expect(handle1).toBeVisible({ timeout: 5000 });
+      await expect(handle1).toBeVisible();
       const taskBox = await task.boundingBox();
       if (!taskBox) throw new Error("Task bounding box not found");
       await handle1.dragTo(diagram.get(), {
@@ -261,7 +261,7 @@ test.describe("Add node - Sub-process", () => {
       // Connect Task -> End Event
       await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
       const handle2 = task.getByTitle("Add Sequence Flow");
-      await expect(handle2).toBeVisible({ timeout: 5000 });
+      await expect(handle2).toBeVisible();
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
       await handle2.dragTo(diagram.get(), {

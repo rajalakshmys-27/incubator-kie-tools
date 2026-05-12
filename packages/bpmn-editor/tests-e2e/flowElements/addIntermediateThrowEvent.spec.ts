@@ -76,17 +76,14 @@ test.describe("Add node - Intermediate Throw Event", () => {
         await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 300, y: 300 } });
 
         const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-        await expect(throwEvent).toBeVisible({ timeout: 5000 });
+        await expect(throwEvent).toBeVisible();
 
         await nodes.morphNode({ nodeLocator: throwEvent, targetMorphType: morphType });
 
         await expect
-          .poll(
-            async () => {
-              return await jsonModel.getFlowElement({ elementIndex: 0 });
-            },
-            { timeout: 10000 }
-          )
+          .poll(async () => {
+            return await jsonModel.getFlowElement({ elementIndex: 0 });
+          })
           .toMatchObject({
             __$$element: "intermediateThrowEvent",
             eventDefinition: [{ __$$element: eventDefinition }],
@@ -104,7 +101,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+      await expect(throwEvent).toBeVisible();
 
       const box = await throwEvent.boundingBox();
       if (!box) throw new Error("Intermediate Throw Event bounding box not found");
@@ -112,7 +109,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addTaskHandle = throwEvent.getByTitle("Add Task");
-      await expect(addTaskHandle).toBeVisible({ timeout: 5000 });
+      await expect(addTaskHandle).toBeVisible();
 
       await addTaskHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -123,7 +120,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await palette.dragNewNode({ type: NodeType.INTERMEDIATE_THROW_EVENT, targetPosition: { x: 100, y: 100 } });
 
       const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+      await expect(throwEvent).toBeVisible();
 
       const box = await throwEvent.boundingBox();
       if (!box) throw new Error("Intermediate Throw Event bounding box not found");
@@ -131,7 +128,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addGatewayHandle = throwEvent.getByTitle("Add Gateway");
-      await expect(addGatewayHandle).toBeVisible({ timeout: 5000 });
+      await expect(addGatewayHandle).toBeVisible();
 
       await addGatewayHandle.dragTo(diagram.get(), { targetPosition: { x: 300, y: 100 } });
 
@@ -147,10 +144,10 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await palette.dragNewNode({ type: NodeType.END_EVENT, targetPosition: { x: 300, y: 100 } });
 
       const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+      await expect(throwEvent).toBeVisible();
 
       const endEvent = page.getByTestId("kie-tools--bpmn-editor--node-end-event").first();
-      await expect(endEvent).toBeVisible({ timeout: 5000 });
+      await expect(endEvent).toBeVisible();
 
       const box = await throwEvent.boundingBox();
       if (!box) throw new Error("Intermediate Throw Event bounding box not found");
@@ -158,7 +155,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
 
       const addSequenceFlowHandle = throwEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const endBox = await endEvent.boundingBox();
       if (!endBox) throw new Error("End Event bounding box not found");
@@ -182,7 +179,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await expect(startEvent).toBeAttached();
 
       const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+      await expect(throwEvent).toBeVisible();
 
       const startBox = await startEvent.boundingBox();
       if (!startBox) throw new Error("Start Event bounding box not found");
@@ -190,7 +187,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await page.mouse.move(startBox.x + startBox.width - 10, startBox.y + startBox.height / 2);
 
       const addSequenceFlowHandle = startEvent.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const throwBox = await throwEvent.boundingBox();
       if (!throwBox) throw new Error("Intermediate Throw Event bounding box not found");
@@ -211,7 +208,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await expect(task).toBeAttached();
 
       const throwEvent = page.getByTestId("kie-tools--bpmn-editor--node-intermediate-throw-event").first();
-      await expect(throwEvent).toBeVisible({ timeout: 5000 });
+      await expect(throwEvent).toBeVisible();
 
       const taskBox = await task.boundingBox();
       if (!taskBox) throw new Error("Task bounding box not found");
@@ -219,7 +216,7 @@ test.describe("Add node - Intermediate Throw Event", () => {
       await page.mouse.move(taskBox.x + taskBox.width - 10, taskBox.y + taskBox.height / 2);
 
       const addSequenceFlowHandle = task.getByTitle("Add Sequence Flow");
-      await expect(addSequenceFlowHandle).toBeVisible({ timeout: 5000 });
+      await expect(addSequenceFlowHandle).toBeVisible();
 
       const throwBox = await throwEvent.boundingBox();
       if (!throwBox) throw new Error("Intermediate Throw Event bounding box not found");

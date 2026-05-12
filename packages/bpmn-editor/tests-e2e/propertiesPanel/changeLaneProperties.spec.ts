@@ -32,16 +32,18 @@ test.describe("Change Properties - Lane", () => {
   });
 
   test("should change the Lane name", async ({ lanePropertiesPanel }) => {
-    await lanePropertiesPanel.setName({ newName: "Sales Department" });
-    expect(await lanePropertiesPanel.getName()).toBe("Sales Department");
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Sales Department" });
+    expect(await lanePropertiesPanel.nameProperties.getName()).toBe("Sales Department");
   });
 
   test("should change the Lane documentation", async ({ lanePropertiesPanel }) => {
-    await lanePropertiesPanel.setDocumentation({
+    await lanePropertiesPanel.documentationProperties.setDocumentation({
       newDocumentation: "Handles all sales-related activities",
     });
 
-    expect(await lanePropertiesPanel.getDocumentation()).toBe("Handles all sales-related activities");
+    expect(await lanePropertiesPanel.documentationProperties.getDocumentation()).toBe(
+      "Handles all sales-related activities"
+    );
   });
 });
 
@@ -53,14 +55,14 @@ test.describe("Change Properties - Multiple Lanes", () => {
     });
 
     await lanePropertiesPanel.open();
-    await lanePropertiesPanel.setName({ newName: "Sales" });
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Sales" });
 
     await palette.dragNewNode({
       type: NodeType.LANE,
       targetPosition: { x: 200, y: 500 },
     });
     await lanePropertiesPanel.open();
-    await lanePropertiesPanel.setName({ newName: "Marketing" });
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Marketing" });
 
     await expect(diagram.get()).toHaveScreenshot("multiple-lanes.png");
   });
@@ -74,7 +76,7 @@ test.describe("Change Properties - Lane with Tasks", () => {
     });
 
     await lanePropertiesPanel.open();
-    await lanePropertiesPanel.setName({ newName: "Processing Lane" });
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Processing Lane" });
 
     await palette.dragNewNode({
       type: NodeType.TASK,
@@ -98,7 +100,7 @@ test.describe("Change Properties - Lane with Tasks", () => {
     });
 
     await lanePropertiesPanel.open();
-    await lanePropertiesPanel.setName({ newName: "Lane 1" });
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Lane 1" });
 
     await palette.dragNewNode({
       type: NodeType.LANE,
@@ -106,7 +108,7 @@ test.describe("Change Properties - Lane with Tasks", () => {
     });
 
     await lanePropertiesPanel.open();
-    await lanePropertiesPanel.setName({ newName: "Lane 2" });
+    await lanePropertiesPanel.nameProperties.setName({ newName: "Lane 2" });
 
     await palette.dragNewNode({
       type: NodeType.TASK,
