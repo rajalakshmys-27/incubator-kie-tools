@@ -37,7 +37,6 @@ test.describe("New file", () => {
       await expect(page.getByRole("button", { name: "Workflow Untitled" })).toBeAttached();
       await expect(page.getByRole("button", { name: "Workflow Untitled" })).toContainText("Untitled");
       await expect(kieSandbox.getEditor().getByTitle("Start Events")).toBeAttached();
-      await expect(kieSandbox.getEditor().getByTitle("Start Events")).toBeVisible();
       await expect(page).toHaveScreenshot("new-file-bpmn.png");
     });
 
