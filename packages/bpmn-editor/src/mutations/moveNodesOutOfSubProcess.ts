@@ -24,6 +24,61 @@ import { Normalized } from "../normalization/normalize";
 import { State } from "../store/Store";
 import { addOrGetProcessAndDiagramElements } from "./addOrGetProcessAndDiagramElements";
 
+export type SubProcessElement = Extract<
+  Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>,
+  { __$$element: "subProcess" | "adHocSubProcess" | "transaction" }
+>;
+
+export function isSubProcessElement(element: any): element is SubProcessElement {
+  return (
+    element.__$$element === "subProcess" ||
+    element.__$$element === "adHocSubProcess" ||
+    element.__$$element === "transaction"
+  );
+}
+
+/**
+ * Recursively searches for a subprocess at any nesting depth.
+ */
+export function findSubProcessRecursively(
+  flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
+  subProcessId: string
+): SubProcessElement | undefined {
+  for (const element of flowElements) {
+    if (element["@_id"] === subProcessId && isSubProcessElement(element)) {
+      return element;
+    }
+    if (isSubProcessElement(element) && element.flowElement) {
+      const found = findSubProcessRecursively(element.flowElement, subProcessId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Finds the parent flow elements array containing the specified subprocess.
+ */
+function findParentFlowElements(
+  flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
+  subProcessId: string
+): NonNullable<BPMN20__tProcess["flowElement"]> | undefined {
+  for (const element of flowElements) {
+    if (element["@_id"] === subProcessId) {
+      return flowElements;
+    }
+    if (isSubProcessElement(element) && element.flowElement) {
+      const found = findParentFlowElements(element.flowElement, subProcessId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
 export function moveNodesOutOfSubProcess({
   definitions,
   __readonly_subProcessId,
@@ -34,16 +89,14 @@ export function moveNodesOutOfSubProcess({
   __readonly_nodeIds: string[];
 }) {
   const { process } = addOrGetProcessAndDiagramElements({ definitions });
-  const subProcess = process.flowElement?.find((s) => s["@_id"] === __readonly_subProcessId);
-  if (
-    !(
-      subProcess?.__$$element === "subProcess" ||
-      subProcess?.__$$element === "adHocSubProcess" ||
-      subProcess?.__$$element === "transaction"
-    )
-  ) {
-    throw new Error(`Can't find subProcess with ID ${__readonly_subProcessId}`);
+
+  const subProcess = findSubProcessRecursively(process.flowElement ?? [], __readonly_subProcessId ?? "");
+  if (!subProcess) {
+    throw new Error(`Cannot find subprocess with ID: ${__readonly_subProcessId}`);
   }
+
+  const parentFlowElements =
+    findParentFlowElements(process.flowElement ?? [], __readonly_subProcessId ?? "") ?? process.flowElement ?? [];
 
   const flowElementsToMove: Normalized<Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>>[] = [];
   const artifactsToMove: Normalized<
@@ -51,32 +104,41 @@ export function moveNodesOutOfSubProcess({
   >[] = [];
 
   const nodeIdsToMoveOut = new Set(__readonly_nodeIds);
-  const subProcessNodes = new Set();
+  const subProcessNodes = new Set<string>();
   subProcess.flowElement?.forEach((flowElement) => {
-    if (flowElement.__$$element !== "sequenceFlow") {
+    if (flowElement.__$$element !== "sequenceFlow" && flowElement["@_id"]) {
       subProcessNodes.add(flowElement["@_id"]);
     }
   });
 
-  // Check if we're moving out of an Event Sub-Process
   const isEventSubProcess = subProcess.__$$element === "subProcess" && (subProcess["@_triggeredByEvent"] ?? false);
+
+  function shouldMoveSequenceFlow(
+    flowElement: Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>,
+    nodeIds: Set<string>,
+    existingNodes: Set<string>
+  ): boolean {
+    return (
+      flowElement.__$$element === "sequenceFlow" &&
+      !!flowElement["@_sourceRef"] &&
+      !!flowElement["@_targetRef"] &&
+      ((nodeIds.has(flowElement["@_sourceRef"]) && nodeIds.has(flowElement["@_targetRef"])) ||
+        (existingNodes.has(flowElement["@_sourceRef"]) && nodeIds.has(flowElement["@_targetRef"])) ||
+        (nodeIds.has(flowElement["@_sourceRef"]) && existingNodes.has(flowElement["@_targetRef"])))
+    );
+  }
 
   for (let i = 0; i < (subProcess.flowElement ?? []).length; i++) {
     const flowElement = (subProcess.flowElement ?? [])[i];
     if (
-      nodeIdsToMoveOut.has(flowElement["@_id"]) ||
-      (flowElement.__$$element === "boundaryEvent" && nodeIdsToMoveOut.has(flowElement["@_attachedToRef"]))
+      (flowElement["@_id"] && nodeIdsToMoveOut.has(flowElement["@_id"])) ||
+      (flowElement.__$$element === "boundaryEvent" &&
+        flowElement["@_attachedToRef"] &&
+        nodeIdsToMoveOut.has(flowElement["@_attachedToRef"]))
     ) {
       flowElementsToMove.push(...((subProcess.flowElement?.splice(i, 1) ?? []) as typeof flowElementsToMove));
       i--; // repeat one index because we just altered the array we're iterating over.
-    } else if (
-      flowElement.__$$element === "sequenceFlow" &&
-      ((nodeIdsToMoveOut.has(flowElement["@_sourceRef"]) && nodeIdsToMoveOut.has(flowElement["@_targetRef"])) ||
-        (subProcessNodes.has(flowElement["@_sourceRef"]) && nodeIdsToMoveOut.has(flowElement["@_targetRef"])) ||
-        (nodeIdsToMoveOut.has(flowElement["@_sourceRef"]) && subProcessNodes.has(flowElement["@_targetRef"])))
-    ) {
-      // If the source and target are both outside of the sub-process
-      // or if the source and target is already in the sub process the sequenceFlow must be copied
+    } else if (shouldMoveSequenceFlow(flowElement, nodeIdsToMoveOut, subProcessNodes)) {
       flowElementsToMove.push(...((subProcess.flowElement?.splice(i, 1) ?? []) as typeof flowElementsToMove));
       i--; // repeat one index because we just altered the array we're iterating over.
     }
@@ -112,14 +174,13 @@ export function moveNodesOutOfSubProcess({
 
   for (let i = 0; i < (subProcess.artifact ?? []).length; i++) {
     const artifact = (subProcess.artifact ?? [])[i];
-    if (nodeIdsToMoveOut.has(artifact["@_id"])) {
+    if (artifact["@_id"] && nodeIdsToMoveOut.has(artifact["@_id"])) {
       artifactsToMove.push(...((subProcess.artifact?.splice(i, 1) ?? []) as typeof artifactsToMove));
       i--; // repeat one index because we just altered the array we're iterating over.
     }
   }
 
-  process.flowElement ??= [];
-  process.flowElement.push(...flowElementsToMove);
+  parentFlowElements.push(...flowElementsToMove);
   process.artifact ??= [];
   process.artifact.push(...artifactsToMove);
 }

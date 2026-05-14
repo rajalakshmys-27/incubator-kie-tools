@@ -23,6 +23,7 @@ import { State } from "../store/Store";
 import { addOrGetProcessAndDiagramElements } from "./addOrGetProcessAndDiagramElements";
 import { ElementExclusion } from "@kie-tools/xml-parser-ts/dist/elementFilter";
 import { BPMN20__tProcess } from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
+import { isSubProcessElement, findSubProcessRecursively } from "./moveNodesOutOfSubProcess";
 
 export function moveNodesInsideSubProcess({
   definitions,
@@ -34,15 +35,10 @@ export function moveNodesInsideSubProcess({
   __readonly_nodeIds: string[];
 }) {
   const { process } = addOrGetProcessAndDiagramElements({ definitions });
-  const subProcess = process.flowElement?.find((s) => s["@_id"] === __readonly_subProcessId);
-  if (
-    !(
-      subProcess?.__$$element === "subProcess" ||
-      subProcess?.__$$element === "adHocSubProcess" ||
-      subProcess?.__$$element === "transaction"
-    )
-  ) {
-    throw new Error(`BPMN Element with id ${__readonly_subProcessId} is not a subProcess.`);
+
+  const subProcess = findSubProcessRecursively(process.flowElement ?? [], __readonly_subProcessId ?? "");
+  if (!subProcess) {
+    throw new Error(`Cannot find subprocess with ID: ${__readonly_subProcessId}`);
   }
 
   const flowElementsToMove: Normalized<Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>>[] = [];
@@ -51,37 +47,54 @@ export function moveNodesInsideSubProcess({
   >[] = [];
 
   const nodeIdsToMoveInside = new Set(__readonly_nodeIds);
-  const subProcessNodes = new Set();
+  const subProcessNodes = new Set<string>();
   subProcess.flowElement?.forEach((flowElement) => {
-    if (flowElement.__$$element !== "sequenceFlow") {
+    if (flowElement.__$$element !== "sequenceFlow" && flowElement["@_id"]) {
       subProcessNodes.add(flowElement["@_id"]);
     }
   });
 
-  for (let i = 0; i < (process.flowElement ?? []).length; i++) {
-    const flowElement = (process.flowElement ?? [])[i];
-    if (
-      nodeIdsToMoveInside.has(flowElement["@_id"]) ||
-      (flowElement.__$$element === "boundaryEvent" && nodeIdsToMoveInside.has(flowElement["@_attachedToRef"]))
-    ) {
-      flowElementsToMove.push(...((process.flowElement?.splice(i, 1) ?? []) as typeof flowElementsToMove));
-      i--; // repeat one index because we just altered the array we're iterating over.
-    } else if (
+  const toMove: Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>[] = [];
+
+  function shouldMoveSequenceFlow(
+    flowElement: Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>,
+    nodeIds: Set<string>,
+    existingNodes: Set<string>
+  ): boolean {
+    return (
       flowElement.__$$element === "sequenceFlow" &&
-      ((nodeIdsToMoveInside.has(flowElement["@_sourceRef"]) && nodeIdsToMoveInside.has(flowElement["@_targetRef"])) ||
-        (subProcessNodes.has(flowElement["@_sourceRef"]) && nodeIdsToMoveInside.has(flowElement["@_targetRef"])) ||
-        (nodeIdsToMoveInside.has(flowElement["@_sourceRef"]) && subProcessNodes.has(flowElement["@_targetRef"])))
-    ) {
-      // If the source and target are both outside of the sub-process
-      // or if the source and target is already in the sub process the sequenceFlow must be copied
-      flowElementsToMove.push(...((process.flowElement?.splice(i, 1) ?? []) as typeof flowElementsToMove));
-      i--; // repeat one index because we just altered the array we're iterating over.
-    }
+      !!flowElement["@_sourceRef"] &&
+      !!flowElement["@_targetRef"] &&
+      ((nodeIds.has(flowElement["@_sourceRef"]) && nodeIds.has(flowElement["@_targetRef"])) ||
+        (existingNodes.has(flowElement["@_sourceRef"]) && nodeIds.has(flowElement["@_targetRef"])) ||
+        (nodeIds.has(flowElement["@_sourceRef"]) && existingNodes.has(flowElement["@_targetRef"])))
+    );
   }
+
+  const collectElements = (flowElements: NonNullable<BPMN20__tProcess["flowElement"]>): void => {
+    for (let i = flowElements.length - 1; i >= 0; i--) {
+      const flowElement = flowElements[i];
+      if (
+        (flowElement["@_id"] && nodeIdsToMoveInside.has(flowElement["@_id"])) ||
+        (flowElement.__$$element === "boundaryEvent" &&
+          flowElement["@_attachedToRef"] &&
+          nodeIdsToMoveInside.has(flowElement["@_attachedToRef"]))
+      ) {
+        toMove.push(...flowElements.splice(i, 1));
+      } else if (shouldMoveSequenceFlow(flowElement, nodeIdsToMoveInside, subProcessNodes)) {
+        toMove.push(...flowElements.splice(i, 1));
+      } else if (isSubProcessElement(flowElement) && flowElement.flowElement) {
+        collectElements(flowElement.flowElement);
+      }
+    }
+  };
+
+  collectElements(process.flowElement ?? []);
+  flowElementsToMove.push(...(toMove as typeof flowElementsToMove));
 
   for (let i = 0; i < (process.artifact ?? []).length; i++) {
     const artifact = (process.artifact ?? [])[i];
-    if (nodeIdsToMoveInside.has(artifact["@_id"])) {
+    if (artifact["@_id"] && nodeIdsToMoveInside.has(artifact["@_id"])) {
       artifactsToMove.push(...((process.artifact?.splice(i, 1) ?? []) as typeof artifactsToMove));
       i--; // repeat one index because we just altered the array we're iterating over.
     }

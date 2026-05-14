@@ -37,6 +37,7 @@ import { BpmnXyFlowDiagramState, State } from "./Store";
 import { NODE_LAYERS } from "@kie-tools/xyflow-react-kie-diagram/dist/nodes/Hooks";
 import { ContainmentMode } from "@kie-tools/xyflow-react-kie-diagram/dist/graph/graphStructure";
 import { BPMN20__tLane } from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
+import { isSubProcessElement } from "../mutations/moveNodesOutOfSubProcess";
 
 export function computeDiagramData(
   definitions: State["bpmn"]["model"]["definitions"],
@@ -102,46 +103,49 @@ export function computeDiagramData(
         nodeBpmnElementsById.set(bpmnElement["@_id"], bpmnElement);
 
         // sub-processes
-        if (
-          bpmnElement?.__$$element === "subProcess" ||
-          bpmnElement?.__$$element === "adHocSubProcess" ||
-          bpmnElement?.__$$element === "transaction"
-        ) {
-          for (const flowElement of bpmnElement.flowElement ?? []) {
-            if (flowElement.__$$element === "boundaryEvent") {
-              parentIdsById.set(flowElement["@_id"], flowElement["@_attachedToRef"]);
-            } else {
-              parentIdsById.set(flowElement["@_id"], bpmnElement["@_id"]);
+        if (isSubProcessElement(bpmnElement)) {
+          const processSubProcessElements = (subProcess: typeof bpmnElement, parentId: string): void => {
+            for (const flowElement of subProcess.flowElement ?? []) {
+              if (flowElement.__$$element === "boundaryEvent") {
+                parentIdsById.set(flowElement["@_id"], flowElement["@_attachedToRef"]);
+              } else {
+                parentIdsById.set(flowElement["@_id"], parentId);
+              }
+
+              if (flowElement.__$$element !== "sequenceFlow") {
+                if (
+                  flowElement.__$$element !== "callChoreography" &&
+                  flowElement.__$$element !== "choreographyTask" &&
+                  flowElement.__$$element !== "dataObjectReference" &&
+                  flowElement.__$$element !== "dataStoreReference" &&
+                  flowElement.__$$element !== "implicitThrowEvent" &&
+                  flowElement.__$$element !== "manualTask" &&
+                  flowElement.__$$element !== "receiveTask" &&
+                  flowElement.__$$element !== "sendTask" &&
+                  flowElement.__$$element !== "subChoreography"
+                ) {
+                  nodeBpmnElementsById.set(flowElement["@_id"], flowElement);
+
+                  if (isSubProcessElement(flowElement)) {
+                    processSubProcessElements(flowElement, flowElement["@_id"]);
+                  }
+                }
+              } else {
+                edgeBpmnElementsById.set(flowElement["@_id"], flowElement);
+              }
             }
-            if (flowElement.__$$element !== "sequenceFlow") {
-              if (
-                flowElement.__$$element !== "callChoreography" &&
-                flowElement.__$$element !== "choreographyTask" &&
-                flowElement.__$$element !== "dataObjectReference" &&
-                flowElement.__$$element !== "dataStoreReference" &&
-                flowElement.__$$element !== "implicitThrowEvent" &&
-                flowElement.__$$element !== "manualTask" &&
-                flowElement.__$$element !== "receiveTask" &&
-                flowElement.__$$element !== "sendTask" &&
-                flowElement.__$$element !== "subChoreography"
-              ) {
+
+            for (const flowElement of subProcess.artifact ?? []) {
+              parentIdsById.set(flowElement["@_id"], parentId);
+              if (flowElement.__$$element !== "association") {
                 nodeBpmnElementsById.set(flowElement["@_id"], flowElement);
               } else {
-                // ignore on purpose. those flowElements are not nodes.
+                edgeBpmnElementsById.set(flowElement["@_id"], flowElement);
               }
-            } else {
-              edgeBpmnElementsById.set(flowElement["@_id"], flowElement);
             }
-          }
+          };
 
-          for (const flowElement of bpmnElement.artifact ?? []) {
-            parentIdsById.set(flowElement["@_id"], bpmnElement["@_id"]);
-            if (flowElement.__$$element !== "association") {
-              nodeBpmnElementsById.set(flowElement["@_id"], flowElement);
-            } else {
-              edgeBpmnElementsById.set(flowElement["@_id"], flowElement);
-            }
-          }
+          processSubProcessElements(bpmnElement, bpmnElement["@_id"]);
         }
 
         // lanes
@@ -336,10 +340,19 @@ export function computeDiagramData(
     new Map<string, RF.Edge<BpmnDiagramEdgeData>>()
   );
 
-  const sortedNodes = [...nodes]
-    .sort((a, b) => Number(b.type === NODE_TYPES.subProcess) - Number(a.type === NODE_TYPES.subProcess))
-    .sort((a, b) => Number(b.type === NODE_TYPES.lane) - Number(a.type === NODE_TYPES.lane))
-    .sort((a, b) => Number(b.type === NODE_TYPES.group) - Number(a.type === NODE_TYPES.group));
+  // Sort nodes by nesting depth to ensure React Flow sees parents before children
+  const depthCache = new Map<string, number>();
+  const getDepth = (nodeId: string): number => {
+    if (depthCache.has(nodeId)) {
+      return depthCache.get(nodeId)!;
+    }
+    const parentId = parentIdsById.get(nodeId);
+    const depth = parentId ? getDepth(parentId) + 1 : 0;
+    depthCache.set(nodeId, depth);
+    return depth;
+  };
+
+  const sortedNodes = [...nodes].sort((a, b) => getDepth(a.id) - getDepth(b.id));
 
   const finalNodes = newNodeProjection ? [...sortedNodes, newNodeProjection] : sortedNodes;
 
