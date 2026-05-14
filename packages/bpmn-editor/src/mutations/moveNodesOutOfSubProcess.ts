@@ -29,7 +29,9 @@ export type SubProcessElement = Extract<
   { __$$element: "subProcess" | "adHocSubProcess" | "transaction" }
 >;
 
-export function isSubProcessElement(element: any): element is SubProcessElement {
+export function isSubProcessElement(
+  element: Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>
+): element is SubProcessElement {
   return (
     element.__$$element === "subProcess" ||
     element.__$$element === "adHocSubProcess" ||
