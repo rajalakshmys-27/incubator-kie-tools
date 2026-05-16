@@ -42,6 +42,7 @@ import {
 import { AdhocAutostartCheckbox } from "../adhocAutostartCheckbox/AdhocAutostartCheckbox";
 import { SlaDueDateInput } from "../slaDueDate/SlaDueDateInput";
 import { AsyncCheckbox } from "../asyncCheckbox/AsyncCheckbox";
+import { ExpandedCheckbox } from "../expandedCheckbox/ExpandedCheckbox";
 import { generateUuid } from "@kie-tools/xyflow-react-kie-diagram/dist/uuid/uuid";
 import { useBpmnEditorI18n } from "../../i18n";
 
@@ -73,6 +74,8 @@ export function AdHocSubProcessProperties({
         <SlaDueDateInput element={adHocSubProcess} />
 
         <AsyncCheckbox element={adHocSubProcess} />
+
+        <ExpandedCheckbox element={adHocSubProcess} />
 
         <Divider inset={{ default: "insetXs" }} />
 

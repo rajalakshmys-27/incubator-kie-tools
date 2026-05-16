@@ -945,6 +945,14 @@ export const SubProcessNode = React.memo(
 
     const icons = useActivityMarkers(subProcess);
 
+    const isExpanded = shape["@_isExpanded"] !== false;
+    const iconsWithCollapsed = useMemo(() => {
+      if (!isExpanded && !icons.includes(ActivityNodeMarker.Collapsed)) {
+        return [...icons, ActivityNodeMarker.Collapsed];
+      }
+      return icons;
+    }, [icons, isExpanded]);
+
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
     useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
     const morphingActions = useSubProcessNodeMorphingActions(subProcess);
@@ -975,7 +983,7 @@ export const SubProcessNode = React.memo(
             ref={interactionRectRef}
             x={0}
             y={0}
-            icons={icons}
+            icons={iconsWithCollapsed}
             variant={
               subProcess["@_triggeredByEvent"]
                 ? "event"

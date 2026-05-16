@@ -19,7 +19,11 @@
 
 import { switchExpression } from "@kie-tools-core/switch-expression-ts";
 import { generateUuid } from "@kie-tools/xyflow-react-kie-diagram/dist/uuid/uuid";
-import { BPMN20__tDefinitions } from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
+import {
+  BPMN20__tDefinitions,
+  BPMN20__tProcess,
+  BPMNDI__BPMNShape,
+} from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
 import { AutoPositionedEdgeMarker } from "@kie-tools/xyflow-react-kie-diagram/dist/edges/AutoPositionedEdgeMarker";
 import { getDiBoundsCenterPoint } from "@kie-tools/xyflow-react-kie-diagram/dist/maths/DcMaths";
 import { DC__Bounds } from "@kie-tools/xyflow-react-kie-diagram/dist/maths/model";
@@ -28,7 +32,10 @@ import { Normalized } from "../normalization/normalize";
 import { addOrGetProcessAndDiagramElements } from "./addOrGetProcessAndDiagramElements";
 import { NodeNature, nodeNatures } from "./_NodeNature";
 import { addEdge } from "./addEdge";
+import { isSubProcessElement, SubProcessElement } from "./moveNodesOutOfSubProcess";
 import { PositionalNodeHandleId } from "@kie-tools/xyflow-react-kie-diagram/dist/nodes/PositionalNodeHandles";
+
+type FlowElementContainer = Normalized<BPMN20__tProcess> | SubProcessElement;
 
 export function addConnectedNode({
   definitions,
@@ -51,10 +58,67 @@ export function addConnectedNode({
 
   const { process, diagramElements } = addOrGetProcessAndDiagramElements({ definitions });
 
-  if (newNodeNature === NodeNature.PROCESS_FLOW_ELEMENT || newNodeNature === NodeNature.CONTAINER) {
-    process.flowElement ??= [];
+  let targetContainer: FlowElementContainer = process;
 
-    process.flowElement?.push(
+  const findSubProcessById = (container: FlowElementContainer, targetId: string): SubProcessElement | undefined => {
+    const flowElements = container.flowElement ?? [];
+    for (const element of flowElements) {
+      if (element["@_id"] === targetId && isSubProcessElement(element)) {
+        return element;
+      }
+      if (isSubProcessElement(element)) {
+        const found = findSubProcessById(element, targetId);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+
+  const allShapes = (definitions["bpmndi:BPMNDiagram"] ?? [])
+    .flatMap((d) => d["bpmndi:BPMNPlane"]["di:DiagramElement"])
+    .filter((el) => el?.__$$element === "bpmndi:BPMNShape") as Normalized<BPMNDI__BPMNShape>[];
+
+  const parentIdByElementId = new Map<string, string>();
+  for (const shape of allShapes) {
+    const elementId = shape["@_bpmnElement"];
+    const bounds = shape["dc:Bounds"];
+
+    if (!elementId || !bounds) continue;
+
+    for (const potentialParentShape of allShapes) {
+      const parentElementId = potentialParentShape["@_bpmnElement"];
+      const parentBounds = potentialParentShape["dc:Bounds"];
+
+      if (!parentElementId || !parentBounds || elementId === parentElementId) continue;
+
+      const isInside =
+        bounds["@_x"] >= parentBounds["@_x"] &&
+        bounds["@_y"] >= parentBounds["@_y"] &&
+        bounds["@_x"] + bounds["@_width"] <= parentBounds["@_x"] + parentBounds["@_width"] &&
+        bounds["@_y"] + bounds["@_height"] <= parentBounds["@_y"] + parentBounds["@_height"];
+
+      if (isInside) {
+        const parentElement = findSubProcessById(process, parentElementId);
+        if (parentElement && isSubProcessElement(parentElement)) {
+          parentIdByElementId.set(elementId, parentElementId);
+          break;
+        }
+      }
+    }
+  }
+
+  const sourceParentId = parentIdByElementId.get(__readonly_sourceNode.id);
+  if (sourceParentId) {
+    const parentSubProcess = findSubProcessById(process, sourceParentId);
+    if (parentSubProcess && isSubProcessElement(parentSubProcess)) {
+      targetContainer = parentSubProcess;
+    }
+  }
+
+  if (newNodeNature === NodeNature.PROCESS_FLOW_ELEMENT || newNodeNature === NodeNature.CONTAINER) {
+    targetContainer.flowElement ??= [];
+
+    targetContainer.flowElement?.push(
       switchExpression(
         __readonly_newNode.type as Exclude<
           BpmnNodeType,
@@ -107,8 +171,8 @@ export function addConnectedNode({
       )
     );
   } else if (newNodeNature === NodeNature.ARTIFACT) {
-    process.artifact ??= [];
-    process.artifact.push(
+    targetContainer.artifact ??= [];
+    targetContainer.artifact.push(
       ...switchExpression(__readonly_newNode.type as Extract<BpmnNodeType, "node_group" | "node_textAnnotation">, {
         [NODE_TYPES.group]: [
           {
@@ -137,7 +201,6 @@ export function addConnectedNode({
   }
 
   const newShapeId = generateUuid();
-  // Add the new node shape
   diagramElements?.push({
     __$$element: "bpmndi:BPMNShape",
     "@_id": newShapeId,
@@ -145,7 +208,6 @@ export function addConnectedNode({
     "dc:Bounds": __readonly_newNode.bounds,
   });
 
-  // Add the new edge and edge shape
   addEdge({
     definitions,
     __readonly_edge: {

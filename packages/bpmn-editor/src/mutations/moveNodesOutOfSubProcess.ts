@@ -24,6 +24,55 @@ import { Normalized } from "../normalization/normalize";
 import { State } from "../store/Store";
 import { addOrGetProcessAndDiagramElements } from "./addOrGetProcessAndDiagramElements";
 
+export type SubProcessElement = Extract<
+  Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>>,
+  { __$$element: "subProcess" | "adHocSubProcess" | "transaction" }
+>;
+
+export function isSubProcessElement(element: { __$$element?: string }): element is SubProcessElement {
+  return (
+    element.__$$element === "subProcess" ||
+    element.__$$element === "adHocSubProcess" ||
+    element.__$$element === "transaction"
+  );
+}
+
+export function findSubProcessRecursively(
+  flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
+  subProcessId: string
+): SubProcessElement | undefined {
+  for (const element of flowElements) {
+    if (element["@_id"] === subProcessId && isSubProcessElement(element)) {
+      return element;
+    }
+    if (isSubProcessElement(element) && element.flowElement) {
+      const found = findSubProcessRecursively(element.flowElement, subProcessId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
+function findParentFlowElements(
+  flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
+  subProcessId: string
+): NonNullable<BPMN20__tProcess["flowElement"]> | undefined {
+  for (const element of flowElements) {
+    if (element["@_id"] === subProcessId) {
+      return flowElements;
+    }
+    if (isSubProcessElement(element) && element.flowElement) {
+      const found = findParentFlowElements(element.flowElement, subProcessId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
 export function moveNodesOutOfSubProcess({
   definitions,
   __readonly_subProcessId,

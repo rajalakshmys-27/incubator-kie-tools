@@ -29,6 +29,7 @@ import { MultiInstanceProperties } from "../multiInstance/MultiInstancePropertie
 import { Divider } from "@patternfly/react-core/dist/js/components/Divider";
 import { AsyncCheckbox } from "../asyncCheckbox/AsyncCheckbox";
 import { SlaDueDateInput } from "../slaDueDate/SlaDueDateInput";
+import { ExpandedCheckbox } from "../expandedCheckbox/ExpandedCheckbox";
 import { useBpmnEditorI18n } from "../../i18n";
 
 export function SubProcessProperties({
@@ -50,6 +51,8 @@ export function SubProcessProperties({
         <SlaDueDateInput element={subProcess} />
 
         <AsyncCheckbox element={subProcess} />
+
+        <ExpandedCheckbox element={subProcess} />
 
         {subProcess.loopCharacteristics?.__$$element === "multiInstanceLoopCharacteristics" && (
           <>

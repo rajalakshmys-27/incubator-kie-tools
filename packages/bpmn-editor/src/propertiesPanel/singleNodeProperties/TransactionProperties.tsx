@@ -28,6 +28,7 @@ import { VariablesFormSection } from "../variables/VariablesFormSection";
 import { Divider } from "@patternfly/react-core/dist/js/components/Divider";
 import { SlaDueDateInput } from "../slaDueDate/SlaDueDateInput";
 import { AsyncCheckbox } from "../asyncCheckbox/AsyncCheckbox";
+import { ExpandedCheckbox } from "../expandedCheckbox/ExpandedCheckbox";
 import { useBpmnEditorI18n } from "../../i18n";
 
 export function TransactionProperties({
@@ -49,6 +50,8 @@ export function TransactionProperties({
         <SlaDueDateInput element={transaction} />
 
         <AsyncCheckbox element={transaction} />
+
+        <ExpandedCheckbox element={transaction} />
       </PropertiesPanelHeaderFormSection>
 
       <VariablesFormSection p={transaction} />

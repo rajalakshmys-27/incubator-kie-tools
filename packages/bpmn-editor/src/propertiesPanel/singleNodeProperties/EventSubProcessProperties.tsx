@@ -27,6 +27,7 @@ import { VariablesFormSection } from "../variables/VariablesFormSection";
 import { Divider } from "@patternfly/react-core/dist/js/components/Divider";
 import { AsyncCheckbox } from "../asyncCheckbox/AsyncCheckbox";
 import { SlaDueDateInput } from "../slaDueDate/SlaDueDateInput";
+import { ExpandedCheckbox } from "../expandedCheckbox/ExpandedCheckbox";
 import { useBpmnEditorI18n } from "../../i18n";
 
 export function EventSubProcessProperties({
@@ -48,6 +49,8 @@ export function EventSubProcessProperties({
         <SlaDueDateInput element={eventSubProcess} />
 
         <AsyncCheckbox element={eventSubProcess} />
+
+        <ExpandedCheckbox element={eventSubProcess} />
       </PropertiesPanelHeaderFormSection>
 
       <VariablesFormSection p={eventSubProcess} />
