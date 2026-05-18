@@ -132,6 +132,45 @@ export function shiftNodesAfterSubProcessResize({
     }
   }
 
+  const edgesBySourceId = new Map<string, number[]>();
+  const edgesByTargetId = new Map<string, number[]>();
+
+  for (let j = 0; j < diagramElements.length; j++) {
+    const edgeElement = diagramElements[j];
+    if (edgeElement.__$$element !== "bpmndi:BPMNEdge") {
+      continue;
+    }
+
+    const edgeElementId = edgeElement["@_bpmnElement"];
+    if (!edgeElementId) {
+      continue;
+    }
+
+    const bpmnEdge = findBpmnElementInProcess(process, edgeElementId);
+    if (!bpmnEdge) {
+      continue;
+    }
+
+    if (bpmnEdge.__$$element === "sequenceFlow" || bpmnEdge.__$$element === "association") {
+      const sourceRef = bpmnEdge["@_sourceRef"];
+      const targetRef = bpmnEdge["@_targetRef"];
+
+      if (sourceRef && typeof sourceRef === "string" && sourceRef.trim() !== "") {
+        if (!edgesBySourceId.has(sourceRef)) {
+          edgesBySourceId.set(sourceRef, []);
+        }
+        edgesBySourceId.get(sourceRef)!.push(j);
+      }
+
+      if (targetRef && typeof targetRef === "string" && targetRef.trim() !== "") {
+        if (!edgesByTargetId.has(targetRef)) {
+          edgesByTargetId.set(targetRef, []);
+        }
+        edgesByTargetId.get(targetRef)!.push(j);
+      }
+    }
+  }
+
   for (let i = 0; i < diagramElements.length; i++) {
     const element = diagramElements[i];
 
@@ -169,47 +208,20 @@ export function shiftNodesAfterSubProcessResize({
       continue;
     }
 
-    const elementType = bpmnElement.__$$element as keyof typeof elementToNodeType;
-    const nodeType = elementToNodeType[elementType];
-    if (!nodeType) {
+    const elementType = bpmnElement.__$$element;
+    if (!(elementType in elementToNodeType)) {
       continue;
     }
+    const nodeType = elementToNodeType[elementType as keyof typeof elementToNodeType];
 
-    const sourceEdgeIndexes: number[] = [];
-    const targetEdgeIndexes: number[] = [];
+    const sourceEdgeIndexes = edgesBySourceId.get(elementId) ?? [];
+    const targetEdgeIndexes = edgesByTargetId.get(elementId) ?? [];
 
-    for (let j = 0; j < diagramElements.length; j++) {
-      const edgeElement = diagramElements[j];
-      if (edgeElement.__$$element !== "bpmndi:BPMNEdge") {
-        continue;
-      }
+    const proposedDeltaX = needsHorizontalShift ? widthDelta : 0;
+    const proposedDeltaY = needsVerticalShift ? heightDelta : 0;
 
-      const edgeElementId = edgeElement["@_bpmnElement"];
-      if (!edgeElementId) {
-        continue;
-      }
-
-      const bpmnEdge = findBpmnElementInProcess(process, edgeElementId);
-      if (!bpmnEdge) {
-        continue;
-      }
-
-      if (bpmnEdge.__$$element === "sequenceFlow") {
-        if (bpmnEdge["@_sourceRef"] === elementId) {
-          sourceEdgeIndexes.push(j);
-        }
-        if (bpmnEdge["@_targetRef"] === elementId) {
-          targetEdgeIndexes.push(j);
-        }
-      } else if (bpmnEdge.__$$element === "association") {
-        if (bpmnEdge["@_sourceRef"] === elementId) {
-          sourceEdgeIndexes.push(j);
-        }
-        if (bpmnEdge["@_targetRef"] === elementId) {
-          targetEdgeIndexes.push(j);
-        }
-      }
-    }
+    const finalDeltaX = Math.max(proposedDeltaX, -otherX);
+    const finalDeltaY = Math.max(proposedDeltaY, -otherY);
 
     repositionNode({
       definitions,
@@ -222,8 +234,8 @@ export function shiftNodesAfterSubProcessResize({
         targetEdgeIndexes,
         selectedEdges: [],
         offset: {
-          deltaX: needsHorizontalShift ? widthDelta : 0,
-          deltaY: needsVerticalShift ? heightDelta : 0,
+          deltaX: finalDeltaX,
+          deltaY: finalDeltaY,
         },
       },
     });

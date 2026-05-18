@@ -18,6 +18,7 @@
  */
 
 import * as React from "react";
+import { useRef } from "react";
 import { useBpmnEditorStore, useBpmnEditorStoreApi } from "../../store/StoreContext";
 import { FormGroup } from "@patternfly/react-core/dist/js/components/Form";
 import { Checkbox } from "@patternfly/react-core/dist/js/components/Checkbox";
@@ -33,15 +34,66 @@ const DEFAULT_EXPANDED_SUBPROCESS_WIDTH = 350;
 const DEFAULT_EXPANDED_SUBPROCESS_HEIGHT = 200;
 
 type BPMNShapeWithExpandedDimensions = Normalized<BPMNDI__BPMNShape> & {
-  "@_kie:expandedWidth"?: number;
-  "@_kie:expandedHeight"?: number;
+  "@_kie:preCollapseWidth"?: number;
+  "@_kie:preCollapseHeight"?: number;
 };
+
+function calculateNewDimensions(
+  shape: BPMNShapeWithExpandedDimensions,
+  isExpanding: boolean
+): { width: number; height: number } {
+  if (!isExpanding && shape["@_isExpanded"] !== false) {
+    shape["@_kie:preCollapseWidth"] = shape["dc:Bounds"]["@_width"];
+    shape["@_kie:preCollapseHeight"] = shape["dc:Bounds"]["@_height"];
+    return { width: COLLAPSED_SUBPROCESS_WIDTH, height: COLLAPSED_SUBPROCESS_HEIGHT };
+  } else if (isExpanding && shape["@_isExpanded"] === false) {
+    const expandedWidth = shape["@_kie:preCollapseWidth"];
+    const expandedHeight = shape["@_kie:preCollapseHeight"];
+
+    if (expandedWidth !== undefined && expandedHeight !== undefined) {
+      delete shape["@_kie:preCollapseWidth"];
+      delete shape["@_kie:preCollapseHeight"];
+      return { width: expandedWidth, height: expandedHeight };
+    } else {
+      const currentWidth = shape["dc:Bounds"]["@_width"];
+      const currentHeight = shape["dc:Bounds"]["@_height"];
+
+      if (currentWidth === COLLAPSED_SUBPROCESS_WIDTH && currentHeight === COLLAPSED_SUBPROCESS_HEIGHT) {
+        return { width: DEFAULT_EXPANDED_SUBPROCESS_WIDTH, height: DEFAULT_EXPANDED_SUBPROCESS_HEIGHT };
+      }
+    }
+  }
+  return { width: shape["dc:Bounds"]["@_width"], height: shape["dc:Bounds"]["@_height"] };
+}
+
+function repositionSubprocess(
+  shape: BPMNShapeWithExpandedDimensions,
+  oldY: number,
+  oldHeight: number,
+  newHeight: number
+): { x: number; y: number } {
+  const oldCenterY = oldY + oldHeight / 2;
+  const newX = shape["dc:Bounds"]["@_x"];
+  const newY = oldCenterY - newHeight / 2;
+  return { x: newX, y: newY };
+}
+
+function validateBounds(shape: BPMNShapeWithExpandedDimensions): boolean {
+  return !!(
+    shape["dc:Bounds"] &&
+    typeof shape["dc:Bounds"]["@_x"] === "number" &&
+    typeof shape["dc:Bounds"]["@_y"] === "number" &&
+    typeof shape["dc:Bounds"]["@_width"] === "number" &&
+    typeof shape["dc:Bounds"]["@_height"] === "number"
+  );
+}
 
 export function ExpandedCheckbox({ element }: { element: SubProcessElement }) {
   const { i18n } = useBpmnEditorI18n();
   const isReadOnly = useBpmnEditorStore((s) => s.settings.isReadOnly);
 
   const bpmnEditorStoreApi = useBpmnEditorStoreApi();
+  const isProcessingRef = useRef(false);
 
   const isExpanded = useBpmnEditorStore((s) => {
     const diagramElements =
@@ -62,91 +114,60 @@ export function ExpandedCheckbox({ element }: { element: SubProcessElement }) {
         isChecked={isExpanded}
         isDisabled={isReadOnly}
         onChange={(_e, checked) => {
-          bpmnEditorStoreApi.setState((s) => {
-            const diagramElements =
-              s.bpmn.model.definitions["bpmndi:BPMNDiagram"]?.[0]?.["bpmndi:BPMNPlane"]?.["di:DiagramElement"];
-            if (diagramElements) {
+          if (isProcessingRef.current) {
+            return;
+          }
+          isProcessingRef.current = true;
+
+          try {
+            bpmnEditorStoreApi.setState((s) => {
+              const diagramElements =
+                s.bpmn.model.definitions["bpmndi:BPMNDiagram"]?.[0]?.["bpmndi:BPMNPlane"]?.["di:DiagramElement"];
+              if (!diagramElements) return;
+
               const shapeIndex = diagramElements.findIndex(
                 (d) => d.__$$element === "bpmndi:BPMNShape" && d["@_bpmnElement"] === element["@_id"]
               );
-              if (shapeIndex >= 0) {
-                const diagramElement = diagramElements[shapeIndex];
-                if (diagramElement.__$$element !== "bpmndi:BPMNShape") {
-                  return;
-                }
+              if (shapeIndex < 0) return;
 
-                const shape = diagramElement as BPMNShapeWithExpandedDimensions;
+              const diagramElement = diagramElements[shapeIndex];
+              if (diagramElement.__$$element !== "bpmndi:BPMNShape") return;
 
-                if (
-                  !shape["dc:Bounds"] ||
-                  typeof shape["dc:Bounds"]["@_x"] !== "number" ||
-                  typeof shape["dc:Bounds"]["@_y"] !== "number" ||
-                  typeof shape["dc:Bounds"]["@_width"] !== "number" ||
-                  typeof shape["dc:Bounds"]["@_height"] !== "number"
-                ) {
-                  console.warn("Invalid bounds for subprocess", element["@_id"]);
-                  return;
-                }
+              const shape: BPMNShapeWithExpandedDimensions = diagramElement;
 
-                const oldX = shape["dc:Bounds"]["@_x"];
-                const oldY = shape["dc:Bounds"]["@_y"];
-                const oldWidth = shape["dc:Bounds"]["@_width"];
-                const oldHeight = shape["dc:Bounds"]["@_height"];
-
-                if (!checked && shape["@_isExpanded"] !== false) {
-                  shape["@_kie:expandedWidth"] = shape["dc:Bounds"]["@_width"];
-                  shape["@_kie:expandedHeight"] = shape["dc:Bounds"]["@_height"];
-
-                  shape["dc:Bounds"]["@_width"] = COLLAPSED_SUBPROCESS_WIDTH;
-                  shape["dc:Bounds"]["@_height"] = COLLAPSED_SUBPROCESS_HEIGHT;
-                } else if (checked && shape["@_isExpanded"] === false) {
-                  const expandedWidth = shape["@_kie:expandedWidth"];
-                  const expandedHeight = shape["@_kie:expandedHeight"];
-
-                  if (expandedWidth !== undefined && expandedHeight !== undefined) {
-                    shape["dc:Bounds"]["@_width"] = expandedWidth;
-                    shape["dc:Bounds"]["@_height"] = expandedHeight;
-                    delete shape["@_kie:expandedWidth"];
-                    delete shape["@_kie:expandedHeight"];
-                  } else {
-                    const currentWidth = shape["dc:Bounds"]["@_width"];
-                    const currentHeight = shape["dc:Bounds"]["@_height"];
-
-                    if (currentWidth === COLLAPSED_SUBPROCESS_WIDTH && currentHeight === COLLAPSED_SUBPROCESS_HEIGHT) {
-                      shape["dc:Bounds"]["@_width"] = DEFAULT_EXPANDED_SUBPROCESS_WIDTH;
-                      shape["dc:Bounds"]["@_height"] = DEFAULT_EXPANDED_SUBPROCESS_HEIGHT;
-                    }
-                  }
-                }
-
-                const newWidth = shape["dc:Bounds"]["@_width"];
-                const newHeight = shape["dc:Bounds"]["@_height"];
-
-                const oldCenterY = oldY + oldHeight / 2;
-                const newX = oldX;
-                const newY = oldCenterY - newHeight / 2;
-
-                shape["dc:Bounds"]["@_x"] = newX;
-                shape["dc:Bounds"]["@_y"] = newY;
-
-                if (checked) {
-                  delete shape["@_isExpanded"];
-                } else {
-                  shape["@_isExpanded"] = false;
-                }
-
-                if ((oldWidth !== newWidth || oldHeight !== newHeight) && element["@_id"]) {
-                  shiftNodesAfterSubProcessResize({
-                    definitions: s.bpmn.model.definitions,
-                    subProcessElementId: element["@_id"],
-                    oldBounds: { width: oldWidth, height: oldHeight },
-                    newBounds: { width: newWidth, height: newHeight },
-                    oldPosition: { x: oldX, y: oldY },
-                  });
-                }
+              if (!validateBounds(shape)) {
+                console.warn("Invalid bounds for subprocess", element["@_id"]);
+                return;
               }
-            }
-          });
+
+              const oldX = shape["dc:Bounds"]["@_x"];
+              const oldY = shape["dc:Bounds"]["@_y"];
+              const oldWidth = shape["dc:Bounds"]["@_width"];
+              const oldHeight = shape["dc:Bounds"]["@_height"];
+
+              const { width: newWidth, height: newHeight } = calculateNewDimensions(shape, checked);
+              shape["dc:Bounds"]["@_width"] = newWidth;
+              shape["dc:Bounds"]["@_height"] = newHeight;
+
+              const { x: newX, y: newY } = repositionSubprocess(shape, oldY, oldHeight, newHeight);
+              shape["dc:Bounds"]["@_x"] = newX;
+              shape["dc:Bounds"]["@_y"] = newY;
+
+              shape["@_isExpanded"] = checked ? undefined : false;
+
+              if ((oldWidth !== newWidth || oldHeight !== newHeight) && element["@_id"]) {
+                shiftNodesAfterSubProcessResize({
+                  definitions: s.bpmn.model.definitions,
+                  subProcessElementId: element["@_id"],
+                  oldBounds: { width: oldWidth, height: oldHeight },
+                  newBounds: { width: newWidth, height: newHeight },
+                  oldPosition: { x: oldX, y: oldY },
+                });
+              }
+            });
+          } finally {
+            isProcessingRef.current = false;
+          }
         }}
       />
     </FormGroup>

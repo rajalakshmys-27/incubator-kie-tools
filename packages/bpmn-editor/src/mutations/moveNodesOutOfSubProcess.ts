@@ -37,16 +37,24 @@ export function isSubProcessElement(element: { __$$element?: string }): element 
   );
 }
 
+const MAX_SUBPROCESS_DEPTH = 50;
+
 export function findSubProcessRecursively(
   flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
-  subProcessId: string
+  subProcessId: string,
+  depth: number = 0
 ): SubProcessElement | undefined {
+  if (depth > MAX_SUBPROCESS_DEPTH) {
+    console.warn(`Maximum subprocess nesting depth (${MAX_SUBPROCESS_DEPTH}) exceeded`);
+    return undefined;
+  }
+
   for (const element of flowElements) {
     if (element["@_id"] === subProcessId && isSubProcessElement(element)) {
       return element;
     }
     if (isSubProcessElement(element) && element.flowElement) {
-      const found = findSubProcessRecursively(element.flowElement, subProcessId);
+      const found = findSubProcessRecursively(element.flowElement, subProcessId, depth + 1);
       if (found) {
         return found;
       }
@@ -57,14 +65,20 @@ export function findSubProcessRecursively(
 
 function findParentFlowElements(
   flowElements: NonNullable<BPMN20__tProcess["flowElement"]>,
-  subProcessId: string
+  subProcessId: string,
+  depth: number = 0
 ): NonNullable<BPMN20__tProcess["flowElement"]> | undefined {
+  if (depth > MAX_SUBPROCESS_DEPTH) {
+    console.warn(`Maximum subprocess nesting depth (${MAX_SUBPROCESS_DEPTH}) exceeded`);
+    return undefined;
+  }
+
   for (const element of flowElements) {
     if (element["@_id"] === subProcessId) {
       return flowElements;
     }
     if (isSubProcessElement(element) && element.flowElement) {
-      const found = findParentFlowElements(element.flowElement, subProcessId);
+      const found = findParentFlowElements(element.flowElement, subProcessId, depth + 1);
       if (found) {
         return found;
       }

@@ -27,6 +27,7 @@ import {
 import { AutoPositionedEdgeMarker } from "@kie-tools/xyflow-react-kie-diagram/dist/edges/AutoPositionedEdgeMarker";
 import { getDiBoundsCenterPoint } from "@kie-tools/xyflow-react-kie-diagram/dist/maths/DcMaths";
 import { DC__Bounds } from "@kie-tools/xyflow-react-kie-diagram/dist/maths/model";
+import { Unpacked } from "@kie-tools/xyflow-react-kie-diagram/dist/tsExt/tsExt";
 import { BpmnNodeElement, BpmnNodeType, EDGE_TYPES, NODE_TYPES } from "../diagram/BpmnDiagramDomain";
 import { Normalized } from "../normalization/normalize";
 import { addOrGetProcessAndDiagramElements } from "./addOrGetProcessAndDiagramElements";
@@ -36,6 +37,8 @@ import { isSubProcessElement, SubProcessElement } from "./moveNodesOutOfSubProce
 import { PositionalNodeHandleId } from "@kie-tools/xyflow-react-kie-diagram/dist/nodes/PositionalNodeHandles";
 
 type FlowElementContainer = Normalized<BPMN20__tProcess> | SubProcessElement;
+
+const BOUNDS_TOLERANCE = 1;
 
 export function addConnectedNode({
   definitions,
@@ -60,23 +63,38 @@ export function addConnectedNode({
 
   let targetContainer: FlowElementContainer = process;
 
-  const findSubProcessById = (container: FlowElementContainer, targetId: string): SubProcessElement | undefined => {
+  const findElementById = (
+    container: FlowElementContainer,
+    targetId: string
+  ): Unpacked<NonNullable<BPMN20__tProcess["flowElement"]>> | undefined => {
     const flowElements = container.flowElement ?? [];
     for (const element of flowElements) {
-      if (element["@_id"] === targetId && isSubProcessElement(element)) {
+      if (element["@_id"] === targetId) {
         return element;
       }
       if (isSubProcessElement(element)) {
-        const found = findSubProcessById(element, targetId);
+        const found = findElementById(element, targetId);
         if (found) return found;
       }
     }
     return undefined;
   };
 
+  const findSubProcessById = (container: FlowElementContainer, targetId: string): SubProcessElement | undefined => {
+    const element = findElementById(container, targetId);
+    return element && isSubProcessElement(element) ? element : undefined;
+  };
+
   const allShapes = (definitions["bpmndi:BPMNDiagram"] ?? [])
     .flatMap((d) => d["bpmndi:BPMNPlane"]["di:DiagramElement"])
     .filter((el) => el?.__$$element === "bpmndi:BPMNShape") as Normalized<BPMNDI__BPMNShape>[];
+
+  const subProcessShapes = allShapes.filter((shape) => {
+    const elementId = shape["@_bpmnElement"];
+    if (!elementId) return false;
+    const element = findSubProcessById(process, elementId);
+    return element && isSubProcessElement(element);
+  });
 
   const parentIdByElementId = new Map<string, string>();
   for (const shape of allShapes) {
@@ -85,25 +103,38 @@ export function addConnectedNode({
 
     if (!elementId || !bounds) continue;
 
-    for (const potentialParentShape of allShapes) {
+    const bpmnElement = findElementById(process, elementId);
+    if (bpmnElement?.__$$element === "boundaryEvent" && bpmnElement["@_attachedToRef"]) {
+      parentIdByElementId.set(elementId, bpmnElement["@_attachedToRef"]);
+      continue;
+    }
+
+    let smallestParentId: string | undefined;
+    let smallestParentArea = Infinity;
+
+    for (const potentialParentShape of subProcessShapes) {
       const parentElementId = potentialParentShape["@_bpmnElement"];
       const parentBounds = potentialParentShape["dc:Bounds"];
 
       if (!parentElementId || !parentBounds || elementId === parentElementId) continue;
 
       const isInside =
-        bounds["@_x"] >= parentBounds["@_x"] &&
-        bounds["@_y"] >= parentBounds["@_y"] &&
-        bounds["@_x"] + bounds["@_width"] <= parentBounds["@_x"] + parentBounds["@_width"] &&
-        bounds["@_y"] + bounds["@_height"] <= parentBounds["@_y"] + parentBounds["@_height"];
+        bounds["@_x"] >= parentBounds["@_x"] - BOUNDS_TOLERANCE &&
+        bounds["@_y"] >= parentBounds["@_y"] - BOUNDS_TOLERANCE &&
+        bounds["@_x"] + bounds["@_width"] <= parentBounds["@_x"] + parentBounds["@_width"] + BOUNDS_TOLERANCE &&
+        bounds["@_y"] + bounds["@_height"] <= parentBounds["@_y"] + parentBounds["@_height"] + BOUNDS_TOLERANCE;
 
       if (isInside) {
-        const parentElement = findSubProcessById(process, parentElementId);
-        if (parentElement && isSubProcessElement(parentElement)) {
-          parentIdByElementId.set(elementId, parentElementId);
-          break;
+        const parentArea = parentBounds["@_width"] * parentBounds["@_height"];
+        if (parentArea < smallestParentArea) {
+          smallestParentArea = parentArea;
+          smallestParentId = parentElementId;
         }
       }
+    }
+
+    if (smallestParentId) {
+      parentIdByElementId.set(elementId, smallestParentId);
     }
   }
 

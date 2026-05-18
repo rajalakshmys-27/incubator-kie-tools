@@ -36,7 +36,9 @@ import { MIN_NODE_SIZES } from "../diagram/BpmnDiagramDomain";
 import { BpmnXyFlowDiagramState, State } from "./Store";
 import { NODE_LAYERS } from "@kie-tools/xyflow-react-kie-diagram/dist/nodes/Hooks";
 import { ContainmentMode } from "@kie-tools/xyflow-react-kie-diagram/dist/graph/graphStructure";
-import { BPMN20__tLane } from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
+import { BPMN20__tLane, BPMNDI__BPMNShape } from "@kie-tools/bpmn-marshaller/dist/schemas/bpmn-2_0/ts-gen/types";
+import { isSubProcessElement } from "../mutations/moveNodesOutOfSubProcess";
+import { Normalized } from "../normalization/normalize";
 
 export function computeDiagramData(
   definitions: State["bpmn"]["model"]["definitions"],
@@ -49,14 +51,12 @@ export function computeDiagramData(
   const edgeBpmnElementsById = new Map<string, BpmnEdgeElement>();
   const parentIdsById = new Map<string, string>();
 
-  const bpmnShapesByElementId = new Map<string, { "@_isExpanded"?: boolean }>();
+  const bpmnShapesByElementId = new Map<string, Normalized<BPMNDI__BPMNShape>>();
   (definitions["bpmndi:BPMNDiagram"] ?? [])
     .flatMap((d) => d["bpmndi:BPMNPlane"]["di:DiagramElement"])
     .forEach((diagramElement) => {
       if (diagramElement?.__$$element === "bpmndi:BPMNShape" && diagramElement["@_bpmnElement"]) {
-        bpmnShapesByElementId.set(diagramElement["@_bpmnElement"], {
-          "@_isExpanded": diagramElement["@_isExpanded"],
-        });
+        bpmnShapesByElementId.set(diagramElement["@_bpmnElement"], diagramElement);
       }
     });
 
@@ -114,18 +114,10 @@ export function computeDiagramData(
       ) {
         nodeBpmnElementsById.set(bpmnElement["@_id"], bpmnElement);
 
-        // sub-processes
-        if (
-          bpmnElement?.__$$element === "subProcess" ||
-          bpmnElement?.__$$element === "adHocSubProcess" ||
-          bpmnElement?.__$$element === "transaction"
-        ) {
-          // Check if the sub-process is expanded in the diagram
-          // According to BPMN 2.0 spec, isExpanded defaults to true if not specified
+        if (isSubProcessElement(bpmnElement)) {
           const bpmnShape = bpmnShapesByElementId.get(bpmnElement["@_id"]);
           const isExpanded = bpmnShape?.["@_isExpanded"] !== false;
 
-          // Always build parent relationships for all flowElements
           for (const flowElement of bpmnElement.flowElement ?? []) {
             if (flowElement.__$$element === "boundaryEvent") {
               parentIdsById.set(flowElement["@_id"], flowElement["@_attachedToRef"]);
@@ -133,7 +125,6 @@ export function computeDiagramData(
               parentIdsById.set(flowElement["@_id"], bpmnElement["@_id"]);
             }
 
-            // Only add to nodeBpmnElementsById if expanded
             if (isExpanded) {
               if (flowElement.__$$element !== "sequenceFlow") {
                 if (
@@ -148,8 +139,6 @@ export function computeDiagramData(
                   flowElement.__$$element !== "subChoreography"
                 ) {
                   nodeBpmnElementsById.set(flowElement["@_id"], flowElement);
-                } else {
-                  // ignore on purpose. those flowElements are not nodes.
                 }
               } else {
                 edgeBpmnElementsById.set(flowElement["@_id"], flowElement);
@@ -157,11 +146,9 @@ export function computeDiagramData(
             }
           }
 
-          // Always build parent relationships for artifacts
           for (const flowElement of bpmnElement.artifact ?? []) {
             parentIdsById.set(flowElement["@_id"], bpmnElement["@_id"]);
 
-            // Only add to maps if expanded
             if (isExpanded) {
               if (flowElement.__$$element !== "association") {
                 nodeBpmnElementsById.set(flowElement["@_id"], flowElement);
@@ -170,10 +157,7 @@ export function computeDiagramData(
               }
             }
           }
-        }
-
-        // lanes
-        else if (bpmnElement.__$$element === "lane") {
+        } else if (bpmnElement.__$$element === "lane") {
           const recursivelyAddNodesInsideLane = (lane: BPMN20__tLane) => {
             for (const flowNodeRef of lane.flowNodeRef ?? []) {
               parentIdsById.set(flowNodeRef.__$$text, bpmnElement["@_id"]);
@@ -202,26 +186,28 @@ export function computeDiagramData(
 
   // Build the set of collapsed subprocess IDs
   const collapsedSubProcessIds = new Set<string>();
-  for (const [elementId, shapeInfo] of bpmnShapesByElementId.entries()) {
-    if (shapeInfo["@_isExpanded"] === false) {
+  for (const [elementId, shape] of bpmnShapesByElementId.entries()) {
+    if (shape["@_isExpanded"] === false) {
       collapsedSubProcessIds.add(elementId);
     }
   }
 
-  // Use parentIdsById to find ALL descendants of collapsed subprocesses
-  const findAllDescendants = (parentId: string): string[] => {
+  const findAllDescendants = (parentId: string, visited: Set<string> = new Set()): string[] => {
+    if (visited.has(parentId)) {
+      return [];
+    }
+    visited.add(parentId);
+
     const descendants: string[] = [];
     for (const [childId, parent] of parentIdsById.entries()) {
       if (parent === parentId) {
         descendants.push(childId);
-        // Recursively find descendants of this child
-        descendants.push(...findAllDescendants(childId));
+        descendants.push(...findAllDescendants(childId, visited));
       }
     }
     return descendants;
   };
 
-  // Add all descendants of collapsed subprocesses to collapsedSubProcessChildIds
   for (const collapsedSubProcessId of collapsedSubProcessIds) {
     const descendants = findAllDescendants(collapsedSubProcessId);
     for (const descendantId of descendants) {
@@ -229,12 +215,6 @@ export function computeDiagramData(
     }
   }
 
-  // FIX: Remove all children of collapsed sub-processes from the node and edge maps.
-  // This is necessary because some children may have been registered into nodeBpmnElementsById
-  // or edgeBpmnElementsById before the collapsed state was determined (e.g. if the BPMN model
-  // lists child elements before their parent sub-process shape in the diagram plane, or when
-  // the forEach processes elements in an order where children are seen before the collapsed
-  // parent). Cleaning up here guarantees nothing inside a collapsed sub-process is rendered.
   for (const id of collapsedSubProcessChildIds) {
     nodeBpmnElementsById.delete(id);
     edgeBpmnElementsById.delete(id);
