@@ -142,7 +142,12 @@ export const StartEventNode = React.memo(
     );
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      // Only close the panel when hover is lost, not when it's gained
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useEventNodeMorphingActions(startEvent);
 
     const parentNodeBpmnElement = useMemo(
@@ -333,7 +338,12 @@ export const IntermediateCatchEventNode = React.memo(
     );
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      // Only close the panel when hover is lost, not when it's gained
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useEventNodeMorphingActions(intermediateCatchEvent);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(
       () =>
@@ -494,7 +504,11 @@ export const IntermediateThrowEventNode = React.memo(
     );
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useEventNodeMorphingActions(intermediateThrowEvent);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(
       () =>
@@ -633,7 +647,11 @@ export const EndEventNode = React.memo(
     );
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useEventNodeMorphingActions(endEvent);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(
       () => new Set(["timerEventDefinition", "conditionalEventDefinition", "linkEventDefinition"]),
@@ -783,7 +801,11 @@ export const TaskNode = React.memo(
     const markers = useActivityMarkers(task);
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useTaskNodeMorphingActions(task);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(() => new Set(), []);
     useKeyboardShortcutsForMorphingActions(ref, morphingActions, disabledMorphingActionIds);
@@ -959,7 +981,11 @@ export const SubProcessNode = React.memo(
     const icons = useActivityMarkers(subProcess);
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useSubProcessNodeMorphingActions(subProcess);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(() => new Set(), []);
     useKeyboardShortcutsForMorphingActions(ref, morphingActions, disabledMorphingActionIds);
@@ -1131,7 +1157,11 @@ export const GatewayNode = React.memo(
     );
 
     const [isMorphingPanelExpanded, setMorphingPanelExpanded] = useState(false);
-    useEffect(() => setMorphingPanelExpanded(false), [isHovered]);
+    useEffect(() => {
+      if (!isHovered) {
+        setMorphingPanelExpanded(false);
+      }
+    }, [isHovered]);
     const morphingActions = useGatewayNodeMorphingActions(gateway);
     const disabledMorphingActionIds = useMemo<Set<Unpacked<typeof morphingActions>["id"]>>(() => new Set(), []);
     useKeyboardShortcutsForMorphingActions(ref, morphingActions, disabledMorphingActionIds);
